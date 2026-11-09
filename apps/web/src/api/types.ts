@@ -5,6 +5,7 @@ export type EntryType =
   | 'rule'
   | 'class'
   | 'skill'
+  | 'heroic-skill'
   | 'spell'
   | 'equipment'
   | 'guide';
@@ -31,6 +32,21 @@ export interface ClassDetails {
 export interface SkillDetails {
   classSlug: string;
   maxLevel: number;
+}
+
+export interface HeroicSkillRequirements {
+  /** Slugs of the Class entries whose Mastery counts; empty when open to everyone. */
+  classes: string[];
+  /** How many of `classes` must be mastered (1 = any of); 0 when `classes` is empty. */
+  required: number;
+  /** Slugs of Skill or Spell entries the character must also have. */
+  alsoRequires: string[];
+  note: string | null;
+}
+
+export interface HeroicSkillDetails {
+  requirements: HeroicSkillRequirements;
+  repeatable: boolean;
 }
 
 export interface SpellDetails {
@@ -76,12 +92,13 @@ export interface DetailsByType {
   rule: RuleDetails;
   class: ClassDetails;
   skill: SkillDetails;
+  'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
   guide: GuideDetails;
 }
 
-/** What list and search endpoints return: no body, no details. */
+/** What list and search endpoints return: everything but the body. */
 export interface EntrySummary {
   id: string;
   slug: string;
@@ -93,12 +110,12 @@ export interface EntrySummary {
   /** Printed page in `source`; null only for guides. */
   page: number | null;
   tags: string[];
+  details: DetailsByType[EntryType];
 }
 
 export interface Entry extends EntrySummary {
   /** Markdown; `[[slug]]` links to another entry. */
   body: string;
-  details: DetailsByType[EntryType];
   createdAt: string;
   updatedAt: string;
 }

@@ -72,3 +72,9 @@ export const CrystalIcon = ({ className }: IconProps) => (
     <path d="M11 0 22 11H0Z" fill="var(--bg)" opacity="0.28" />
   </svg>
 );
+
+export const ChevronIcon = ({ className }: IconProps) => (
+  <svg {...base} width={18} height={18} className={className}>
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);

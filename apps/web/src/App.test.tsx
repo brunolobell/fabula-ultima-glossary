@@ -36,12 +36,12 @@ describe('Home', () => {
     expect(within(grid).getByRole('link', { name: /classes.*1 entrada\b/i })).toBeInTheDocument();
   });
 
-  it('has a sidebar with the classes and a skip link', async () => {
+  it('has a skip link and no longer lists every Class in the sidebar', async () => {
     mockApi();
     renderAt('/');
     const nav = screen.getByRole('navigation', { name: 'Navegação principal' });
-    expect(await within(nav).findByRole('link', { name: 'Elementalista' }))
-      .toHaveAttribute('href', '/classes/elementalista');
+    await within(nav).findByRole('button', { name: 'Criação de Personagem' });
+    expect(within(nav).queryByRole('link', { name: 'Elementalista' })).toBeNull();
     expect(screen.getByRole('link', { name: /ir para o conteúdo/i })).toBeInTheDocument();
   });
 
@@ -187,5 +187,166 @@ describe('Search', () => {
     fireEvent.submit(input.closest('form')!);
     expect(await screen.findByRole('heading', { level: 1, name: 'Busca' })).toBeInTheDocument();
     expect(await screen.findByText(/resultados? para “raio”/)).toBeInTheDocument();
+  });
+});
+
+const menu = () => screen.getByRole('navigation', { name: 'Navegação principal' });
+
+describe('Sidebar groups', () => {
+  it('lists the groups alphabetically, collapsed, with Regras as a plain link', async () => {
+    mockApi();
+    renderAt('/');
+    const nav = within(menu());
+    const headers = await nav.findAllByRole('button', { expanded: false });
+    expect(headers.map((h) => h.textContent)).toEqual([
+      'Criação de Personagem',
+      'Equipamento',
+    ]);
+    expect(nav.getByRole('link', { name: /^Regras/ })).toHaveAttribute('href', '/regras');
+    expect(nav.queryByRole('link', { name: /^Classes/ })).toBeNull();
+  });
+
+  it('expands a group to its type lists, in alphabetical order, with counts', async () => {
+    mockApi();
+    renderAt('/');
+    const nav = within(menu());
+    fireEvent.click(await nav.findByRole('button', { name: 'Criação de Personagem' }));
+    const links = within(
+      nav.getByRole('button', { name: 'Criação de Personagem' }).nextElementSibling as HTMLElement,
+    ).getAllByRole('link');
+    expect(links.map((l) => l.textContent)).toEqual([
+      'Classes1',
+      'Feitiços1',
+      'Poderes1',
+      'Poderes Heroicos2',
+    ]);
+    expect(links[3]).toHaveAttribute('href', '/poderes-heroicos');
+  });
+
+  it('opens the group of the current page by itself and marks the item', async () => {
+    mockApi();
+    renderAt('/classes/elementalista');
+    const nav = within(menu());
+    const header = await nav.findByRole('button', { name: 'Criação de Personagem' });
+    await waitFor(() => expect(header).toHaveAttribute('aria-expanded', 'true'));
+    expect(nav.getByRole('link', { name: /^Classes/ })).toHaveAttribute('aria-current', 'page');
+    expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+  });
+
+  it('keeps several groups open at once', async () => {
+    mockApi();
+    renderAt('/classes/elementalista');
+    const nav = within(menu());
+    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    expect(nav.getByRole('button', { name: 'Criação de Personagem' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+  });
+
+  it('links the Equipment Kinds to a filtered list and highlights the right one', async () => {
+    mockApi();
+    renderAt('/equipamento?item=armas');
+    const nav = within(menu());
+    await waitFor(() =>
+      expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
+        'aria-expanded',
+        'true',
+      ),
+    );
+    expect(nav.getByRole('link', { name: /^Armas/ })).toHaveAttribute('href', '/equipamento?item=armas');
+    expect(nav.getByRole('link', { name: /^Armas/ })).toHaveAttribute('aria-current', 'page');
+    expect(nav.getByRole('link', { name: /^Todo o equipamento/ })).not.toHaveAttribute('aria-current');
+    expect(nav.getByRole('link', { name: /^Escudos/ })).toHaveAttribute('href', '/equipamento?item=escudos');
+  });
+
+  it('highlights "Todo o equipamento" on the unfiltered list', async () => {
+    mockApi();
+    renderAt('/equipamento');
+    const nav = within(menu());
+    const all = await nav.findByRole('link', { name: /^Todo o equipamento/ });
+    expect(all).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('highlights the kind of an Equipment entry page', async () => {
+    mockApi();
+    renderAt('/equipamento/katana');
+    const nav = within(menu());
+    const armas = await nav.findByRole('link', { name: /^Armas/ });
+    await waitFor(() => expect(armas).toHaveAttribute('aria-current', 'page'));
+    expect(nav.getByRole('link', { name: /^Todo o equipamento/ })).not.toHaveAttribute('aria-current');
+  });
+});
+
+describe('Equipment list filter', () => {
+  it('reads the kind from the URL and shows only that kind', async () => {
+    mockApi();
+    renderAt('/equipamento?item=escudos');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByRole('heading', { level: 1, name: 'Escudos' })).toBeInTheDocument();
+    expect(await main.findByText('Ainda não há entradas neste tipo.')).toBeInTheDocument();
+    expect(main.queryByText('Katana')).toBeNull();
+  });
+
+  it('writes the chosen kind to the URL', async () => {
+    mockApi();
+    renderAt('/equipamento');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByText('Katana')).toBeInTheDocument();
+    fireEvent.click(main.getByRole('button', { name: 'Armas' }));
+    expect(main.getByRole('button', { name: 'Armas' })).toHaveAttribute('aria-pressed', 'true');
+    expect(main.getByText('Katana')).toBeInTheDocument();
+  });
+});
+
+describe('Heroic Skills', () => {
+  it('lists them with their requirements and filters by whether a Class is needed', async () => {
+    mockApi();
+    renderAt('/poderes-heroicos');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByText('Feitiço Poderoso')).toBeInTheDocument();
+    expect(main.getByText('Dominar Elementalista · Também exige: Raio')).toBeInTheDocument();
+    expect(main.getByText('Disponível a todos os personagens')).toBeInTheDocument();
+
+    fireEvent.click(main.getByRole('button', { name: 'Disponíveis a todos' }));
+    expect(main.getByText('PV Extras')).toBeInTheDocument();
+    expect(main.queryByText('Feitiço Poderoso')).toBeNull();
+
+    fireEvent.click(main.getByRole('button', { name: 'Exigem classe' }));
+    expect(main.getByText('Feitiço Poderoso')).toBeInTheDocument();
+    expect(main.queryByText('PV Extras')).toBeNull();
+  });
+
+  it('shows the requirements on the entry page with links to the Class and the Spell', async () => {
+    mockApi();
+    renderAt('/poderes-heroicos/feitico-poderoso');
+    const main = within(screen.getByRole('main'));
+    const stat = (await main.findByText('Requisitos')).closest('div') as HTMLElement;
+    expect(within(stat).getByRole('link', { name: 'Elementalista' })).toHaveAttribute(
+      'href',
+      '/classes/elementalista',
+    );
+    expect(within(stat).getByRole('link', { name: 'Raio' })).toHaveAttribute('href', '/feiticos/raio');
+  });
+
+  it('is listed on a Class page that it requires', async () => {
+    mockApi();
+    renderAt('/classes/elementalista');
+    const main = within(screen.getByRole('main'));
+    const section = await main.findByRole('region', {
+      name: 'Poderes Heroicos que exigem esta classe',
+    });
+    expect(within(section).getByRole('link', { name: 'Feitiço Poderoso' })).toHaveAttribute(
+      'href',
+      '/poderes-heroicos/feitico-poderoso',
+    );
+    expect(within(section).queryByText('PV Extras')).toBeNull();
   });
 });

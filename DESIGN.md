@@ -215,7 +215,7 @@ Header row on `--surface` with Antonio labels; rows separated by `--line` hairli
 
 - **Mobile first.** Players use phones at the table. Design at 360 px first.
 - **Single column of content.** Reading width is capped at **44 rem** (≈ 70 characters at 18 px). Navigation lives in a **lateral menu** (see below), not in a second content column.
-- **Lateral menu** (decided after the first design pass, replacing "no sidebar in v1"): from `lg` (1024 px) a fixed 16 rem sidebar on the left, sticky to the viewport height; below `lg` a slide-in drawer opened by a menu button in the header, closed by its button, the overlay, `Esc`, or navigating. Sections: Início; **Guias**; **Conteúdo** (the five browse types, each with its count); **Classes** (every Class, for one-tap access at the table). Search is not in the menu: it lives only in the header box. The current page is highlighted and exposed with `aria-current`.
+- **Lateral menu** (decided after the first design pass, replacing "no sidebar in v1"): from `lg` (1024 px) a fixed 16 rem sidebar on the left, sticky to the viewport height; below `lg` a slide-in drawer opened by a menu button in the header, closed by its button, the overlay, `Esc`, or navigating. Structure, in the style of the Archives of Nethys, alphabetical (PT-BR) at every level: **Início**; **Guias** (a plain list); then collapsible groups **Criação de Personagem** (Classes, Feitiços, Poderes, Poderes Heroicos) and **Equipamento** (Todo o equipamento, then Acessórios, Armaduras, Armas, Artefatos, Escudos), and **Regras** as a plain link. A group heading is only a toggle button (`aria-expanded`, chevron), not a page; groups start collapsed, several can be open at once, the group holding the current page opens itself, and the open state is not remembered between visits. Items are links to a type list (or to `/equipamento?item=<kind>`), each with its entry count, and the menu never lists individual entries or Classes. Search is not in the menu: it lives only in the header box. The current page is highlighted and exposed with `aria-current`.
 - **Gutters:** 16 px on phones, 24 px from 640 px up.
 - **Touch targets:** at least 44×44 px.
 - **Breakpoints:** `sm` 640 px, `md` 768 px. Only the header layout and stat-bar wrapping change; the page remains one column.
@@ -254,7 +254,7 @@ Top to bottom:
 Main header, intro as key highlight, then the stepper (6.7). Examples: *Criar um personagem*, *Como jogar*.
 
 ### 8.5 Type list — `/:tipo`
-Main header with the type's name, then result rows, alphabetical unless the type has a natural order. Equipment lists add filter chips by Kind (arma, armadura, escudo, acessório).
+Main header with the type's name, then result rows, alphabetical unless the type has a natural order. Equipment lists add filter chips by Kind (acessórios, armaduras, armas, artefatos, escudos), kept in the URL as `?item=armas` so the menu and the chips agree. The Heroic Skills list adds chips "Todos / Disponíveis a todos / Exigem classe" and shows each skill's requirement under its summary.
 
 ### 8.6 Not found
 "Não encontramos essa página." with the search box and a link to Home.

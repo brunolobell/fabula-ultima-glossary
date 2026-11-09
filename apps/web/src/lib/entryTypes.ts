@@ -27,6 +27,13 @@ export const TYPE_INFO: Record<EntryType, TypeInfo> = {
     plural: 'Poderes',
     description: 'Os Poderes que cada classe oferece, com o NP máximo.',
   },
+  'heroic-skill': {
+    slug: 'poderes-heroicos',
+    label: 'Poder Heroico',
+    plural: 'Poderes Heroicos',
+    description:
+      'Poderes que se adquirem ao dominar uma classe, alguns com requisitos.',
+  },
   spell: {
     slug: 'feiticos',
     label: 'Feitiço',
@@ -52,6 +59,7 @@ export const BROWSE_TYPES: EntryType[] = [
   'rule',
   'class',
   'skill',
+  'heroic-skill',
   'spell',
   'equipment',
 ];

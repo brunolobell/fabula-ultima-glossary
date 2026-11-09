@@ -122,8 +122,53 @@ const criar: Entry = {
   },
 };
 
+const feiticoPoderoso: Entry = {
+  ...base,
+  id: '20',
+  slug: 'feitico-poderoso',
+  name: 'Feitiço Poderoso',
+  type: 'heroic-skill',
+  summary: 'Seus feitiços causam 5 de dano adicional.',
+  body: 'Seus feitiços causam **5 pontos de dano adicional**.',
+  page: 236,
+  details: {
+    requirements: {
+      classes: ['elementalista'],
+      required: 1,
+      alsoRequires: ['raio'],
+      note: null,
+    },
+    repeatable: false,
+  },
+};
+
+const pvExtras: Entry = {
+  ...base,
+  id: '21',
+  slug: 'pv-extras',
+  name: 'PV Extras',
+  type: 'heroic-skill',
+  summary: 'Aumenta permanentemente seus PV máximos em 10.',
+  body: 'Aumente seus **PV máximos em 10**.',
+  page: 239,
+  details: {
+    requirements: { classes: [], required: 0, alsoRequires: [], note: null },
+    repeatable: false,
+  },
+};
+
 const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
-  [tracos, comoLancar, magiaElemental, raio, elementalista, katana, criar].map(
+  [
+    tracos,
+    comoLancar,
+    magiaElemental,
+    raio,
+    elementalista,
+    katana,
+    feiticoPoderoso,
+    pvExtras,
+    criar,
+  ].map(
     (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],
   ),
 );
@@ -137,6 +182,7 @@ const summaryOf = ({
   source,
   page,
   tags,
+  details,
 }: Entry) => ({
   id,
   slug,
@@ -146,6 +192,7 @@ const summaryOf = ({
   source,
   page,
   tags,
+  details,
 });
 
 const fold = (s: string) =>

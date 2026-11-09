@@ -2,14 +2,17 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type {
   EquipmentDetails,
+  HeroicSkillDetails,
   Entry,
   EntrySummary,
   SkillDetails,
   SpellDetails,
 } from '../api/types';
 import { BoltIcon } from '../components/Icons';
+import { Requirements } from '../components/Requirements';
 import { decorateChecks } from './check';
 import { entryPath } from './entryTypes';
+
 
 export interface Cell {
   label: string;
@@ -41,6 +44,17 @@ export function statCells(
         { label: 'NP máximo', value: d.maxLevel },
         { label: 'Classe', value: classLink(d.classSlug, index) },
       ];
+    }
+    case 'heroic-skill': {
+      const d = entry.details as HeroicSkillDetails;
+      const cells: Cell[] = [
+        {
+          label: 'Requisitos',
+          value: <Requirements requirements={d.requirements} index={index} />,
+        },
+      ];
+      if (d.repeatable) cells.push({ label: 'Repetível', value: 'Sim' });
+      return cells;
     }
     case 'spell': {
       const d = entry.details as SpellDetails;

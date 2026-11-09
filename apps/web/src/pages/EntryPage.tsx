@@ -5,6 +5,7 @@ import type {
   Entry,
   EntrySummary,
   EntryWithChildren,
+  HeroicSkillDetails,
 } from '../api/types';
 import { EntryBody } from '../components/EntryBody';
 import { PageRef } from '../components/PageRef';
@@ -52,6 +53,11 @@ function ChildSection({ child, index }: { child: Entry; index: Index }) {
 }
 
 function ClassContent({ entry, index }: { entry: EntryWithChildren; index: Index }) {
+  const heroic = [...index.values()].filter(
+    (e) =>
+      e.type === 'heroic-skill' &&
+      (e.details as HeroicSkillDetails).requirements.classes.includes(entry.slug),
+  );
   const skills = entry.children.filter((c) => c.type === 'skill');
   const spells = entry.children.filter((c) => c.type === 'spell');
   const details = entry.details as ClassDetails;
@@ -85,6 +91,26 @@ function ClassContent({ entry, index }: { entry: EntryWithChildren; index: Index
           {spells.map((child) => (
             <ChildSection key={child.slug} child={child} index={index} />
           ))}
+        </section>
+      )}
+      {heroic.length > 0 && (
+        <section aria-labelledby="poderes-heroicos">
+          <h2 id="poderes-heroicos" className="h-secondary">
+            Poderes Heroicos que exigem esta classe
+          </h2>
+          <p>
+            Ao dominar {entry.name}, você pode escolher um destes (ou um dos{' '}
+            <Link to={typePath('heroic-skill')}>demais Poderes Heroicos</Link>
+            ).
+          </p>
+          <ul className="bullets">
+            {heroic.map((power) => (
+              <li key={power.slug}>
+                <Link to={entryPath(power)}>{power.name}</Link>:{' '}
+                {decorateChecks(power.summary)}
+              </li>
+            ))}
+          </ul>
         </section>
       )}
     </>
