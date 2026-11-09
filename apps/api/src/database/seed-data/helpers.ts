@@ -1,0 +1,110 @@
+import { slugify } from '../../entries/slug';
+import { SeedEntry } from './types';
+
+type Of<T extends SeedEntry['type']> = Extract<SeedEntry, { type: T }>;
+
+export const rule = (
+  name: string,
+  page: number,
+  summary: string,
+  body: string,
+  tags: string[] = [],
+): Of<'rule'> => ({
+  type: 'rule',
+  name,
+  page,
+  summary,
+  body,
+  tags,
+  details: {},
+});
+
+export interface ClassInput {
+  name: string;
+  page: number;
+  summary: string;
+  body: string;
+  otherNames: string[];
+  quote: string | null;
+  freeBenefits: string[];
+}
+
+export const classEntry = ({
+  otherNames,
+  quote,
+  freeBenefits,
+  ...rest
+}: ClassInput): Of<'class'> => ({
+  type: 'class',
+  tags: ['classe'],
+  details: { otherNames, quote, freeBenefits },
+  ...rest,
+});
+
+/** A Skill ("Poder"); `maxLevel` is the number after the repeat symbol. */
+export const skill = (
+  className: string,
+  name: string,
+  page: number,
+  maxLevel: number,
+  summary: string,
+  body = '',
+): Of<'skill'> => ({
+  type: 'skill',
+  name,
+  page,
+  summary,
+  body,
+  tags: ['poder', className.toLowerCase()],
+  details: { classSlug: slugify(className), maxLevel },
+});
+
+export interface SpellInput {
+  name: string;
+  page: number;
+  mpCost: string;
+  target: string;
+  duration: string;
+  offensive?: boolean;
+  summary: string;
+  body?: string;
+}
+
+/** A Spell ("Feitiço") belonging to a Class. */
+export const spell = (
+  className: string,
+  { offensive = false, body = '', ...rest }: SpellInput,
+): Of<'spell'> => {
+  const { name, page, summary, mpCost, target, duration } = rest;
+  return {
+    type: 'spell',
+    name,
+    page,
+    summary,
+    body,
+    tags: ['feitiço', className.toLowerCase()],
+    details: {
+      classSlug: slugify(className),
+      mpCost,
+      target,
+      duration,
+      offensive,
+    },
+  };
+};
+
+export interface GuideInput {
+  name: string;
+  page: number | null;
+  summary: string;
+  body: string;
+  steps: { title: string; intro: string; entries: string[] }[];
+}
+
+/** A Guide: an ordered list of steps, each pointing at entries to read. */
+export const guide = ({ steps, ...rest }: GuideInput): Of<'guide'> => ({
+  type: 'guide',
+  tags: ['guia'],
+  details: { steps },
+  ...rest,
+});

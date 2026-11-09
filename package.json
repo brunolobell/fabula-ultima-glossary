@@ -1,0 +1,26 @@
+{
+  "name": "fabula-ultima-glossary",
+  "version": "0.0.1",
+  "private": true,
+  "description": "A searchable glossary for the Fabula Ultima tabletop RPG.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently -n web,api -c cyan,magenta \"npm:dev:web\" \"npm:dev:api\"",
+    "dev:web": "npm run dev --workspace @fug/web",
+    "dev:api": "npm run start:dev --workspace @fug/api",
+    "build": "npm run build --workspace @fug/api && npm run build --workspace @fug/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "db:seed": "npm run seed --workspace @fug/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
