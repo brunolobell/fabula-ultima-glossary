@@ -7,7 +7,7 @@ import { normalizeText } from './slug';
 
 export type EntrySummary = Pick<
   Entry,
-  'id' | 'slug' | 'name' | 'type' | 'summary' | 'page' | 'tags'
+  'id' | 'slug' | 'name' | 'type' | 'summary' | 'source' | 'page' | 'tags'
 >;
 
 export type EntryWithChildren = Entry & {
@@ -21,6 +21,7 @@ const SUMMARY_COLUMNS = [
   'name',
   'type',
   'summary',
+  'source',
   'page',
   'tags',
 ];

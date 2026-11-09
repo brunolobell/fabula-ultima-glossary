@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-Códice do Cristal: a private, unofficial, Portuguese (PT-BR) reference for the Fabula Ultima tabletop RPG, Nethys-style (search first, then browse by type). Content comes only from the *Livro Básico*. Domain vocabulary is in `GLOSSARY.md`, the visual system in `DESIGN.md`, and the storage decision in `docs/adr/0001-single-entry-table.md`. npm-workspaces monorepo:
+Códice do Cristal: a private, unofficial, Portuguese (PT-BR) reference for the Fabula Ultima tabletop RPG, Nethys-style (search first, then browse by type). Content comes from the *Livro Básico* plus the three Atlas supplements (High Fantasy, Natural Fantasy, Techno Fantasy). Domain vocabulary is in `GLOSSARY.md`, the visual system in `DESIGN.md`, and the storage decision in `docs/adr/0001-single-entry-table.md`. npm-workspaces monorepo:
 
 - `apps/web` — React + TypeScript + Vite + Tailwind CSS frontend (workspace `@fug/web`)
 - `apps/api` — NestJS + TypeORM + PostgreSQL backend (workspace `@fug/api`)
@@ -72,9 +72,11 @@ Frontend type-checking happens as part of `npm run build --workspace @fug/web` (
 
 ## Content
 
-- **Source: only the Livro Básico** (Jambô, PT-BR). Other books are out of scope. Never invent a Portuguese term; use the book's ("Laços", "Pontos de Mana", "Poderes", "Feitiços", "Astúcia"…).
-- Write **summaries in our own words** with exact rules and numbers; never paste book text. Every Entry except guides needs `page`.
-- **`page` is the printed page number, which is the PDF page index minus 4.** Verify numbers against the printed number.
+- **Sources:** the *Livro Básico* and the Jambô PT-BR *Atlas* supplements for High Fantasy, Natural Fantasy and Techno Fantasy. Other books (Codex Extra, Nova Gênesis…) are out of scope. Never invent a Portuguese term; use the book's ("Laços", "Pontos de Mana", "Poderes", "Feitiços", "Astúcia"…).
+- **Every Entry has a `source`** (`livro-basico` by default, or `high-fantasy` / `natural-fantasy` / `techno-fantasy`) and its `page` is printed in *that* book. Supplement entries are seeded under `seed-data/classes/<book>/` and `seed-data/equipment/<book>/`; wrap them with `inBook()` (classes) or use the builders in `equipment/rare-helpers.ts` (items), which set `source`. When adding a book, extend `ENTRY_SOURCES` (API), `EntrySource` and `lib/sources.ts` (web).
+- **Atlas items:** rare weapons/armor/shields/accessories/artifacts are `equipment` entries (`kind` includes `artifact`; armor and shields carry `defense`, `magicDefense`, and armor `initiative`). Piloto vehicle modules are rare weapons/shields tagged `módulo`.
+- Write **summaries in our own words** with exact rules and numbers; never paste book text. Every Entry except guides needs `page`. Class sub-systems that are not Poderes (Danças, Símbolos, Versos, magissementes, iguarias, Mananciais, terioformas, dons, veículos/módulos) live in the class `body`.
+- **`page` is the printed page number.** In the Livro Básico it is the PDF page index minus 4; **in the three Atlas PDFs it is the PDF index minus 2.** Verify against the printed number in the page footer.
 - The PDF's text extraction is unreliable for icons (the repeat symbol shows as "çç", the martial icon as "W", the offensive icon as "O"). When a table or numbering matters, render the page to an image and look at it.
 - Body text is Markdown. `[[slug]]` links to another Entry; an example is a blockquote starting with `**Exemplo:**`.
 

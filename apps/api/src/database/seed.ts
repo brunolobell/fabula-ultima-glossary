@@ -27,6 +27,7 @@ async function run() {
       repo.merge(existing, {
         ...data,
         slug,
+        source: data.source ?? 'livro-basico',
         body: data.body ?? '',
         tags: data.tags ?? [],
       });
@@ -36,6 +37,7 @@ async function run() {
         repo.create({
           ...data,
           slug,
+          source: data.source ?? 'livro-basico',
           body: data.body ?? '',
           tags: data.tags ?? [],
         }),

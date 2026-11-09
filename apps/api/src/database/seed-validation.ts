@@ -1,6 +1,7 @@
 import { slugify } from '../entries/slug';
 import {
   ATTRIBUTES,
+  ENTRY_SOURCES,
   ENTRY_TYPES,
   EQUIPMENT_KINDS,
   EntryType,
@@ -43,6 +44,8 @@ export function validateSeed(entries: SeedEntry[]): string[] {
 
     if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) fail('invalid slug');
     if (!ENTRY_TYPES.includes(entry.type)) fail(`unknown type "${entry.type}"`);
+    if (entry.source && !ENTRY_SOURCES.includes(entry.source))
+      fail(`unknown source "${entry.source}"`);
     if (!entry.name.trim()) fail('empty name');
     if (!entry.summary.trim()) fail('empty summary');
 
@@ -99,11 +102,20 @@ export function validateSeed(entries: SeedEntry[]): string[] {
       case 'equipment': {
         const d = entry.details;
         if (!EQUIPMENT_KINDS.includes(d.kind)) fail(`unknown kind "${d.kind}"`);
-        if (d.kind === 'accessory' && d.rarity !== 'rare') {
-          fail('accessories are always rare');
+        if (
+          (d.kind === 'accessory' || d.kind === 'artifact') &&
+          d.rarity !== 'rare'
+        ) {
+          fail('accessories and artifacts are always rare');
         }
         if (d.cost !== null && !(Number.isInteger(d.cost) && d.cost >= 0)) {
           fail('details.cost must be a non-negative integer or null');
+        }
+        if (d.kind === 'armor' || d.kind === 'shield') {
+          if (!d.defense) fail('armor and shield need details.defense');
+        }
+        if (d.kind === 'armor' && !Number.isInteger(d.initiative)) {
+          fail('armor needs integer details.initiative');
         }
         if (d.kind === 'weapon') {
           if (!d.category) fail('weapon needs details.category');

@@ -13,8 +13,23 @@ import { ladino } from './classes/ladino';
 import { mestreDeArmas } from './classes/mestre-de-armas';
 import { orador } from './classes/orador';
 import { quimerista } from './classes/quimerista';
+import { comandante } from './classes/high-fantasy/comandante';
+import { dancarino } from './classes/high-fantasy/dancarino';
+import { simbolista } from './classes/high-fantasy/simbolista';
+import { virtuoso } from './classes/high-fantasy/virtuoso';
+import { floralista } from './classes/natural-fantasy/floralista';
+import { gourmet } from './classes/natural-fantasy/gourmet';
+import { invocador } from './classes/natural-fantasy/invocador';
+import { mercador } from './classes/natural-fantasy/mercador';
+import { esper } from './classes/techno-fantasy/esper';
+import { mutante } from './classes/techno-fantasy/mutante';
+import { piloto } from './classes/techno-fantasy/piloto';
 import { armasBasicas } from './equipment/armas-basicas';
+import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
+import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
+import { itensRarosTechnoFantasy } from './equipment/techno-fantasy/itens-raros';
 import { guides } from './guides';
+import { inBook } from './helpers';
 import { rules } from './rules';
 import { SeedEntry } from './types';
 
@@ -38,4 +53,23 @@ export const seedEntries: SeedEntry[] = [
   ...orador,
   ...quimerista,
   ...armasBasicas,
+  // Atlas High Fantasy
+  ...inBook('high-fantasy', [
+    ...comandante,
+    ...dancarino,
+    ...simbolista,
+    ...virtuoso,
+  ]),
+  ...itensRarosHighFantasy,
+  // Atlas Natural Fantasy
+  ...inBook('natural-fantasy', [
+    ...floralista,
+    ...gourmet,
+    ...invocador,
+    ...mercador,
+  ]),
+  ...itensRarosNaturalFantasy,
+  // Atlas Techno Fantasy
+  ...inBook('techno-fantasy', [...esper, ...mutante, ...piloto]),
+  ...itensRarosTechnoFantasy,
 ];

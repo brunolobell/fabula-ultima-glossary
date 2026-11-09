@@ -8,11 +8,21 @@ export const ENTRY_TYPES = [
 ] as const;
 export type EntryType = (typeof ENTRY_TYPES)[number];
 
+/** The book an Entry's Page Reference points into. */
+export const ENTRY_SOURCES = [
+  'livro-basico',
+  'high-fantasy',
+  'natural-fantasy',
+  'techno-fantasy',
+] as const;
+export type EntrySource = (typeof ENTRY_SOURCES)[number];
+
 export const EQUIPMENT_KINDS = [
   'weapon',
   'armor',
   'shield',
   'accessory',
+  'artifact',
 ] as const;
 export type EquipmentKind = (typeof EQUIPMENT_KINDS)[number];
 
@@ -52,6 +62,12 @@ export interface EquipmentDetails {
   martial: boolean;
   /** Cost in zênites (z); null when the item has none. */
   cost: number | null;
+  /** Armor and shields: Defesa as printed ("12", "Dado de DES +1", "+2"). */
+  defense?: string;
+  /** Armor and shields: Defesa Mágica as printed; absent when the item gives none. */
+  magicDefense?: string;
+  /** Armor only: Iniciativa modifier (negative or 0). */
+  initiative?: number;
   /** Weapons only. */
   category?: string;
   accuracy?: string;

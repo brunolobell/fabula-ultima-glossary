@@ -35,11 +35,11 @@ How many times a Skill has been taken, which strengthens it. Shown to Readers as
 _Avoid_: Rank, power level
 
 **Equipment**:
-An Entry for a weapon, armor, shield, or accessory.
+An Entry for a weapon, armor, shield, accessory, or artifact (including a Piloto's vehicle modules).
 _Avoid_: Item, gear
 
 **Equipment Kind**:
-Which of weapon, armor, shield, or accessory an Equipment Entry is.
+Which of weapon, armor, shield, accessory, or artifact an Equipment Entry is.
 _Avoid_: Equipment type, equipment category
 
 ### Guidance
@@ -55,11 +55,15 @@ _Avoid_: Chapter, stage
 ### Sources and writing
 
 **Core Rulebook**:
-The Brazilian edition of the Fabula Ultima core rulebook ("Livro Básico", Jambô Editora, 1st edition, November 2025), the only source of content for the first version of the app.
+The Brazilian edition of the Fabula Ultima core rulebook ("Livro Básico", Jambô Editora, 1st edition, November 2025), the primary source of content.
 _Avoid_: Livro (alone), manual, SRD
 
+**Atlas**:
+One of the three Jambô supplement books, "Atlas High Fantasy", "Atlas Natural Fantasy" and "Atlas Techno Fantasy" (1st edition, November 2025), which add Classes, rare Equipment and artifacts. Together with the Core Rulebook they are the four **Sources** of an Entry.
+_Avoid_: Expansion, supplement (in the UI), setting book
+
 **Page Reference**:
-The page number printed on the page of the Core Rulebook where an Entry's full rules appear, shown on every Entry. It is not the PDF page index, which is 4 higher.
+The page number printed on the page, in the Entry's Source (the Core Rulebook unless the Entry says otherwise), where its full rules appear, shown on every Entry with the book's name. It is not the PDF page index, which is 4 higher in the Core Rulebook and 2 higher in the Atlas books.
 _Avoid_: Source, citation, footnote
 
 **Summary**:

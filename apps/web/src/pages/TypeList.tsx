@@ -12,6 +12,7 @@ const EQUIPMENT_KINDS = [
   { tag: 'armadura', label: 'Armaduras' },
   { tag: 'escudo', label: 'Escudos' },
   { tag: 'acessório', label: 'Acessórios' },
+  { tag: 'artefato', label: 'Artefatos' },
 ];
 
 export function TypeList() {

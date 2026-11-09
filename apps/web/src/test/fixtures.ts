@@ -1,7 +1,12 @@
 import { vi } from 'vitest';
 import type { Entry, EntryWithChildren } from '../api/types';
 
-const base = { createdAt: '', updatedAt: '', tags: [] as string[] };
+const base = {
+  createdAt: '',
+  updatedAt: '',
+  tags: [] as string[],
+  source: 'livro-basico' as const,
+};
 
 const tracos: Entry = {
   ...base,
@@ -123,12 +128,22 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   ),
 );
 
-const summaryOf = ({ id, slug, name, type, summary, page, tags }: Entry) => ({
+const summaryOf = ({
   id,
   slug,
   name,
   type,
   summary,
+  source,
+  page,
+  tags,
+}: Entry) => ({
+  id,
+  slug,
+  name,
+  type,
+  summary,
+  source,
   page,
   tags,
 });

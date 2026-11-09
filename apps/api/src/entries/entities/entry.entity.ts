@@ -8,7 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { DetailsByType, EntryType } from '../entry-types';
+import { DetailsByType, EntrySource, EntryType } from '../entry-types';
 import { normalizeText } from '../slug';
 
 @Entity('entries')
@@ -35,7 +35,11 @@ export class Entry {
   @Column({ type: 'text', default: '' })
   body: string;
 
-  /** Printed page number in the Core Rulebook; null only for guides. */
+  /** Which book `page` refers to. */
+  @Column({ type: 'varchar', default: 'livro-basico' })
+  source: EntrySource;
+
+  /** Printed page number in `source`; null only for guides. */
   @Column({ type: 'int', nullable: true })
   page: number | null;
 

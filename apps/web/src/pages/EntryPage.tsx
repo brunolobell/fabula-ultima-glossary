@@ -39,7 +39,7 @@ function ChildSection({ child, index }: { child: Entry; index: Index }) {
       </h3>
       <p className="text-[15px] text-muted">
         <Link to={entryPath(child)}>Abrir página</Link> ·{' '}
-        <PageRef page={child.page} />
+        <PageRef page={child.page} source={child.source} />
       </p>
       <StatBar cells={cells} />
       {child.body.trim() ? (
@@ -150,7 +150,7 @@ export function EntryPage() {
       <h1 className="h-main mt-3">{entry.name}</h1>
       <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
         <TypeBadge type={entry.type} />
-        <PageRef page={entry.page} />
+        <PageRef page={entry.page} source={entry.source} />
       </p>
       {classDetails && (
         <p className="mt-2 text-muted">

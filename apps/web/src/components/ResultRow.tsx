@@ -15,7 +15,7 @@ export function ResultRow({ entry }: { entry: EntrySummary }) {
         </div>
         <p className="mt-1 line-clamp-2">{decorateChecks(entry.summary)}</p>
         <p className="mt-1 text-[15px]">
-          <PageRef page={entry.page} />
+          <PageRef page={entry.page} source={entry.source} />
         </p>
       </Link>
     </li>

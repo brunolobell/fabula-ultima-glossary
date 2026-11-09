@@ -21,6 +21,7 @@ const KIND_LABEL = {
   armor: 'Armadura',
   shield: 'Escudo',
   accessory: 'Acessório',
+  artifact: 'Artefato',
 } as const;
 
 function classLink(slug: string, index: ReadonlyMap<string, EntrySummary>) {
@@ -90,6 +91,21 @@ export function statCells(
             }`,
           },
         );
+      }
+      if (d.kind === 'armor' || d.kind === 'shield') {
+        cells.push({
+          label: 'Defesa',
+          value: decorateChecks(d.defense ?? '—'),
+        });
+        if (d.magicDefense) {
+          cells.push({
+            label: 'Def. Mágica',
+            value: decorateChecks(d.magicDefense),
+          });
+        }
+        if (d.kind === 'armor' && d.initiative !== undefined) {
+          cells.push({ label: 'Iniciativa', value: String(d.initiative) });
+        }
       }
       cells.push({
         label: 'Custo',

@@ -9,7 +9,18 @@ export type EntryType =
   | 'equipment'
   | 'guide';
 
-export type EquipmentKind = 'weapon' | 'armor' | 'shield' | 'accessory';
+export type EntrySource =
+  | 'livro-basico'
+  | 'high-fantasy'
+  | 'natural-fantasy'
+  | 'techno-fantasy';
+
+export type EquipmentKind =
+  | 'weapon'
+  | 'armor'
+  | 'shield'
+  | 'accessory'
+  | 'artifact';
 
 export interface ClassDetails {
   otherNames: string[];
@@ -36,6 +47,9 @@ export interface EquipmentDetails {
   rarity: 'basic' | 'rare';
   martial: boolean;
   cost: number | null;
+  defense?: string;
+  magicDefense?: string;
+  initiative?: number;
   category?: string;
   accuracy?: string;
   accuracyBonus?: number;
@@ -74,7 +88,9 @@ export interface EntrySummary {
   name: string;
   type: EntryType;
   summary: string;
-  /** Printed page in the Livro Básico; null only for guides. */
+  /** Book that `page` refers to. */
+  source: EntrySource;
+  /** Printed page in `source`; null only for guides. */
   page: number | null;
   tags: string[];
 }

@@ -1,4 +1,8 @@
-import { DetailsByType, EntryType } from '../../entries/entry-types';
+import {
+  DetailsByType,
+  EntrySource,
+  EntryType,
+} from '../../entries/entry-types';
 
 interface SeedBase {
   name: string;
@@ -7,7 +11,9 @@ interface SeedBase {
   summary: string;
   /** Markdown. `[[slug]]` links to another entry. */
   body?: string;
-  /** Printed page number in the Livro Básico (not the PDF index). */
+  /** Book that `page` refers to; defaults to the Livro Básico. */
+  source?: EntrySource;
+  /** Printed page number in `source` (not the PDF index). */
   page: number | null;
   tags?: string[];
 }

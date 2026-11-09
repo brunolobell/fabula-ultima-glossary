@@ -42,7 +42,7 @@ export function GuidePage() {
       <h1 className="h-main mt-3">{entry.name}</h1>
       <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
         <TypeBadge type="guide" />
-        <PageRef page={entry.page} />
+        <PageRef page={entry.page} source={entry.source} />
       </p>
 
       <div className="highlight-key">

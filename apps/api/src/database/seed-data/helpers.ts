@@ -1,3 +1,4 @@
+import { EntrySource } from '../../entries/entry-types';
 import { slugify } from '../../entries/slug';
 import { SeedEntry } from './types';
 
@@ -108,3 +109,9 @@ export const guide = ({ steps, ...rest }: GuideInput): Of<'guide'> => ({
   details: { steps },
   ...rest,
 });
+
+/** Marks every entry as coming from a supplement book (`page` is that book's printed page). */
+export const inBook = (
+  source: EntrySource,
+  entries: SeedEntry[],
+): SeedEntry[] => entries.map((entry) => ({ ...entry, source }));

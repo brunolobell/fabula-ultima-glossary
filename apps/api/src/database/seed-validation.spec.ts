@@ -19,7 +19,10 @@ describe('validateSeed', () => {
   });
 
   it('seeds all 15 classes of the Livro Básico, each with Poderes', () => {
-    const classes = seedEntries.filter((e) => e.type === 'class');
+    const classes = seedEntries.filter(
+      (e) =>
+        e.type === 'class' && (e.source ?? 'livro-basico') === 'livro-basico',
+    );
     expect(classes.map((c) => c.name).sort()).toEqual(
       [
         'Andarilho',
@@ -39,13 +42,80 @@ describe('validateSeed', () => {
         'Quimerista',
       ].sort(),
     );
-    for (const cls of classes) {
+  });
+
+  const classesOf = (source: string) =>
+    seedEntries
+      .filter((e) => e.type === 'class' && e.source === source)
+      .map((c) => c.name)
+      .sort();
+
+  it('seeds the Atlas High Fantasy classes', () => {
+    expect(classesOf('high-fantasy')).toEqual(
+      ['Comandante', 'Dançarino', 'Simbolista', 'Virtuoso'].sort(),
+    );
+  });
+
+  it('seeds the Atlas Natural Fantasy classes', () => {
+    expect(classesOf('natural-fantasy')).toEqual(
+      ['Floralista', 'Gourmet', 'Invocador', 'Mercador'].sort(),
+    );
+  });
+
+  it('seeds the Atlas Techno Fantasy classes', () => {
+    expect(classesOf('techno-fantasy')).toEqual(
+      ['Esper', 'Mutante', 'Piloto'].sort(),
+    );
+  });
+
+  it('gives every class at least one Poder from the same book', () => {
+    for (const cls of seedEntries.filter((e) => e.type === 'class')) {
       const slug = resolveSlug(cls);
       const skills = seedEntries.filter(
         (e) => e.type === 'skill' && e.details.classSlug === slug,
       );
       expect(skills.length).toBeGreaterThan(0);
+      for (const s of skills) expect(s.source).toBe(cls.source);
     }
+  });
+
+  it('seeds rare items and artifacts from each Atlas, always from that book', () => {
+    for (const book of ['high-fantasy', 'natural-fantasy', 'techno-fantasy']) {
+      const items = seedEntries.filter(
+        (e) => e.type === 'equipment' && e.source === book,
+      );
+      const kinds = new Set(
+        items.map((e) => (e as { details: { kind: string } }).details.kind),
+      );
+      expect(kinds).toContain('weapon');
+      expect(kinds).toContain('armor');
+      expect(kinds).toContain('shield');
+      expect(kinds).toContain('accessory');
+      expect(kinds).toContain('artifact');
+    }
+  });
+
+  it('rejects an armor without Defesa or Iniciativa', () => {
+    const errors = validateSeed([
+      {
+        type: 'equipment',
+        name: 'Peitoral',
+        page: 80,
+        summary: 'a',
+        details: { kind: 'armor', rarity: 'rare', martial: false, cost: 100 },
+      },
+    ]);
+    expect(errors).toEqual([
+      expect.stringContaining('details.defense'),
+      expect.stringContaining('details.initiative'),
+    ]);
+  });
+
+  it('rejects an unknown source book', () => {
+    const entry = { ...rule('Crise', 84, 'a', ''), source: 'outro' } as never;
+    expect(validateSeed([entry])).toEqual([
+      expect.stringContaining('unknown source'),
+    ]);
   });
 
   it('rejects duplicate slugs', () => {
