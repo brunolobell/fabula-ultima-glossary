@@ -25,8 +25,8 @@ export function TypeList() {
   if (!type) return <NotFoundState />;
 
   const ofType = entries.filter((e) => e.type === type);
-  const rows = buildRows(type, ofType, bySlug);
   const selection = readSelection(type, params);
+  const rows = buildRows(type, ofType, bySlug, selection);
   const filtering = hasActiveFilters(selection);
   const shown = applyFilters(type, ofType, selection);
 
@@ -48,7 +48,7 @@ export function TypeList() {
         rows={rows}
         selection={selection}
         onToggle={toggle}
-        onClear={filtering ? clear : undefined}
+        onClear={filtering && (isLoading || shown.length > 0) ? clear : undefined}
       />
 
       {isError ? (
@@ -59,16 +59,23 @@ export function TypeList() {
         <ListSkeleton />
       ) : shown.length === 0 ? (
         <p className="mt-6">
-          {filtering
-            ? 'Nenhuma entrada com esses filtros.'
-            : 'Ainda não há entradas neste tipo.'}
+          {filtering ? (
+            <>
+              Nenhuma entrada com esses filtros.{' '}
+              <button type="button" className="underline text-primary" onClick={clear}>
+                Limpar filtros
+              </button>
+            </>
+          ) : (
+            'Ainda não há entradas neste tipo.'
+          )}
         </p>
       ) : (
         <>
           <p className="mt-6 text-muted">{countLabel(shown.length)}</p>
           <ul className="mt-2">
             {shown.map((entry) => (
-              <ResultRow key={entry.id} entry={entry} />
+              <ResultRow key={entry.id} entry={entry} showType={false} />
             ))}
           </ul>
         </>

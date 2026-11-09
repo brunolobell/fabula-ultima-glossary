@@ -131,8 +131,22 @@ describe('Guide page', () => {
     expect(await screen.findByRole('heading', { level: 1, name: 'Criar um personagem' })).toBeInTheDocument();
 
     const steps = within(screen.getByRole('main')).getAllByRole('heading', { level: 2 });
-    expect(steps.map((h) => h.textContent)).toEqual(['Identidade', 'Classes']);
-    expect(await screen.findByRole('link', { name: /traços/i })).toHaveAttribute('href', '/regras/tracos');
+    expect(steps.map((h) => h.textContent)).toEqual(['Identidade', 'Tema', 'Classes']);
+    expect((await screen.findAllByRole('link', { name: /traços/i }))[0]).toHaveAttribute('href', '/regras/tracos');
+  });
+
+  it('shows an entry in full once, then only a link back from later steps', async () => {
+    mockApi();
+    renderAt('/guias/criar-um-personagem');
+    const main = within(await screen.findByRole('main'));
+    await main.findAllByRole('link', { name: /traços/i });
+
+    // The full result row (with its Summary) appears once, in step 1.
+    expect(main.getAllByText(/Todo personagem tem três Traços/i)).toHaveLength(1);
+    // Step 2 only points back to it.
+    const back = main.getByText('Ver de novo:').parentElement!;
+    expect(within(back).getByRole('link', { name: 'Traços' })).toHaveAttribute('href', '/regras/tracos');
+    expect(within(back).getByRole('link', { name: 'passo 1' })).toHaveAttribute('href', '#passo-1');
   });
 });
 
@@ -158,6 +172,25 @@ describe('Search', () => {
     await waitFor(() => expect(screen.getByText(/1 resultado/)).toHaveTextContent('“raio”'));
     expect(screen.getByRole('button', { name: /feitiços/i })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getAllByRole('link', { name: /raio/i }).length).toBeGreaterThan(0);
+  });
+
+  it('offers only the types that have results, plus Todos', async () => {
+    mockApi();
+    renderAt('/buscar?q=raio');
+    await screen.findByText(/resultados? para “raio”/);
+    const chips = within(screen.getByRole('group', { name: 'Filtrar por tipo' })).getAllByRole('button');
+    expect(chips[0]).toHaveTextContent(/^Todos/);
+    expect(chips.length).toBeGreaterThan(1);
+    // Every other chip leads somewhere: none reads 0.
+    for (const chip of chips.slice(1)) expect(chip.textContent).not.toMatch(/\b0$/);
+    // Types the fixtures have nothing for are not offered at all.
+    expect(screen.queryByRole('button', { name: /^Guias/ })).toBeNull();
+  });
+
+  it('includes Poderes Heroicos among the types', async () => {
+    mockApi();
+    renderAt('/buscar?q=poderoso');
+    expect(await screen.findByRole('button', { name: /^Poderes Heroicos/ })).toBeInTheDocument();
   });
 
   it('ignores accents in the query', async () => {
@@ -357,3 +390,74 @@ describe('Heroic Skills', () => {
     expect(within(section).queryByText('PV Extras')).toBeNull();
   });
 });
+
+describe('Siglas legend', () => {
+  it('names the abbreviations a page uses, in the book\'s terms', async () => {
+    mockApi();
+    renderAt('/feiticos/raio');
+    const summary = await screen.findByText('Siglas nesta página');
+    // The one line already says which: here only the check formula's RA.
+    expect(summary.parentElement).toHaveTextContent('RA');
+    const legend = summary.closest('details')!;
+    expect(legend).not.toHaveAttribute('open');
+    expect(within(legend).getByText('rolagem alta')).toBeInTheDocument();
+  });
+
+  it('reads the Class page benefits and its Skills too', async () => {
+    mockApi();
+    renderAt('/classes/elementalista');
+    const summary = await screen.findByText('Siglas nesta página');
+    expect(summary.parentElement).toHaveTextContent(/PM/);
+    expect(within(summary.closest('details')!).getByText('Pontos de Mana')).toBeInTheDocument();
+  });
+
+  it('is absent when a page uses none', async () => {
+    mockApi();
+    renderAt('/regras/tracos');
+    await screen.findByRole('heading', { level: 1, name: 'Traços' });
+    expect(screen.queryByText('Siglas nesta página')).toBeNull();
+  });
+});
+
+describe('Empty states offer the way out', () => {
+  it('lets a filtered list be cleared from the message itself', async () => {
+    mockApi();
+    renderAt('/equipamento?item=escudos');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByText(/Nenhuma entrada com esses filtros/)).toBeInTheDocument();
+    fireEvent.click(main.getByRole('button', { name: 'Limpar filtros' }));
+    expect(await main.findByText('Katana')).toBeInTheDocument();
+  });
+
+  it('offers to search every type when a type filter hides all results', async () => {
+    mockApi();
+    renderAt('/buscar?q=traco&tipo=feiticos');
+    fireEvent.click(await screen.findByRole('button', { name: 'Buscar em todos os tipos' }));
+    expect(await screen.findByText(/1 resultado/)).toBeInTheDocument();
+  });
+});
+
+describe('Skill and Spell rows show what identifies them', () => {
+  it('names the Class and the PM cost on a Spell row', async () => {
+    mockApi();
+    renderAt('/feiticos');
+    const row = (await screen.findByRole('link', { name: /raio/i })).closest('a')!;
+    await waitFor(() => expect(row).toHaveTextContent('Elementalista · PM 20 · ver Livro Básico'));
+  });
+
+  it('names the Class on a Skill row', async () => {
+    mockApi();
+    renderAt('/poderes');
+    const row = (await screen.findByRole('link', { name: /magia elemental/i })).closest('a')!;
+    await waitFor(() => expect(row).toHaveTextContent('Elementalista · ver Livro Básico'));
+    expect(row).not.toHaveTextContent('PM');
+  });
+
+  it('leaves other types with just the book reference', async () => {
+    mockApi();
+    renderAt('/regras');
+    const row = (await screen.findByRole('link', { name: /traços/i })).closest('a')!;
+    expect(row).not.toHaveTextContent('·');
+  });
+});
+

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { CrystalIcon, MenuIcon } from './Icons';
 import { SearchBox } from './SearchBox';
 import { ThemeToggle } from './ThemeToggle';
@@ -9,9 +9,11 @@ interface Props {
 }
 
 export function Header({ menuOpen, onToggleMenu }: Props) {
+  // The Home hero has its own, larger search box.
+  const showSearch = useLocation().pathname !== '/';
   return (
     <header className="border-b border-line bg-bg">
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-3 px-4 py-3 sm:px-6">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-3 px-4 py-3 sm:gap-x-4 sm:px-6">
         <button
           type="button"
           className="icon-btn lg:hidden"
@@ -25,19 +27,21 @@ export function Header({ menuOpen, onToggleMenu }: Props) {
 
         <Link
           to="/"
-          className="flex items-center gap-2 text-heading no-underline hover:no-underline"
+          className="flex min-h-[44px] items-center gap-2 text-heading no-underline hover:no-underline"
         >
           <CrystalIcon className="text-primary" />
-          <span className="font-display text-2xl uppercase leading-none tracking-wide">
+          <span className="font-display text-xl uppercase leading-none tracking-wide sm:text-2xl">
             Códice do Cristal
           </span>
         </Link>
 
-        <div className="order-last w-full md:order-none md:ml-auto md:w-96">
-          <SearchBox />
-        </div>
+        {showSearch && (
+          <div className="order-last w-full md:order-none md:ml-auto md:w-96">
+            <SearchBox />
+          </div>
+        )}
 
-        <ThemeToggle className="ml-auto md:ml-0" />
+        <ThemeToggle className={showSearch ? 'ml-auto md:ml-0' : 'ml-auto'} />
       </div>
     </header>
   );

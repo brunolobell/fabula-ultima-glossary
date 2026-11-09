@@ -2,6 +2,9 @@ import type { EntryType, EntrySummary, EntryWithChildren } from './types';
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
 
+/** Longest search the API accepts (see ListEntriesQuery). */
+export const MAX_SEARCH_CHARS = 100;
+
 export class ApiError extends Error {
   constructor(readonly status: number) {
     super(`Request failed with status ${status}`);
@@ -21,7 +24,7 @@ export function fetchEntries(
   type?: EntryType,
 ): Promise<EntrySummary[]> {
   const params = new URLSearchParams();
-  if (search) params.set('search', search);
+  if (search) params.set('search', search.slice(0, MAX_SEARCH_CHARS));
   if (type) params.set('type', type);
   const query = params.size > 0 ? `?${params}` : '';
   return request<EntrySummary[]>(`/entries${query}`);
