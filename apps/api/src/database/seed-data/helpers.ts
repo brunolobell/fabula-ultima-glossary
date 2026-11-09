@@ -60,6 +60,46 @@ export const skill = (
   details: { classSlug: slugify(className), maxLevel },
 });
 
+export interface HeroicSkillInput {
+  name: string;
+  /** Set it only to resolve a slug collision (e.g. with a Spell of the same name). */
+  slug?: string;
+  page: number;
+  summary: string;
+  body: string;
+  /** Class names whose Mastery counts; leave empty for "available to everyone". */
+  classes?: string[];
+  /** How many of `classes` must be mastered; defaults to 1 ("any of") when there are classes. */
+  required?: number;
+  /** Names of Skills or Spells that must also be known. */
+  alsoRequires?: string[];
+  note?: string;
+  repeatable?: boolean;
+}
+
+/** A Heroic Skill ("Poder Heroico"): taken on mastering a Class, with optional requirements. */
+export const heroicSkill = ({
+  classes = [],
+  required = classes.length > 0 ? 1 : 0,
+  alsoRequires = [],
+  note,
+  repeatable = false,
+  ...rest
+}: HeroicSkillInput): Of<'heroic-skill'> => ({
+  type: 'heroic-skill',
+  tags: ['poder heroico', ...classes.map((c) => c.toLowerCase())],
+  details: {
+    requirements: {
+      classes: classes.map(slugify),
+      required,
+      alsoRequires: alsoRequires.map(slugify),
+      note: note ?? null,
+    },
+    repeatable,
+  },
+  ...rest,
+});
+
 export interface SpellInput {
   name: string;
   page: number;

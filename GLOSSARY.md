@@ -11,7 +11,7 @@ A single self-contained reference page about one piece of the game, with a name,
 _Avoid_: Term, article, record, page
 
 **Entry Type**:
-The kind of an Entry: Rule, Class, Skill, Spell, Equipment, or Guide.
+The kind of an Entry: Rule, Class, Skill, Heroic Skill, Spell, Equipment, or Guide.
 _Avoid_: Category (a Fabula Ultima game term for weapons), kind (reserved for Equipment Kind)
 
 **Rule**:
@@ -29,6 +29,18 @@ _Avoid_: Ability, perk; never name the type `power` in code
 **Spell**:
 An Entry for one spell, with its MP cost, target, duration, whether it is offensive, and the Class it belongs to. Shown to Readers as "Feitiço".
 _Avoid_: Magic, incantation
+
+**Heroic Skill**:
+An Entry for one Skill a character may take on mastering a Class. It belongs to no Class and has no Skill Level; it may have Requirements, and it comes from one Source. Shown to Readers as "Poder Heroico".
+_Avoid_: Heroic power, epic skill, perk; never name the type `power` in code
+
+**Mastery**:
+The state of a character who has taken the tenth level in a Class: the Class is mastered, earns the character one Heroic Skill, and cannot take further levels. Shown to Readers as "dominar uma classe".
+_Avoid_: Maxing out, completing a Class (a Skill reaching its maximum Skill Level is not Mastery)
+
+**Heroic Skill Requirement**:
+What a Heroic Skill demands before it can be taken: nothing, Mastery of one specific Class, of any one of several Classes, of a number of Classes out of a set, optionally also holding a specific Skill. Shown to Readers as "requisitos".
+_Avoid_: Prerequisite, unlock
 
 **Skill Level**:
 How many times a Skill has been taken, which strengthens it. Shown to Readers as "nível de poder (NP)".

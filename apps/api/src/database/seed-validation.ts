@@ -87,6 +87,32 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         }
         break;
       }
+      case 'heroic-skill': {
+        const { requirements, repeatable } = entry.details;
+        const { classes, required, alsoRequires } = requirements;
+        for (const target of classes) expectType(slug, target, 'class');
+        if (new Set(classes).size !== classes.length)
+          fail('requirements.classes has duplicates');
+        if (
+          !Number.isInteger(required) ||
+          required < Math.min(1, classes.length) ||
+          required > classes.length
+        ) {
+          fail(
+            `requirements.required (${required}) must be between ${Math.min(1, classes.length)} and the number of classes (${classes.length})`,
+          );
+        }
+        for (const target of alsoRequires) {
+          if (!['skill', 'spell'].includes(typeBySlug.get(target) ?? '')) {
+            fail(
+              `requirements.alsoRequires "${target}" is not a skill or spell`,
+            );
+          }
+        }
+        if (typeof repeatable !== 'boolean')
+          fail('details.repeatable must be a boolean');
+        break;
+      }
       case 'spell': {
         const { classSlug, mpCost, target, duration, offensive } =
           entry.details;

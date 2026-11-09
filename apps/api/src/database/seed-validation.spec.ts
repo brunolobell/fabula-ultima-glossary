@@ -1,5 +1,11 @@
 import { seedEntries } from './seed-data';
-import { classEntry, rule, skill, spell } from './seed-data/helpers';
+import {
+  classEntry,
+  heroicSkill,
+  rule,
+  skill,
+  spell,
+} from './seed-data/helpers';
 import { SeedEntry } from './seed-data/types';
 import { resolveSlug, validateSeed } from './seed-validation';
 
@@ -224,5 +230,85 @@ describe('validateSeed', () => {
       },
     ]);
     expect(errors).toEqual([expect.stringContaining('unknown entry "nada"')]);
+  });
+  describe('heroic skills', () => {
+    const heroicBy = (source: string) =>
+      seedEntries.filter(
+        (e) =>
+          e.type === 'heroic-skill' && (e.source ?? 'livro-basico') === source,
+      );
+
+    it('seeds the Heroic Skills of the Livro Básico and each Atlas', () => {
+      expect(heroicBy('livro-basico')).toHaveLength(31);
+      expect(heroicBy('high-fantasy')).toHaveLength(24);
+      expect(heroicBy('natural-fantasy')).toHaveLength(21);
+      expect(heroicBy('techno-fantasy')).toHaveLength(18);
+    });
+
+    it('lets only the five generic Heroic Skills be open to everyone', () => {
+      const open = seedEntries.filter(
+        (e) =>
+          e.type === 'heroic-skill' &&
+          e.details.requirements.classes.length === 0,
+      );
+      expect(open.map((e) => e.name).sort()).toEqual(
+        [
+          'Ambidestria',
+          'Feitiços Extras',
+          'PI Extras',
+          'PM Extras',
+          'PV Extras',
+        ].sort(),
+      );
+    });
+
+    it('rejects a Heroic Skill whose required class does not exist', () => {
+      const errors = validateSeed([
+        heroicSkill({
+          name: 'Ataque',
+          page: 234,
+          summary: 'a',
+          body: '',
+          classes: ['Fantasma'],
+        }),
+      ]);
+      expect(errors).toEqual([
+        expect.stringContaining('"fantasma" is not a class'),
+      ]);
+    });
+
+    it('rejects "required" larger than the number of classes', () => {
+      const errors = validateSeed([
+        guardiao,
+        heroicSkill({
+          name: 'Muralha',
+          page: 238,
+          summary: 'a',
+          body: '',
+          classes: ['Guardião'],
+          required: 2,
+        }),
+      ]);
+      expect(errors).toEqual([
+        expect.stringContaining('requirements.required'),
+      ]);
+    });
+
+    it('rejects an alsoRequires that is neither a skill nor a spell', () => {
+      const errors = validateSeed([
+        guardiao,
+        heroicSkill({
+          name: 'Muralha',
+          page: 238,
+          summary: 'a',
+          body: '',
+          classes: ['Guardião'],
+          alsoRequires: ['Guardião'],
+        }),
+      ]);
+      expect(errors).toEqual([
+        expect.stringContaining('is not a skill or spell'),
+      ]);
+    });
   });
 });

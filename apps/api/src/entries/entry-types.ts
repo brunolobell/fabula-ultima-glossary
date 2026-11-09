@@ -2,6 +2,7 @@ export const ENTRY_TYPES = [
   'rule',
   'class',
   'skill',
+  'heroic-skill',
   'spell',
   'equipment',
   'guide',
@@ -43,6 +44,24 @@ export interface SkillDetails {
   classSlug: string;
   /** How many times the Skill can be taken (its maximum NP); 1 if not repeatable. */
   maxLevel: number;
+}
+
+/** What a Heroic Skill demands before it can be taken. */
+export interface HeroicSkillRequirements {
+  /** Slugs of the Class entries whose Mastery counts; empty when open to everyone. */
+  classes: string[];
+  /** How many of `classes` must be mastered: 1 for "any of", `classes.length` for "all of", 2 for "two of". 0 when `classes` is empty. */
+  required: number;
+  /** Slugs of Skill or Spell entries the character must also have. */
+  alsoRequires: string[];
+  /** Any other condition (a minimum level, "know two offensive spells"), in our own words. */
+  note: string | null;
+}
+
+export interface HeroicSkillDetails {
+  requirements: HeroicSkillRequirements;
+  /** Whether the same Heroic Skill can be taken more than once. */
+  repeatable: boolean;
 }
 
 export interface SpellDetails {
@@ -98,6 +117,7 @@ export interface DetailsByType {
   rule: RuleDetails;
   class: ClassDetails;
   skill: SkillDetails;
+  'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
   guide: GuideDetails;
