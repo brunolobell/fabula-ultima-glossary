@@ -32,11 +32,11 @@
   --tint-key: #ece9f8;
   --tint-example: #fceee2;
   --accent-ink: #8a4a1f;
+  --accent: #c2661f;
   --scrim: rgba(20, 19, 28, 0.5);
 
   --grad-key: linear-gradient(90deg, var(--tint-key), transparent);
   --grad-example: linear-gradient(90deg, var(--tint-example), transparent);
-  --grad-bar: linear-gradient(90deg, var(--primary-deep), transparent);
   --grad-rule: linear-gradient(90deg, var(--primary-deep), transparent);
 }
 
@@ -54,6 +54,7 @@
   --tint-key: rgba(155, 144, 240, 0.16);
   --tint-example: rgba(242, 167, 119, 0.14);
   --accent-ink: #f2b48a;
+  --accent: #f2a777;
 }
 
 /* ---------- Base ---------- */
@@ -67,6 +68,7 @@
     font-family: 'PT Sans Narrow', sans-serif;
     font-size: 18px;
     line-height: 1.6;
+    overflow-wrap: break-word;
   }
   :focus-visible {
     outline: 2px solid var(--primary);
@@ -94,9 +96,19 @@
     letter-spacing: 0.02em;
     text-transform: uppercase;
     color: var(--heading);
-    border-left: 4px solid var(--primary);
-    padding: 0 0 12px 12px;
+    padding: 0 0 12px;
     background: var(--grad-rule) bottom / 100% 2px no-repeat;
+  }
+  /* The logo's crystal leads the title. It scales with the type (em units). */
+  .h-main::before {
+    content: '';
+    display: inline-block;
+    width: 0.3em;
+    height: 0.5em;
+    margin-right: 0.35em;
+    vertical-align: 0.06em;
+    background: var(--primary);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
   }
   @media (min-width: 640px) {
     .h-main {
@@ -104,6 +116,9 @@
     }
   }
 
+  /* Weight follows rank: secondary is the strongest bar, tertiary a quiet band,
+     minor a hairline. Scale 18 / 21 / 26 px (Antonio is condensed, so it needs
+     the size to match PT Sans Narrow body at 18 px). */
   .h-secondary,
   .h-tertiary,
   .h-minor {
@@ -113,24 +128,34 @@
     line-height: 1.2;
     margin-bottom: 12px;
   }
+  /* The bar hugs its text and fades out in a tail that text never enters, so
+     white text always sits on the opaque colour (DESIGN.md §3.4). */
   .h-secondary {
-    font-size: 1.5rem;
-    letter-spacing: 0.03em;
+    --h2-tail: 3rem;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    font-size: 1.625rem;
+    letter-spacing: 0.04em;
     margin-top: 40px;
-    padding: 8px 12px;
-    color: var(--heading);
-    background: var(--grad-key);
+    padding: 8px var(--h2-tail) 8px 12px;
+    color: var(--on-bar);
+    background: linear-gradient(
+      90deg,
+      var(--primary-deep) calc(100% - var(--h2-tail)),
+      transparent
+    );
   }
   .h-tertiary {
-    font-size: 1.0625rem;
+    font-size: 1.3125rem;
     letter-spacing: 0.04em;
     margin-top: 28px;
     padding: 6px 12px;
-    color: var(--on-bar);
-    background: var(--grad-bar);
+    color: var(--heading);
+    background: var(--grad-key);
   }
   .h-minor {
-    font-size: 1.0625rem;
+    font-size: 1.125rem;
     letter-spacing: 0.03em;
     margin-top: 20px;
     padding-bottom: 2px;
@@ -240,6 +265,7 @@
     padding: 8px 12px;
     border-bottom: 1px solid var(--line);
     vertical-align: top;
+    font-variant-numeric: tabular-nums;
   }
 
   /* ---------- Check formulas: brackets drawn in CSS (§6.4) ---------- */
@@ -274,6 +300,7 @@
   .stat-bar dd {
     font-weight: 700;
     margin: 0;
+    font-variant-numeric: tabular-nums;
   }
 
   /* ---------- Entry Type badge (§6.5) ---------- */
@@ -311,7 +338,7 @@
     align-items: center;
     gap: 6px;
     min-height: 44px;
-    padding: 0 14px;
+    padding: 0 16px;
     border-radius: 4px;
     border: 1px solid var(--line);
     background: transparent;
@@ -330,6 +357,43 @@
     color: var(--primary);
     border-color: var(--primary);
   }
+  .chip[data-empty='true']:not([aria-pressed='true']) {
+    color: var(--ink-muted);
+  }
+  .chip[aria-pressed='true'] .chip-count {
+    color: var(--accent-ink);
+  }
+
+  /* Apricot crystal: one meaning everywhere, "this is where you are / what is
+     selected". A shape, not a stripe, so selection never relies on colour
+     alone and the element's width does not change. */
+  .chip,
+  .nav-item,
+  .suggest-option {
+    position: relative;
+  }
+  .chip[aria-pressed='true']::before,
+  .nav-item[aria-current='page']::before,
+  .suggest-option[aria-selected='true']::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 10px;
+    transform: translateY(-50%);
+    background: var(--accent);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  .chip[aria-pressed='true']::before {
+    left: 5px;
+  }
+  /* Hangs in the menu's gutter, left of the highlighted row. */
+  .nav-item[aria-current='page']::before {
+    left: -9px;
+  }
+  .suggest-option[aria-selected='true']::before {
+    left: 5px;
+  }
   .search-input {
     width: 100%;
     min-height: 48px;
@@ -339,6 +403,30 @@
     background: var(--bg);
     color: var(--ink);
     font: inherit;
+  }
+  /* The hero box: a size up from `sm`; on a phone the placeholder must fit. */
+  .search-input-lg {
+    min-height: 56px;
+    font-size: 1.125rem;
+  }
+  @media (min-width: 640px) {
+    .search-input-lg {
+      font-size: 1.25rem;
+    }
+  }
+  .search-hint {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0 7px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--ink-muted);
+    pointer-events: none;
   }
   .search-input::placeholder {
     color: var(--ink-muted);
@@ -410,6 +498,14 @@
     text-transform: uppercase;
     color: var(--primary);
   }
+  .suggest-heading {
+    padding: 8px 16px 0;
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.9375rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
   .suggest-message {
     padding: 12px 16px;
     color: var(--ink-muted);
@@ -459,6 +555,74 @@
     color: var(--on-bar);
     background: var(--primary-deep);
     clip-path: polygon(50% 0, 100% 28%, 100% 72%, 50% 100%, 0 72%, 0 28%);
+  }
+
+  /* Name index under a Class page's Poderes and Feitiços: compact with a mouse,
+     a full 44 px row on touch. */
+  .jump-link {
+    display: inline-block;
+    padding: 6px 0;
+  }
+  @media (pointer: coarse) {
+    .jump-link {
+      padding: 10px 0;
+    }
+  }
+
+  /* "Siglas nesta página": a quiet, closed disclosure under the stat bar. */
+  .siglas {
+    margin: 12px 0;
+    font-size: 0.9375rem;
+  }
+  .siglas > summary {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 6px;
+    cursor: pointer;
+    color: var(--primary);
+  }
+  .siglas > summary::-webkit-details-marker {
+    display: none;
+  }
+  /* A flex summary loses the native triangle, so draw one: points right when
+     closed, down when open (no transition, per DESIGN.md §10). */
+  .siglas > summary::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    margin: 0 4px 0 2px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+  }
+  .siglas[open] > summary::before {
+    transform: rotate(45deg);
+  }
+  .siglas > summary:hover {
+    text-decoration: underline;
+  }
+  .siglas > summary > span {
+    color: var(--ink-muted);
+  }
+  .siglas dl {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 8px;
+  }
+  .siglas dl > div {
+    display: grid;
+    grid-template-columns: 3.25rem 1fr;
+    gap: 0 8px;
+  }
+  .siglas dt {
+    font-family: 'Antonio', sans-serif;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+  }
+  .siglas dd {
+    margin: 0;
   }
 
   .skip-link {

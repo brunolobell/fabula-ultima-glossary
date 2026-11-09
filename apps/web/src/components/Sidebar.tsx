@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import type { EntryType, EquipmentDetails } from '../api/types';
 import { useEntryIndex } from '../hooks/useEntryIndex';
@@ -11,29 +11,22 @@ import { TYPE_INFO, entryPath, typeFromSlug, typePath } from '../lib/entryTypes'
 import { ChevronIcon, CloseIcon } from './Icons';
 
 const itemClass = (isActive: boolean) =>
-  `block rounded px-3 py-2 min-h-[44px] leading-snug no-underline hover:bg-tint-key hover:no-underline ${
+  `nav-item block rounded px-3 py-2 min-h-[44px] leading-snug no-underline hover:bg-tint-key hover:no-underline ${
     isActive ? 'bg-tint-key font-bold text-primary' : 'text-ink'
   }`;
 
 const linkClass = ({ isActive }: { isActive: boolean }) => itemClass(isActive);
 
+// Group toggles are the only uppercase headings in the menu; everything that
+// is a page (Início, the guides, Regras) is a plain link.
 const headingClass =
   'font-heading text-[17px] uppercase tracking-wide';
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  const id = `menu-${title.toLowerCase()}`;
-  return (
-    <div className="mt-6">
-      <p
-        id={id}
-        className="px-3 pb-1 font-heading text-[15px] uppercase tracking-wider text-muted"
-      >
-        {title}
-      </p>
-      <ul aria-labelledby={id}>{children}</ul>
-    </div>
-  );
-}
+/** From `lg` the menu is a fixed column with room to spare, so groups start open. */
+const startsOpen = () =>
+  typeof window !== 'undefined' &&
+  typeof window.matchMedia === 'function' &&
+  window.matchMedia('(min-width: 1024px)').matches;
 
 interface MenuItem {
   label: string;
@@ -117,7 +110,9 @@ export function Sidebar({ open, onClose }: Props) {
   };
 
   const activeGroup = GROUPS.find((g) => g.items.some(isActive))?.id;
-  const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(new Set());
+  const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(
+    () => new Set(startsOpen() ? GROUPS.map((g) => g.id) : []),
+  );
 
   // The group holding the current page opens itself; the others stay as the
   // Reader left them.
@@ -176,21 +171,16 @@ export function Sidebar({ open, onClose }: Props) {
                 Início
               </NavLink>
             </li>
+            {guides.map((guide) => (
+              <li key={guide.slug}>
+                <NavLink to={entryPath(guide)} className={linkClass}>
+                  {guide.name}
+                </NavLink>
+              </li>
+            ))}
           </ul>
 
-          {guides.length > 0 && (
-            <Section title="Guias">
-              {guides.map((guide) => (
-                <li key={guide.slug}>
-                  <NavLink to={entryPath(guide)} className={linkClass}>
-                    {guide.name}
-                  </NavLink>
-                </li>
-              ))}
-            </Section>
-          )}
-
-          <ul className="mt-6 space-y-1">
+          <ul className="mt-5 space-y-1">
             {GROUPS.map((group) => {
               const expanded = openGroups.has(group.id);
               const listId = `menu-${group.id}`;
@@ -205,7 +195,7 @@ export function Sidebar({ open, onClose }: Props) {
                   >
                     {group.title}
                     <ChevronIcon
-                      className={`shrink-0 text-muted transition-transform ${
+                      className={`shrink-0 text-muted ${
                         expanded ? 'rotate-180' : ''
                       }`}
                     />
@@ -223,7 +213,11 @@ export function Sidebar({ open, onClose }: Props) {
                             <span className="flex items-baseline justify-between gap-2">
                               {item.label}
                               {!isLoading && (
-                                <span className="text-[15px] font-normal text-muted">
+                                <span
+                                  className={`text-[15px] font-normal ${
+                                    active ? 'text-accent-ink' : 'text-muted'
+                                  }`}
+                                >
                                   {count(item)}
                                 </span>
                               )}
@@ -239,13 +233,17 @@ export function Sidebar({ open, onClose }: Props) {
             <li>
               <Link
                 to={typePath('rule')}
-                className={`${itemClass(currentType === 'rule')} ${headingClass}`}
-                aria-current={currentType === 'rule' && onList ? 'page' : undefined}
+                className={itemClass(currentType === 'rule')}
+                aria-current={currentType === 'rule' ? 'page' : undefined}
               >
                 <span className="flex items-baseline justify-between gap-2">
                   {TYPE_INFO.rule.plural}
                   {!isLoading && (
-                    <span className="font-body text-[15px] normal-case tracking-normal text-muted">
+                    <span
+                      className={`text-[15px] font-normal ${
+                        currentType === 'rule' ? 'text-accent-ink' : 'text-muted'
+                      }`}
+                    >
                       {entries.filter((e) => e.type === 'rule').length}
                     </span>
                   )}

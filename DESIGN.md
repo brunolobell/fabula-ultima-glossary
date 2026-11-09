@@ -25,7 +25,7 @@ The source is the *Fabula Ultima Third Party License — Style Guide*. We follow
 The guide states third-party work "cannot reproduce the Fabula Ultima trade dress (such as its color palette, graphics, and cover layout) and must not give the impression of being an official product".
 
 - **No green palette.** Ours is indigo-violet and apricot.
-- **No filigree/flourish borders, corner curl ornaments, logo, or cover layout.** Our ornaments are a crystal-shaped bullet, a thin gradient rule, and a left accent bar on main headers.
+- **No filigree/flourish borders, corner curl ornaments, logo, or cover layout.** Our ornaments are a crystal-shaped bullet, a thin gradient rule, and a small crystal that leads each main header.
 - **No official logotype, no "Fabula Ultima" lettering treatment.** The game's name appears only as plain text in the tagline and notice.
 - **Every page carries the unofficial notice** (see §2).
 
@@ -40,7 +40,7 @@ The guide states third-party work "cannot reproduce the Fabula Ultima trade dres
 
 ## 3. Color
 
-Two main hues: **indigo-violet** (primary) and **apricot** (secondary, used sparingly: example highlights, small accents). Variety comes from gradients that fade to transparent, left to right, like the guide's highlights. Light is the default only until the Reader chooses; see §3.3.
+Two main hues: **indigo-violet** (primary) and **apricot** (secondary, used sparingly: example highlights, and one small mark that always means "this is where you are / what is selected": a crystal glyph in `--accent` on the current menu item, a pressed filter chip and the highlighted search suggestion, with the count in `--accent-ink`). Apricot is never decoration. Variety comes from gradients that fade to transparent, left to right, like the guide's highlights. Light is the default only until the Reader chooses; see §3.3.
 
 ### 3.1 Tokens
 
@@ -58,6 +58,7 @@ Two main hues: **indigo-violet** (primary) and **apricot** (secondary, used spar
   --tint-key:      #ECE9F8;           /* key-rule highlight (indigo) */
   --tint-example:  #FCEEE2;           /* example highlight (apricot) */
   --accent-ink:    #8A4A1F;           /* "Exemplo:" label on apricot */
+  --accent:        #C2661F;           /* apricot crystal marker (graphics, ≥ 3:1) */
   --hp:            #A83D4E;           /* stat bar: Pontos de Vida */
   --mp:            #2F5F9E;           /* stat bar: Pontos de Mente */
   --on-stat:       #FFFFFF;
@@ -75,6 +76,7 @@ Two main hues: **indigo-violet** (primary) and **apricot** (secondary, used spar
   --tint-key:      rgba(155, 144, 240, 0.16);   /* ≈ #2A273E on --bg */
   --tint-example:  rgba(242, 167, 119, 0.14);   /* ≈ #332829 on --bg */
   --accent-ink:    #F2B48A;
+  --accent:        #F2A777;
   --hp:            #E2788A;
   --mp:            #7BA6E6;
   --on-stat:       #14131C;
@@ -89,7 +91,6 @@ Gradients are the only decoration on color. All fade **left → right to transpa
 | --- | --- | --- |
 | `--grad-key` | `linear-gradient(90deg, var(--tint-key), transparent)` | Key-rule highlight, secondary-header band |
 | `--grad-example` | `linear-gradient(90deg, var(--tint-example), transparent)` | Example highlight |
-| `--grad-bar` | `linear-gradient(90deg, var(--primary-deep), transparent)` | Tertiary-header bar |
 | `--grad-rule` | `linear-gradient(90deg, var(--primary-deep), transparent)` (2px tall) | Main-header underline |
 
 ### 3.3 Light/dark toggle
@@ -113,6 +114,9 @@ Gradients are the only decoration on color. All fade **left → right to transpa
 | `--accent-ink` on example highlight | 6.00 | 7.91 |
 | `--on-bar` on `--primary-deep` (bar start) | 11.46 | 8.24 |
 | `--on-primary` on `--primary` (buttons) | 8.24 | 9.02 |
+| `--accent` glyph on `--bg` (graphic, ≥ 3:1) | 4.03 | 9.27 |
+| `--accent` glyph on key tint | 3.37 | 7.25 |
+| `--accent-ink` count on key tint | 5.71 | 8.00 |
 | `--on-stat` on `--hp` | 6.10 | 6.39 |
 | `--on-stat` on `--mp` | 6.46 | 7.41 |
 
@@ -144,9 +148,11 @@ PT Sans Narrow is small for its nominal size, so the body is larger than the gui
 | Body | **18 px / 1.6** | Never below 15 px anywhere (the guide's "don't go under 9 pt"). |
 | Small / meta | 15 px / 1.5 | Page Reference, captions, footer. |
 | Main header | 40 px / 1.1 (32 px under 640 px) | Credit Valley, uppercase, letter-spacing 0.02em. |
-| Secondary header | 24 px / 1.2 | Antonio, uppercase, letter-spacing 0.03em. |
-| Tertiary header | 17 px / 1.2 | Antonio, uppercase, 0.04em. |
-| Minor header | 17 px / 1.2 | Antonio, uppercase, 0.03em. |
+| Secondary header | 26 px / 1.2 | Antonio, uppercase, letter-spacing 0.04em. |
+| Tertiary header | 21 px / 1.2 | Antonio, uppercase, 0.04em. |
+| Minor header | 18 px / 1.2 | Antonio, uppercase, 0.03em. |
+
+Header weight follows rank (a lower level never looks louder than the one above it): secondary is the only saturated bar, tertiary a pale band, minor a hairline. Numbers in tables and stat bars use `tabular-nums`.
 
 ## 5. Header hierarchy
 
@@ -154,9 +160,9 @@ Mirrors the guide's four levels. **Main and secondary are the common ones**; ter
 
 | Level | HTML | Look |
 | --- | --- | --- |
-| **Main** | `h1` | Credit Valley, `--primary-deep` (dark mode: `--ink`), 4 px left accent bar in `--primary`, `--grad-rule` underline spanning the content width. One per page. |
-| **Secondary** | `h2` | Antonio on a `--grad-key` band (full width, 8×12 px padding), no border. |
-| **Tertiary** | `h3` | Antonio, `--on-bar` (white in both themes) text on a `--grad-bar` bar; the text sits on the opaque left end. |
+| **Main** | `h1` | Credit Valley, `--primary-deep` (dark mode: `--ink`), a small `--primary` crystal before the title (0.3 em × 0.5 em, scales with the type; no side stripe), `--grad-rule` underline spanning the content width. One per page. |
+| **Secondary** | `h2` | Antonio, `--on-bar` (white in both themes) on a `--primary-deep` bar that hugs its text (`width: fit-content`). A 3 rem right padding holds a tail where the bar fades to transparent, so text never enters the fade. 8 px vertical, 12 px left padding. |
+| **Tertiary** | `h3` | Antonio, `--heading` on a `--grad-key` band (full width, 6×12 px padding), no border. |
 | **Minor** | `h4` | Antonio, `--primary-deep` (dark: `--primary`), a 1 px `--line` underline only. |
 
 Note: `--on-bar` is `#FFFFFF` in both themes. Do not use `--on-primary` for bars; in dark mode it is a dark ink meant for text on the (light) `--primary` button.
@@ -202,25 +208,28 @@ The guide says ordered steps deserve a flowchart. A Guide renders as a **vertica
 ### 6.8 Buttons and inputs
 - **Primary button:** `--primary` background, `--on-primary` text, Antonio uppercase, radius 4 px, min-height 44 px.
 - **Ghost button / filter chip:** transparent, 1 px `--line`; selected state `--tint-key` background + `--primary` text + `aria-pressed="true"`.
-- **Search input:** 48 px tall, 1 px `--line`, 4 px radius, 18 px text; placeholder "Buscar regras, classes, poderes, feitiços…".
+- **Search input:** 48 px tall (the Home hero box: 56 px, 18 px text, 20 px from `sm`), 1 px `--line`, 4 px radius, 18 px text; placeholder "Buscar regras, classes, poderes, feitiços…".
 - **Focus:** 2 px `--primary` outline with 2 px offset on every interactive element. Never remove it.
 
 ### 6.9 Result row
-Used in search, type lists and steppers. Badge, name (PT Sans Narrow 700, 20 px, `--primary`, not Antonio), a two-line Summary snippet in `--ink`, and "Livro Básico, p. **X**" in `--ink-muted`. Rows are separated by hairlines, not cards; the whole row is the link.
+Used in search, type lists and steppers. Badge (omitted on a type list, where every row has the same type and the badge would repeat the page title), name (PT Sans Narrow 700, 20 px, `--primary`, not Antonio), a two-line Summary snippet in `--ink`, and a meta line in `--ink-muted` (15 px): for a Skill or Spell the Class name in `--ink` and, for a Spell, "PM **cost**" (a per-target cost such as "5 × A" carries a "Custo por alvo" hint), then "Livro Básico, p. **X**", separated by " · ". The Class is plain text, not a link, because the whole row is already a link. Rows are separated by hairlines, not cards; the whole row is the link.
 
 ### 6.10 Tables
 Header row on `--surface` with Antonio labels; rows separated by `--line` hairlines; no vertical lines, no zebra. On phones a wide table scrolls horizontally inside its own container, never the page.
+
+### 6.11 Siglas legend
+Under the stat bar of an Entry or Guide that uses abbreviations, a closed native `<details>`: "Siglas nesta página" in `--primary`, followed by the abbreviations actually used, in `--ink-muted` (for example "PM, RA"). Open, it lists each one as `SIGLA` (Antonio, `--ink-muted`) and **the book's term**, then a short gloss in our own words. The summary row is 44 px tall; it is plain text, never a highlight. The table lives in `src/lib/abbreviations.ts` and holds only terms from the Livro Básico (NP nível de poder, PV, PM, PI, DES, VIG, AST, VON, RA rolagem alta, ND nível de dificuldade, PJ, NPC). Detection is whole-word and case-sensitive, over the summary, body, Class free benefits, children and stat labels. A page that uses none shows nothing.
 
 ## 7. Layout and responsive
 
 - **Mobile first.** Players use phones at the table. Design at 360 px first.
 - **Single column of content.** Reading width is capped at **44 rem** (≈ 70 characters at 18 px). Navigation lives in a **lateral menu** (see below), not in a second content column.
-- **Lateral menu** (decided after the first design pass, replacing "no sidebar in v1"): from `lg` (1024 px) a fixed 16 rem sidebar on the left, sticky to the viewport height; below `lg` a slide-in drawer opened by a menu button in the header, closed by its button, the overlay, `Esc`, or navigating. Structure, in the style of the Archives of Nethys, alphabetical (PT-BR) at every level: **Início**; **Guias** (a plain list); then collapsible groups **Criação de Personagem** (Classes, Feitiços, Poderes, Poderes Heroicos) and **Equipamento** (Todo o equipamento, then Acessórios, Armaduras, Armas, Artefatos, Escudos), and **Regras** as a plain link. A group heading is only a toggle button (`aria-expanded`, chevron), not a page; groups start collapsed, several can be open at once, the group holding the current page opens itself, and the open state is not remembered between visits. Items are links to a type list (or to `/equipamento?item=<kind>`), each with its entry count, and the menu never lists individual entries or Classes. Search is not in the menu: it lives only in the header box. The current page is highlighted and exposed with `aria-current`.
+- **Lateral menu** (decided after the first design pass, replacing "no sidebar in v1"): from `lg` (1024 px) a fixed 16 rem sidebar on the left, sticky to the viewport height; below `lg` a slide-in drawer opened by a menu button in the header, closed by its button, the overlay, `Esc`, or navigating. Structure, in the style of the Archives of Nethys, alphabetical (PT-BR) at every level: **Início** followed by the guides, all plain links with no heading of their own; then collapsible groups **Criação de Personagem** (Classes, Feitiços, Poderes, Poderes Heroicos) and **Equipamento** (Todo o equipamento, then Acessórios, Armaduras, Armas, Artefatos, Escudos), and **Regras** as a plain link. A group heading is only a toggle button (`aria-expanded`, chevron), not a page; groups start open from `lg` (the column has room) and collapsed in the drawer, several can be open at once, the group holding the current page opens itself, and the open state is not remembered between visits. Group toggles are the only uppercase headings in the menu; pages (Início, guides, Regras) are plain body-font links. Items are links to a type list (or to `/equipamento?item=<kind>`), each with its entry count, and the menu never lists individual entries or Classes. Search is not in the menu: it lives only in the header box. The current page is highlighted and exposed with `aria-current`.
 - **Gutters:** 16 px on phones, 24 px from 640 px up.
 - **Touch targets:** at least 44×44 px.
 - **Breakpoints:** `sm` 640 px, `md` 768 px. Only the header layout and stat-bar wrapping change; the page remains one column.
 - **No horizontal page scroll** at any width.
-- **Header:** menu button (below `lg`), logo/name, search box and theme toggle. From `md` the search box sits beside the logo; on phones it wraps to its own full-width row. The header is not sticky (it costs too much height on phones); the sidebar is sticky instead.
+- **Header:** menu button (below `lg`), logo/name, search box and theme toggle. The logo is 20 px below `sm` (24 px from there) so the menu button, logo and theme toggle share one row at 360 px. On Home the search box is left out of the header, because the hero already holds a larger one. From `md` the search box sits beside the logo; on phones it wraps to its own full-width row. The header is not sticky (it costs too much height on phones); the sidebar is sticky instead.
 - **Footer:** unofficial notice and font credit (§2).
 
 ## 8. Pages
@@ -228,15 +237,15 @@ Header row on `--surface` with Antonio labels; rows separated by `--line` hairli
 Client-side routing is required (the app is currently a single page).
 
 ### 8.1 Home — `/`
-1. Hero: tagline and a large search box.
+1. Hero: the tagline as large plain text (28 px, 32 px from `sm`, bold; the game's name is never set in the display face) and a large search box. It is the largest type on the page, so the hero leads. The logo in the header already carries the site name, so the `h1` is visually hidden (`sr-only`). The section headers below it use the quiet tertiary style, not the solid secondary bar.
 2. Two **Guide cards**: "Criar um personagem" and "Como jogar". Surfaces are `--grad-key` rows with a Credit Valley title and a one-line promise; the whole card is the link.
 3. **"Navegar por tipo"**: a grid of the five Entry Types (Regras, Classes, Poderes, Feitiços, Equipamento), each with a count.
 
 ### 8.2 Search — `/buscar?q=…&tipo=…`
-- **The search box is a type-ahead** (header and Home hero). From 2 characters, after a ~200 ms pause, a panel under the box lists **at most 10 matches** (name, Entry Type badge, one-line Summary), name matches first, with a last row "Ver todos os N resultados" (or "Abrir a página de busca" when there are 10 or fewer). **Enter opens this search page** (`/buscar?q=`); if the Reader arrowed to a suggestion, Enter opens that Entry instead. Click opens an Entry; `Esc` or leaving the box closes the panel. The box never changes this page's results while typing. It is an ARIA combobox (`role="combobox"`, `aria-activedescendant`, a `listbox` of `option`s) with an empty state ("Nenhuma entrada encontrada para “…”. Confira a grafia.").
+- **The search box is a type-ahead** (header and Home hero). From 2 characters, after a ~200 ms pause, a panel under the box lists **at most 10 matches** (name, Entry Type badge, one-line Summary), name matches first, with a last row "Ver todos os N resultados" (or "Abrir a página de busca" when there are 10 or fewer). **Enter opens this search page** (`/buscar?q=`); if the Reader arrowed to a suggestion, Enter opens that Entry instead. Click opens an Entry; `Esc` or leaving the box closes the panel. The box never changes this page's results while typing. With the box empty and focused, the panel instead lists the last 5 entries the Reader opened ("Vistos recentemente", kept in `localStorage`, newest first, same keyboard behaviour). **`/`** focuses the box from anywhere that is not a text field (a small `/` hint sits inside the box from `md`, and the input carries `aria-keyshortcuts`). The box accepts at most 100 characters, the limit the API enforces. It is an ARIA combobox (`role="combobox"`, `aria-activedescendant`, a `listbox` of `option`s) with an empty state ("Nenhuma entrada encontrada para “…”. Confira a grafia.").
 - Matching is **case- and accent-insensitive** ("pericia" finds "Perícia"); the API matches against accent- and case-folded columns computed when an Entry is saved, so no PostgreSQL extension is needed.
 - One **ranked list** (name matches first, then body matches) of result rows (6.9).
-- Filter chips by Entry Type; both the query and the filter live in the URL so a Reader can paste a link into the group chat.
+- Filter chips by Entry Type (every browsable type, Poderes Heroicos included), each with its count; only types that have results are offered, plus **Todos** (a chosen type stays visible even at 0). Both the query and the filter live in the URL so a Reader can paste a link into the group chat.
 - Result count in plain words: "12 resultados para “perícia”".
 
 ### 8.3 Entry — `/:tipo/:slug`
@@ -247,14 +256,14 @@ Top to bottom:
 4. **Summary** as a key highlight.
 5. **Stat bar** if the type has `details` to show.
 6. **Body** (Markdown): secondary headers, bullets, example highlights.
-7. **Class pages only:** free benefits, then **Skills** and **Spells** inline, each as a tertiary-header section with its own stat bar. The Class page is fully readable without clicking away.
+7. **Class pages only:** a plain-text "Nesta página" index (Benefícios iniciais, Poderes, Feitiços, Poderes Heroicos, with counts), then free benefits, then **Skills** and **Spells** inline, each as a tertiary-header section. Under the Poderes and Feitiços headers a row of jump links lists every name. A section with a single fact (a Skill's NP máximo) shows it in the meta line instead of a stat bar. The Class page is fully readable without clicking away.
 8. **"Veja também"** at the end as **plain text** links (never a highlight; see the ending rule in 6.2).
 
 ### 8.4 Guide — `/guias/:slug`
-Main header, intro as key highlight, then the stepper (6.7). Examples: *Criar um personagem*, *Como jogar*.
+Main header, intro as key highlight, then the stepper (6.7). Examples: *Criar um personagem*, *Como jogar*. An Entry is shown as a full result row only in the first step that lists it; a later step shows a one-line "Ver de novo: Traços (passo 1)" with a link to the Entry and an anchor to that step, so a guide never repeats a card.
 
 ### 8.5 Type list — `/:tipo`
-Main header with the type's name, then result rows, alphabetical unless the type has a natural order. Equipment lists add filter chips by Kind (acessórios, armaduras, armas, artefatos, escudos), kept in the URL as `?item=armas` so the menu and the chips agree. The Heroic Skills list adds chips "Todos / Disponíveis a todos / Exigem classe" and shows each skill's requirement under its summary.
+Main header with the type's name, then result rows, alphabetical unless the type has a natural order. A filter row appears only when it has at least two options (a single option filters nothing). Each chip's count is what choosing it would show given the other rows' chosen chips (zero is shown muted, not hidden). A row with more than 8 options shows its first 6 plus any chosen chip, and a "Mostrar todas (N)" link. Below `md` the rows sit behind a "Filtrar" toggle (with the number of chosen chips) so the list is not pushed off the screen; with more than 10 chips in all, the toggle is used at every width. Until the Reader toggles it, the block follows the URL: a link that arrives with filters set opens it already. The Equipment "Tipo de item" row is hidden from `lg`, where the menu offers the same choice. Equipment lists add filter chips by Kind (acessórios, armaduras, armas, artefatos, escudos), kept in the URL as `?item=armas` so the menu and the chips agree. The Heroic Skills list adds chips "Todos / Disponíveis a todos / Exigem classe" and shows each skill's requirement under its summary.
 
 ### 8.6 Not found
 "Não encontramos essa página." with the search box and a link to Home.
@@ -277,7 +286,8 @@ Game vocabulary comes **only** from the Portuguese Core Rulebook (*Fabula Ultima
 
 ## 10. States and accessibility
 
-- **Empty search:** "Nenhuma entrada encontrada para “…”. Confira a grafia ou remova os filtros." Always offer a clear action.
+- **Empty search:** "Nenhuma entrada encontrada para “…”. Confira a grafia." Always offer a clear action: with a type chosen, the message itself carries "Buscar em todos os tipos". An empty filtered list says "Nenhuma entrada com esses filtros." with "Limpar filtros" inside the message (the separate clear link is hidden then, so there is one).
+- **Retries:** a 4xx response is never retried (a missing entry shows "não encontrado" at once); other failures are retried twice before the error state appears.
 - **Error:** say what happened and what to try: "Não foi possível carregar o conteúdo. Verifique sua conexão e tente de novo." (Only mention the API in development builds.)
 - **Loading:** skeleton blocks shaped like result rows or the Entry layout, not a bare "Carregando…". Announce with `aria-busy`.
 - **Contrast:** WCAG AA in both themes (§3.4), visible focus rings, color never the only carrier of meaning (the offensive-spell marker also has a text label for screen readers).
@@ -290,4 +300,4 @@ Game vocabulary comes **only** from the Portuguese Core Rulebook (*Fabula Ultima
 - Colors, gradients and fonts live as CSS variables in `apps/web/src/index.css`; `tailwind.config.js` maps theme colors to those variables, so components never reference raw hex values.
 - Credit Valley files go in `apps/web/src/assets/fonts/` with their license file; Antonio and PT Sans Narrow come from `@fontsource`.
 - The API this design depends on exists: read-only `GET /api/entries` (`?search=`, `?type=`) and `GET /api/entries/:slug` (a Class also returns its Skills then Spells as `children`). Content lives in seed files under `apps/api/src/database/seed-data/`.
-- The UI is not built yet. `App.tsx` is a placeholder list; none of its slate/indigo-default classes survive the redesign.
+- The UI is built: routes, pages and components live in `apps/web/src` (see `CLAUDE.md` for the map). Keep this document and `src/index.css` in step when a token or component changes.

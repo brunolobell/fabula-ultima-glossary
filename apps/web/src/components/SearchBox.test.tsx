@@ -2,9 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { rememberEntry } from '../lib/recent';
 import { SearchBox } from './SearchBox';
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.unstubAllGlobals();
+  localStorage.clear();
+});
 
 const entry = (n: number, over: Record<string, unknown> = {}) => ({
   id: String(n),
@@ -152,3 +156,54 @@ describe('SearchBox type-ahead', () => {
     expect(where()).toBe('/buscar?q=raio');
   });
 });
+
+describe('SearchBox shortcut and recents', () => {
+  it('focuses the box when "/" is pressed outside a text field', () => {
+    stubSearch([]);
+    const input = setup();
+    expect(input).not.toHaveFocus();
+    fireEvent.keyDown(document.body, { key: '/' });
+    expect(input).toHaveFocus();
+  });
+
+  it('leaves "/" alone while typing in a field', () => {
+    stubSearch([]);
+    const input = setup();
+    const other = document.createElement('input');
+    document.body.appendChild(other);
+    other.focus();
+    fireEvent.keyDown(other, { key: '/' });
+    expect(input).not.toHaveFocus();
+    other.remove();
+  });
+
+  it('offers the last opened entries when the empty box is focused', async () => {
+    const fetchMock = stubSearch([]);
+    rememberEntry({ slug: 'raio', name: 'Raio', type: 'spell' });
+    rememberEntry({ slug: 'tracos', name: 'Traços', type: 'rule' });
+    const input = setup();
+    fireEvent.focus(input);
+
+    const options = within(await screen.findByRole('listbox', { name: 'Vistos recentemente' })).getAllByRole('option');
+    expect(options.map((o) => o.textContent)).toEqual(['TraçosRegra', 'RaioFeitiço']);
+    expect(fetchMock).not.toHaveBeenCalled();
+
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    fireEvent.submit(input.closest('form')!);
+    expect(where()).toBe('/feiticos/raio');
+  });
+
+  it('shows nothing extra when there are no recents', () => {
+    stubSearch([]);
+    const input = setup();
+    fireEvent.focus(input);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+  });
+
+  it('does not let a query grow past what the API accepts', () => {
+    stubSearch([]);
+    expect(setup()).toHaveAttribute('maxlength', '100');
+  });
+});
+

@@ -147,3 +147,45 @@ describe('toggleValue / clearFilters', () => {
     expect(next.toString()).toBe('q=1');
   });
 });
+
+describe('single-option rows', () => {
+  it('are left out, since one option filters nothing', () => {
+    const rows = buildRows('spell', [spell('a', 'elementalista', true)], index);
+    // One class, one effect, one book: nothing to choose.
+    expect(rows).toEqual([]);
+  });
+
+  it('stay when the list offers a choice', () => {
+    const rows = buildRows(
+      'spell',
+      [spell('a', 'elementalista', true), spell('b', 'entropista', true)],
+      index,
+    );
+    expect(rows.map((r) => r.param)).toEqual(['classe']);
+  });
+});
+
+describe('counts follow the other rows', () => {
+  const spells = [
+    spell('a', 'elementalista', true),
+    spell('b', 'elementalista', false),
+    spell('c', 'entropista', true),
+  ];
+  const countsOf = (rows: ReturnType<typeof buildRows>, param: string) =>
+    Object.fromEntries(rows.find((r) => r.param === param)!.options.map((o) => [o.value, o.count]));
+
+  it('count the whole list when nothing is chosen', () => {
+    const rows = buildRows('spell', spells, index);
+    expect(countsOf(rows, 'classe')).toEqual({ elementalista: 2, entropista: 1 });
+    expect(countsOf(rows, 'ofensivo')).toEqual({ sim: 2, nao: 1 });
+  });
+
+  it('show what choosing a chip would give, given the other rows', () => {
+    const rows = buildRows('spell', spells, index, { ofensivo: ['nao'] });
+    // Only "b" is non-offensive, so entropista would show nothing.
+    expect(countsOf(rows, 'classe')).toEqual({ elementalista: 1, entropista: 0 });
+    // A row ignores its own choice, so its other chip keeps a real number.
+    expect(countsOf(rows, 'ofensivo')).toEqual({ sim: 2, nao: 1 });
+  });
+});
+

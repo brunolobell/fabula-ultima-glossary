@@ -21,12 +21,17 @@ interface RowSpec {
   labelOf: (value: string, index: Index) => string;
   /** Fixed option order; alphabetical by label when absent. */
   order?: readonly string[];
+  /** The side menu already offers these choices, so a wide screen hides the row. */
+  menuRow?: boolean;
 }
 
 export interface FilterOption {
   value: string;
   label: string;
-  /** Entries of the whole list (not of the filtered one) that have this value. */
+  /**
+   * Entries that have this value and also pass the *other* rows' chosen chips,
+   * so the number is what choosing it would show. Zero when it would show none.
+   */
   count: number;
 }
 
@@ -34,6 +39,8 @@ export interface FilterRow {
   param: string;
   label: string;
   options: FilterOption[];
+  /** See RowSpec.menuRow. */
+  menuRow?: boolean;
 }
 
 /** Chosen values per row param. A row with no values is off. */
@@ -102,6 +109,7 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
       values: (e) => [kindParamOf((e.details as EquipmentDetails).kind)],
       labelOf: (value) => kindFromParam(value)?.label ?? value,
       order: EQUIPMENT_KIND_FILTERS.map((f) => f.param),
+      menuRow: true,
     },
     {
       param: 'raridade',
@@ -125,16 +133,34 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
 
 const specsOf = (type: EntryType) => ROWS[type] ?? [];
 
-/** The rows to show for a list: only values that some entry has, in a stable order. */
+/**
+ * The rows to show for a list: only values that some entry has, in a stable
+ * order, and only rows with a real choice (a single option filters nothing).
+ * Counts follow the current `selection` (see FilterOption).
+ */
 export function buildRows(
   type: EntryType,
   ofType: readonly EntrySummary[],
   index: Index,
+  selection: Selection = {},
 ): FilterRow[] {
-  return specsOf(type)
+  const specs = specsOf(type);
+  return specs
     .map((spec) => {
+      // Options come from the whole list, so a chip never vanishes...
       const counts = new Map<string, number>();
       for (const entry of ofType) {
+        for (const value of spec.values(entry)) counts.set(value, 0);
+      }
+      // ...and its number comes from what the other rows already allow.
+      const others = specs.filter(
+        (other) => other !== spec && (selection[other.param] ?? []).length > 0,
+      );
+      for (const entry of ofType) {
+        const allowed = others.every((other) =>
+          other.values(entry).some((v) => selection[other.param].includes(v)),
+        );
+        if (!allowed) continue;
         for (const value of new Set(spec.values(entry))) {
           counts.set(value, (counts.get(value) ?? 0) + 1);
         }
@@ -150,9 +176,9 @@ export function buildRows(
           ? rank(a.value) - rank(b.value)
           : a.label.localeCompare(b.label, 'pt-BR'),
       );
-      return { param: spec.param, label: spec.label, options };
+      return { param: spec.param, label: spec.label, options, menuRow: spec.menuRow };
     })
-    .filter((row) => row.options.length > 0);
+    .filter((row) => row.options.length > 1);
 }
 
 /** Reads the chosen values of this type's rows from the query string (`a,b`). */

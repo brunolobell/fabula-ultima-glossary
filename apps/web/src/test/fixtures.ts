@@ -105,6 +105,26 @@ const katana: Entry = {
   },
 };
 
+// A second kind, so the "Tipo de item" filter row has a real choice.
+const anel: Entry = {
+  ...base,
+  id: '8',
+  slug: 'anel-de-prata',
+  name: 'Anel de Prata',
+  type: 'equipment',
+  summary: 'Acessório simples.',
+  body: '',
+  tags: ['equipamento', 'acessório'],
+  page: 140,
+  details: {
+    kind: 'accessory',
+    rarity: 'basic',
+    martial: false,
+    cost: 100,
+    notes: null,
+  },
+};
+
 const criar: Entry = {
   ...base,
   id: '7',
@@ -117,6 +137,7 @@ const criar: Entry = {
   details: {
     steps: [
       { title: 'Identidade', intro: 'Crie uma frase curta.', entries: ['tracos'] },
+      { title: 'Tema', intro: 'Crie um ideal.', entries: ['tracos'] },
       { title: 'Classes', intro: 'Escolha duas ou três.', entries: ['elementalista'] },
     ],
   },
@@ -165,6 +186,7 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     raio,
     elementalista,
     katana,
+    anel,
     feiticoPoderoso,
     pvExtras,
     criar,

@@ -4,6 +4,7 @@ import type { GuideDetails } from '../api/types';
 import { EntryBody } from '../components/EntryBody';
 import { PageRef } from '../components/PageRef';
 import { ResultRow } from '../components/ResultRow';
+import { SiglasLegend } from '../components/SiglasLegend';
 import { ErrorState, NotFoundState, PageSkeleton } from '../components/States';
 import { TypeBadge } from '../components/TypeBadge';
 import { useEntry } from '../hooks/useEntry';
@@ -26,6 +27,13 @@ export function GuidePage() {
   if (entry.type !== 'guide') return <Navigate to={entryPath(entry)} replace />;
 
   const { steps } = entry.details as GuideDetails;
+  // The first step that lists each entry.
+  const firstStep = new Map<string, number>();
+  steps.forEach((step, i) =>
+    step.entries.forEach((slug) => {
+      if (!firstStep.has(slug)) firstStep.set(slug, i);
+    }),
+  );
 
   return (
     <article>
@@ -48,6 +56,9 @@ export function GuidePage() {
       <div className="highlight-key">
         <p>{decorateChecks(entry.summary)}</p>
       </div>
+      <SiglasLegend
+        texts={[entry.summary, entry.body, ...steps.map((s) => s.intro)]}
+      />
       <EntryBody body={entry.body} index={bySlug} />
 
       <ol className="stepper">
@@ -55,8 +66,12 @@ export function GuidePage() {
           const linked = step.entries
             .map((s) => bySlug.get(s))
             .filter((e) => e !== undefined);
+          // An entry a step shares with an earlier one is shown in full once;
+          // here it is only a link back, so a long guide stays short.
+          const fresh = linked.filter((e) => firstStep.get(e.slug) === i);
+          const again = linked.filter((e) => firstStep.get(e.slug) !== i);
           return (
-            <li key={step.title} className="step">
+            <li key={step.title} id={`passo-${i + 1}`} className="step">
               <span className="step-marker" aria-hidden>
                 {i + 1}
               </span>
@@ -64,12 +79,27 @@ export function GuidePage() {
                 {step.title}
               </h2>
               <p>{decorateChecks(step.intro)}</p>
-              {linked.length > 0 && (
+              {fresh.length > 0 && (
                 <ul>
-                  {linked.map((e) => (
+                  {fresh.map((e) => (
                     <ResultRow key={e.slug} entry={e} />
                   ))}
                 </ul>
+              )}
+              {again.length > 0 && (
+                <p className="mt-2 text-[15px]">
+                  <strong>Ver de novo:</strong>{' '}
+                  {again.map((e, n) => (
+                    <span key={e.slug}>
+                      {n > 0 && ', '}
+                      <Link to={entryPath(e)}>{e.name}</Link> (
+                      <a href={`#passo-${(firstStep.get(e.slug) ?? 0) + 1}`}>
+                        passo {(firstStep.get(e.slug) ?? 0) + 1}
+                      </a>
+                      )
+                    </span>
+                  ))}
+                </p>
               )}
             </li>
           );

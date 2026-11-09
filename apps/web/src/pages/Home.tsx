@@ -19,13 +19,13 @@ export function Home() {
   return (
     <div>
       <section aria-labelledby="titulo">
-        <h1 id="titulo" className="h-main">
+        <h1 id="titulo" className="sr-only">
           Códice do Cristal
         </h1>
-        <p className="mt-4 text-xl">
-          Referência não oficial para Fabula Ultima: o que você precisa para
-          criar um personagem e jogar.
+        <p className="text-[1.75rem] font-bold leading-tight sm:text-[2rem]">
+          Tudo o que você precisa para criar um personagem e jogar Fabula Ultima.
         </p>
+        <p className="mt-1 text-muted">Referência não oficial, feita por fãs.</p>
         <div className="mt-6">
           <SearchBox size="lg" label="Buscar em todo o conteúdo" />
         </div>
@@ -39,7 +39,7 @@ export function Home() {
 
       {guides.length > 0 && (
         <section aria-labelledby="guias" className="mt-10">
-          <h2 id="guias" className="h-secondary" style={{ marginTop: 0 }}>
+          <h2 id="guias" className="h-tertiary" style={{ marginTop: 0 }}>
             Por onde começar
           </h2>
           <ul className="grid gap-4 sm:grid-cols-2">
@@ -65,7 +65,7 @@ export function Home() {
       )}
 
       <section aria-labelledby="tipos" className="mt-10">
-        <h2 id="tipos" className="h-secondary" style={{ marginTop: 0 }}>
+        <h2 id="tipos" className="h-tertiary" style={{ marginTop: 0 }}>
           Navegar por tipo
         </h2>
         {isLoading ? (

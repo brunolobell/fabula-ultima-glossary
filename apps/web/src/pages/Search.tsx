@@ -10,6 +10,7 @@ const FILTERS: EntryType[] = [
   'rule',
   'class',
   'skill',
+  'heroic-skill',
   'spell',
   'equipment',
   'guide',
@@ -63,7 +64,11 @@ export function Search() {
             >
               Todos
             </button>
-            {FILTERS.map((type) => (
+            {/* Only types that have results: a chip with 0 leads nowhere. The
+                chosen type stays, so the state is never hidden. */}
+            {FILTERS.filter(
+              (type) => tipo === type || (!isLoading && !isError && countOf(type) > 0),
+            ).map((type) => (
               <button
                 key={type}
                 type="button"
@@ -95,8 +100,21 @@ export function Search() {
               </p>
               {results.length === 0 ? (
                 <p className="mt-4">
-                  Nenhuma entrada encontrada para “{query}”. Confira a grafia ou
-                  remova os filtros.
+                  Nenhuma entrada encontrada para “{query}”.{' '}
+                  {tipo ? (
+                    <>
+                      <button
+                        type="button"
+                        className="underline text-primary"
+                        onClick={() => chooseType(undefined)}
+                      >
+                        Buscar em todos os tipos
+                      </button>
+                      , ou confira a grafia.
+                    </>
+                  ) : (
+                    'Confira a grafia.'
+                  )}
                 </p>
               ) : (
                 <ul className="mt-2">
