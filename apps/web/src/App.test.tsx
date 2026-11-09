@@ -291,7 +291,7 @@ describe('Equipment list filter', () => {
     renderAt('/equipamento?item=escudos');
     const main = within(screen.getByRole('main'));
     expect(await main.findByRole('heading', { level: 1, name: 'Escudos' })).toBeInTheDocument();
-    expect(await main.findByText('Ainda não há entradas neste tipo.')).toBeInTheDocument();
+    expect(await main.findByText('Nenhuma entrada com esses filtros.')).toBeInTheDocument();
     expect(main.queryByText('Katana')).toBeNull();
   });
 
@@ -300,8 +300,8 @@ describe('Equipment list filter', () => {
     renderAt('/equipamento');
     const main = within(screen.getByRole('main'));
     expect(await main.findByText('Katana')).toBeInTheDocument();
-    fireEvent.click(main.getByRole('button', { name: 'Armas' }));
-    expect(main.getByRole('button', { name: 'Armas' })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(main.getByRole('button', { name: /^Armas/ }));
+    expect(main.getByRole('button', { name: /^Armas/ })).toHaveAttribute('aria-pressed', 'true');
     expect(main.getByText('Katana')).toBeInTheDocument();
   });
 });
@@ -315,13 +315,20 @@ describe('Heroic Skills', () => {
     expect(main.getByText('Dominar Elementalista · Também exige: Raio')).toBeInTheDocument();
     expect(main.getByText('Disponível a todos os personagens')).toBeInTheDocument();
 
-    fireEvent.click(main.getByRole('button', { name: 'Disponíveis a todos' }));
+    fireEvent.click(main.getByRole('button', { name: /^Disponíveis a todos/ }));
     expect(main.getByText('PV Extras')).toBeInTheDocument();
     expect(main.queryByText('Feitiço Poderoso')).toBeNull();
 
-    fireEvent.click(main.getByRole('button', { name: 'Exigem classe' }));
+    // Chips in one row are OR: both on shows both; turn the first off to narrow.
+    fireEvent.click(main.getByRole('button', { name: /^Exigem classe/ }));
+    expect(main.getByText('Feitiço Poderoso')).toBeInTheDocument();
+    expect(main.getByText('PV Extras')).toBeInTheDocument();
+    fireEvent.click(main.getByRole('button', { name: /^Disponíveis a todos/ }));
     expect(main.getByText('Feitiço Poderoso')).toBeInTheDocument();
     expect(main.queryByText('PV Extras')).toBeNull();
+
+    fireEvent.click(main.getByRole('button', { name: 'Limpar filtros' }));
+    expect(main.getByText('PV Extras')).toBeInTheDocument();
   });
 
   it('shows the requirements on the entry page with links to the Class and the Spell', async () => {

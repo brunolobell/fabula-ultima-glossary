@@ -1,0 +1,212 @@
+import type {
+  EntrySummary,
+  EntryType,
+  EquipmentDetails,
+  HeroicSkillDetails,
+  SkillDetails,
+  SpellDetails,
+} from '../api/types';
+import { EQUIPMENT_KIND_FILTERS, kindFromParam } from './equipmentKinds';
+import { isOpenToAll } from './requirements';
+import { SOURCE_LABEL } from './sources';
+
+type Index = ReadonlyMap<string, EntrySummary>;
+
+/** One row of chips on a type list page. The `param` is its query-string key. */
+interface RowSpec {
+  param: string;
+  label: string;
+  /** The values an entry has in this row (a Heroic Skill can require several Classes). */
+  values: (entry: EntrySummary) => string[];
+  labelOf: (value: string, index: Index) => string;
+  /** Fixed option order; alphabetical by label when absent. */
+  order?: readonly string[];
+}
+
+export interface FilterOption {
+  value: string;
+  label: string;
+  /** Entries of the whole list (not of the filtered one) that have this value. */
+  count: number;
+}
+
+export interface FilterRow {
+  param: string;
+  label: string;
+  options: FilterOption[];
+}
+
+/** Chosen values per row param. A row with no values is off. */
+export type Selection = Readonly<Record<string, readonly string[]>>;
+
+const className = (slug: string, index: Index) => index.get(slug)?.name ?? slug;
+
+const bookRow: RowSpec = {
+  param: 'livro',
+  label: 'Livro',
+  values: (e) => [e.source],
+  labelOf: (value) => SOURCE_LABEL[value as keyof typeof SOURCE_LABEL] ?? value,
+  order: Object.keys(SOURCE_LABEL),
+};
+
+const classRow = (label: string, values: (e: EntrySummary) => string[]): RowSpec => ({
+  param: 'classe',
+  label,
+  values,
+  labelOf: className,
+});
+
+const kindParamOf = (kind: EquipmentDetails['kind']) =>
+  EQUIPMENT_KIND_FILTERS.find((f) => f.kind === kind)?.param ?? kind;
+
+const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
+  class: [bookRow],
+  skill: [
+    classRow('Classe', (e) => [(e.details as SkillDetails).classSlug]),
+    bookRow,
+  ],
+  'heroic-skill': [
+    {
+      param: 'requisito',
+      label: 'Requisito',
+      values: (e) => [
+        isOpenToAll((e.details as HeroicSkillDetails).requirements)
+          ? 'livres'
+          : 'classe',
+      ],
+      labelOf: (value) =>
+        value === 'livres' ? 'Disponíveis a todos' : 'Exigem classe',
+      order: ['livres', 'classe'],
+    },
+    classRow(
+      'Classe exigida',
+      (e) => (e.details as HeroicSkillDetails).requirements.classes,
+    ),
+    bookRow,
+  ],
+  spell: [
+    classRow('Classe', (e) => [(e.details as SpellDetails).classSlug]),
+    {
+      param: 'ofensivo',
+      label: 'Efeito',
+      values: (e) => [(e.details as SpellDetails).offensive ? 'sim' : 'nao'],
+      labelOf: (value) => (value === 'sim' ? 'Ofensivo' : 'Não ofensivo'),
+      order: ['sim', 'nao'],
+    },
+    bookRow,
+  ],
+  equipment: [
+    {
+      param: 'item',
+      label: 'Tipo de item',
+      values: (e) => [kindParamOf((e.details as EquipmentDetails).kind)],
+      labelOf: (value) => kindFromParam(value)?.label ?? value,
+      order: EQUIPMENT_KIND_FILTERS.map((f) => f.param),
+    },
+    {
+      param: 'raridade',
+      label: 'Raridade',
+      values: (e) => [
+        (e.details as EquipmentDetails).rarity === 'rare' ? 'raro' : 'basico',
+      ],
+      labelOf: (value) => (value === 'raro' ? 'Raro' : 'Básico'),
+      order: ['basico', 'raro'],
+    },
+    {
+      param: 'marcial',
+      label: 'Marcial',
+      values: (e) => [(e.details as EquipmentDetails).martial ? 'sim' : 'nao'],
+      labelOf: (value) => (value === 'sim' ? 'Marcial' : 'Não marcial'),
+      order: ['sim', 'nao'],
+    },
+    bookRow,
+  ],
+};
+
+const specsOf = (type: EntryType) => ROWS[type] ?? [];
+
+/** The rows to show for a list: only values that some entry has, in a stable order. */
+export function buildRows(
+  type: EntryType,
+  ofType: readonly EntrySummary[],
+  index: Index,
+): FilterRow[] {
+  return specsOf(type)
+    .map((spec) => {
+      const counts = new Map<string, number>();
+      for (const entry of ofType) {
+        for (const value of new Set(spec.values(entry))) {
+          counts.set(value, (counts.get(value) ?? 0) + 1);
+        }
+      }
+      const options = [...counts].map(([value, count]) => ({
+        value,
+        label: spec.labelOf(value, index),
+        count,
+      }));
+      const rank = (value: string) => spec.order?.indexOf(value) ?? -1;
+      options.sort((a, b) =>
+        spec.order
+          ? rank(a.value) - rank(b.value)
+          : a.label.localeCompare(b.label, 'pt-BR'),
+      );
+      return { param: spec.param, label: spec.label, options };
+    })
+    .filter((row) => row.options.length > 0);
+}
+
+/** Reads the chosen values of this type's rows from the query string (`a,b`). */
+export function readSelection(type: EntryType, params: URLSearchParams): Selection {
+  return Object.fromEntries(
+    specsOf(type).map((spec) => {
+      const values = (params.get(spec.param) ?? '')
+        .split(',')
+        .map((v) => v.trim())
+        .filter(Boolean);
+      return [spec.param, [...new Set(values)]];
+    }),
+  );
+}
+
+export const hasActiveFilters = (selection: Selection) =>
+  Object.values(selection).some((values) => values.length > 0);
+
+/** OR inside a row, AND between rows. */
+export function applyFilters(
+  type: EntryType,
+  entries: readonly EntrySummary[],
+  selection: Selection,
+): EntrySummary[] {
+  const active = specsOf(type).filter(
+    (spec) => (selection[spec.param] ?? []).length > 0,
+  );
+  return entries.filter((entry) =>
+    active.every((spec) => {
+      const chosen = selection[spec.param];
+      return spec.values(entry).some((value) => chosen.includes(value));
+    }),
+  );
+}
+
+/** A copy of `params` with `value` added to or removed from the row. */
+export function toggleValue(
+  params: URLSearchParams,
+  param: string,
+  value: string,
+): URLSearchParams {
+  const next = new URLSearchParams(params);
+  const current = (next.get(param) ?? '').split(',').filter(Boolean);
+  const updated = current.includes(value)
+    ? current.filter((v) => v !== value)
+    : [...current, value];
+  if (updated.length > 0) next.set(param, updated.join(','));
+  else next.delete(param);
+  return next;
+}
+
+/** A copy of `params` without this type's filter rows. */
+export function clearFilters(type: EntryType, params: URLSearchParams) {
+  const next = new URLSearchParams(params);
+  for (const spec of specsOf(type)) next.delete(spec.param);
+  return next;
+}
