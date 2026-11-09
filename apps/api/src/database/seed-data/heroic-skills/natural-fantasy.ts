@@ -278,8 +278,7 @@ Ativos enquanto você estiver a 1 dia de viagem do assentamento:
     name: 'Refração Auramante',
     page: 169,
     classes: ['Arcanista', 'Espiritualista'],
-    alsoRequires: ['Aura', 'Barreira'],
-    note: 'Basta ter o feitiço Aura e/ou Barreira.',
+    note: 'Exige ter o feitiço Aura e/ou Barreira.',
     summary:
       'Quando um inimigo causa dano a criaturas sob sua Aura ou Barreira, o dano sofrido cai e você retalia com dano do tipo escolhido (uma vez por turno).',
     body: `Escolha um tipo de dano entre **ar, raio, terra, fogo, gelo e luz**.

@@ -7,7 +7,15 @@ import { normalizeText } from './slug';
 
 export type EntrySummary = Pick<
   Entry,
-  'id' | 'slug' | 'name' | 'type' | 'summary' | 'source' | 'page' | 'tags'
+  | 'id'
+  | 'slug'
+  | 'name'
+  | 'type'
+  | 'summary'
+  | 'source'
+  | 'page'
+  | 'tags'
+  | 'details'
 >;
 
 export type EntryWithChildren = Entry & {
@@ -24,6 +32,7 @@ const SUMMARY_COLUMNS = [
   'source',
   'page',
   'tags',
+  'details',
 ];
 
 const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
@@ -36,7 +45,8 @@ export class EntriesService {
   ) {}
 
   /**
-   * Lists entries without their bodies. A search matches name, summary, body
+   * Lists entries without their bodies (details are small and stay: they
+   * drive the menu and the requirement lines). A search matches name, summary, body
    * and tags ignoring case and accents, with name matches ranked first.
    */
   findAll(search?: string, type?: EntryType): Promise<EntrySummary[]> {

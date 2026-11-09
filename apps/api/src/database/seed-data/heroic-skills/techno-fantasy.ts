@@ -38,8 +38,7 @@ Se seus ataques desarmados contam em mais de uma categoria (por exemplo, pelo po
     name: 'Câmera Lenta',
     page: 172,
     classes: ['Entropista', 'Ladino'],
-    alsoRequires: ['Esquiva', 'Tempo Roubado'],
-    note: 'Basta ter o poder Esquiva e/ou Tempo Roubado.',
+    note: 'Exige ter o poder Esquiva e/ou Tempo Roubado.',
     summary:
       'Bônus de iniciativa igual aos NP em Esquiva + Tempo Roubado; sem escudo ou armadura marcial, reduz o dano sofrido pelo NP de Esquiva e causa dano adicional igual ao NP de Tempo Roubado.',
     body: `Você recebe um bônus no **modificador de iniciativa** igual a **(seu NP em [[esquiva]] + seu NP em [[tempo-roubado]])**.
