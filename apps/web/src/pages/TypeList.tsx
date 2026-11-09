@@ -45,6 +45,7 @@ export function TypeList() {
       <p className="mt-4">{TYPE_INFO[type].description}</p>
 
       <ListFilters
+        key={type}
         rows={rows}
         selection={selection}
         onToggle={toggle}

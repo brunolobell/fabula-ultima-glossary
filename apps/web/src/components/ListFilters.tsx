@@ -1,12 +1,6 @@
 import { useId, useState } from 'react';
 import type { FilterRow, Selection } from '../lib/listFilters';
 
-/** A row with more options than this shows a few and a "Mostrar todas". */
-const LONG_ROW = 8;
-const SHOWN_WHEN_LONG = 6;
-/** More chips than this in all: the whole block sits behind "Filtrar" at every width. */
-const COMPACT_TOTAL = 10;
-
 interface Props {
   rows: FilterRow[];
   selection: Selection;
@@ -15,108 +9,94 @@ interface Props {
   onClear?: () => void;
 }
 
-function Row({
-  row,
-  chosen,
-  onToggle,
-}: {
-  row: FilterRow;
-  chosen: readonly string[];
-  onToggle: (param: string, value: string) => void;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const long = row.options.length > LONG_ROW;
-  // Original order is kept (no chip jumps when toggled); a chosen chip past
-  // the cut stays visible so the Reader always sees what is on.
-  const visible =
-    !long || expanded
-      ? row.options
-      : row.options.filter(
-          (option, i) => i < SHOWN_WHEN_LONG || chosen.includes(option.value),
-        );
-
-  return (
-    <div role="group" aria-label={row.label} className={row.menuRow ? 'lg:hidden' : undefined}>
-      <p className="text-[15px] text-muted">{row.label}</p>
-      <div className="mt-1 flex flex-wrap gap-2">
-        {visible.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            className="chip"
-            aria-pressed={chosen.includes(option.value)}
-            data-empty={option.count === 0 || undefined}
-            onClick={() => onToggle(row.param, option.value)}
-          >
-            {option.label}
-            <span className="chip-count text-muted">{option.count}</span>
-          </button>
-        ))}
-      </div>
-      {long && (
-        <button
-          type="button"
-          className="flex min-h-[44px] items-center text-[15px] underline text-primary"
-          aria-expanded={expanded}
-          onClick={() => setExpanded((e) => !e)}
-        >
-          {expanded ? 'Mostrar menos' : `Mostrar todas (${row.options.length})`}
-        </button>
-      )}
-    </div>
-  );
+/** "Classe", "Classe: Guardião" or "Classe: 3". */
+function buttonLabel(row: FilterRow, chosen: readonly string[]) {
+  if (chosen.length === 0) return row.label;
+  if (chosen.length === 1) {
+    const option = row.options.find((o) => o.value === chosen[0]);
+    return `${row.label}: ${option?.label ?? chosen[0]}`;
+  }
+  return `${row.label}: ${chosen.length}`;
 }
 
 /**
- * Rows of toggle chips: OR inside a row, AND between rows. Long rows show a
- * few chips; on phones (and, for big lists, everywhere) the rows sit behind a
- * "Filtrar" toggle so the list is not pushed off the screen.
+ * One button per filter on a single line; a button opens its options in a panel
+ * under the bar (one at a time). OR inside a filter, AND between filters. The
+ * panel stays open while the Reader ticks options and closes on its button,
+ * on Escape or when another filter opens.
  */
 export function ListFilters({ rows, selection, onToggle, onClear }: Props) {
-  const panelId = useId();
-  const shownActive = rows.reduce(
-    (n, row) => (row.menuRow ? n : n + (selection[row.param] ?? []).length),
-    0,
-  );
-  const compact = rows.reduce((n, row) => n + row.options.length, 0) > COMPACT_TOTAL;
-  // Until the Reader toggles it, the block follows the URL: a link that arrives
-  // with filters set shows them. (The rows can arrive after the first render,
-  // once the list has loaded, so this cannot be a one-time initial state.)
-  const [chosenOpen, setChosenOpen] = useState<boolean | null>(null);
-  const open = chosenOpen ?? shownActive > 0;
+  const baseId = useId();
+  const [openParam, setOpenParam] = useState<string | null>(null);
 
   if (rows.length === 0 && !onClear) return null;
+
+  const openRow = rows.find((row) => row.param === openParam);
+  const panelId = (param: string) => `${baseId}-${param}`;
+
   return (
-    <div className="mt-4">
-      {rows.length > 0 && (
-        <button
-          type="button"
-          className={`chip ${compact ? '' : 'md:hidden'}`}
-          aria-expanded={open}
-          aria-controls={panelId}
-          onClick={() => setChosenOpen(!open)}
-        >
-          Filtrar
-          {shownActive > 0 && <span className="chip-count text-muted">{shownActive}</span>}
-        </button>
-      )}
-      <div
-        id={panelId}
-        className={`space-y-3 ${open ? 'mt-3' : 'hidden'} ${compact ? '' : 'md:mt-0 md:block'}`}
-      >
-        {rows.map((row) => (
-          <Row
-            key={row.param}
-            row={row}
-            chosen={selection[row.param] ?? []}
-            onToggle={onToggle}
-          />
-        ))}
+    <div
+      className="mt-4"
+      onKeyDown={(event) => {
+        if (event.key !== 'Escape' || !openParam) return;
+        event.currentTarget.querySelector<HTMLButtonElement>('[aria-expanded="true"]')?.focus();
+        setOpenParam(null);
+      }}
+    >
+      <div className="flex flex-wrap items-center gap-2">
+        {rows.map((row) => {
+          const chosen = selection[row.param] ?? [];
+          const open = openParam === row.param;
+          return (
+            <button
+              key={row.param}
+              type="button"
+              className={`chip ${row.menuRow ? 'lg:hidden' : ''}`}
+              data-active={chosen.length > 0 || undefined}
+              aria-expanded={open}
+              aria-controls={panelId(row.param)}
+              onClick={() => setOpenParam(open ? null : row.param)}
+            >
+              {buttonLabel(row, chosen)}
+              <span aria-hidden="true">{open ? '▴' : '▾'}</span>
+            </button>
+          );
+        })}
+        {onClear && (
+          <button
+            type="button"
+            className="inline-flex min-h-[44px] items-center px-2 underline text-primary"
+            onClick={onClear}
+          >
+            Limpar filtros
+          </button>
+        )}
       </div>
-      {onClear && (
-        <button type="button" className="mt-1 flex min-h-[44px] items-center underline text-primary" onClick={onClear}>
-          Limpar filtros
-        </button>
+      {openRow && (
+        <div
+          id={panelId(openRow.param)}
+          role="group"
+          aria-label={openRow.label}
+          className={`mt-2 max-h-64 overflow-y-auto rounded border border-line px-3 py-1 sm:grid sm:grid-cols-2 sm:gap-x-4 md:grid-cols-3 ${
+            openRow.menuRow ? 'lg:hidden' : ''
+          }`}
+        >
+          {openRow.options.map((option) => (
+            <label
+              key={option.value}
+              className="flex min-h-[44px] cursor-pointer items-center gap-2"
+            >
+              <input
+                type="checkbox"
+                style={{ accentColor: 'var(--primary)' }}
+                checked={(selection[openRow.param] ?? []).includes(option.value)}
+                onChange={() => onToggle(openRow.param, option.value)}
+              />
+              <span className={option.count === 0 ? 'text-muted' : undefined}>{option.label}</span>
+              <span className="ml-auto text-muted">{option.count}</span>
+            </label>
+          ))}
+        </div>
       )}
     </div>
   );

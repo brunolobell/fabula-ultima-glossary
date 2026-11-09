@@ -1,6 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, useNavigate } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { App } from './App';
 import { mockApi } from './test/fixtures';
@@ -333,9 +333,40 @@ describe('Equipment list filter', () => {
     renderAt('/equipamento');
     const main = within(screen.getByRole('main'));
     expect(await main.findByText('Katana')).toBeInTheDocument();
-    fireEvent.click(main.getByRole('button', { name: /^Armas/ }));
-    expect(main.getByRole('button', { name: /^Armas/ })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(main.getByRole('button', { name: /^Tipo de item/ }));
+    fireEvent.click(main.getByRole('checkbox', { name: /^Armas/ }));
+    expect(main.getByRole('checkbox', { name: /^Armas/ })).toBeChecked();
+    expect(main.getByRole('button', { name: 'Tipo de item: Armas' })).toBeInTheDocument();
     expect(main.getByText('Katana')).toBeInTheDocument();
+  });
+
+  it('does not reopen a filter panel after leaving the list and coming back', async () => {
+    mockApi();
+    let go: (path: string) => void = () => {};
+    function Navigator() {
+      const navigate = useNavigate();
+      go = navigate;
+      return null;
+    }
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter initialEntries={['/equipamento']}>
+          <Navigator />
+          <App />
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByText('Katana')).toBeInTheDocument();
+    fireEvent.click(main.getByRole('button', { name: /^Tipo de item/ }));
+    expect(main.getAllByRole('checkbox').length).toBeGreaterThan(0);
+
+    act(() => go('/classes'));
+    await main.findByRole('heading', { level: 1, name: /Classes/ });
+    act(() => go('/equipamento'));
+    expect(await main.findByText('Katana')).toBeInTheDocument();
+    expect(main.getByRole('button', { name: /^Tipo de item/ })).toHaveAttribute('aria-expanded', 'false');
+    expect(main.queryAllByRole('checkbox')).toHaveLength(0);
   });
 });
 
@@ -348,15 +379,16 @@ describe('Heroic Skills', () => {
     expect(main.getByText('Dominar Elementalista · Também exige: Raio')).toBeInTheDocument();
     expect(main.getByText('Disponível a todos os personagens')).toBeInTheDocument();
 
-    fireEvent.click(main.getByRole('button', { name: /^Disponíveis a todos/ }));
+    fireEvent.click(main.getByRole('button', { name: /^Requisito/ }));
+    fireEvent.click(main.getByRole('checkbox', { name: /^Disponíveis a todos/ }));
     expect(main.getByText('PV Extras')).toBeInTheDocument();
     expect(main.queryByText('Feitiço Poderoso')).toBeNull();
 
-    // Chips in one row are OR: both on shows both; turn the first off to narrow.
-    fireEvent.click(main.getByRole('button', { name: /^Exigem classe/ }));
+    // Options in one filter are OR: both on shows both; turn the first off to narrow.
+    fireEvent.click(main.getByRole('checkbox', { name: /^Exigem classe/ }));
     expect(main.getByText('Feitiço Poderoso')).toBeInTheDocument();
     expect(main.getByText('PV Extras')).toBeInTheDocument();
-    fireEvent.click(main.getByRole('button', { name: /^Disponíveis a todos/ }));
+    fireEvent.click(main.getByRole('checkbox', { name: /^Disponíveis a todos/ }));
     expect(main.getByText('Feitiço Poderoso')).toBeInTheDocument();
     expect(main.queryByText('PV Extras')).toBeNull();
 

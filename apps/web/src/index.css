@@ -352,16 +352,11 @@
   .chip:hover {
     background: var(--tint-key);
   }
-  .chip[aria-pressed='true'] {
+  .chip[aria-pressed='true'],
+  .chip[data-active='true'] {
     background: var(--tint-key);
     color: var(--primary);
     border-color: var(--primary);
-  }
-  .chip[data-empty='true']:not([aria-pressed='true']) {
-    color: var(--ink-muted);
-  }
-  .chip[aria-pressed='true'] .chip-count {
-    color: var(--accent-ink);
   }
 
   /* Apricot crystal: one meaning everywhere, "this is where you are / what is
@@ -373,6 +368,7 @@
     position: relative;
   }
   .chip[aria-pressed='true']::before,
+  .chip[data-active='true']::before,
   .nav-item[aria-current='page']::before,
   .suggest-option[aria-selected='true']::before {
     content: '';
@@ -384,7 +380,8 @@
     background: var(--accent);
     clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
   }
-  .chip[aria-pressed='true']::before {
+  .chip[aria-pressed='true']::before,
+  .chip[data-active='true']::before {
     left: 5px;
   }
   /* Hangs in the menu's gutter, left of the highlighted row. */
