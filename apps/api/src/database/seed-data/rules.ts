@@ -255,4 +255,26 @@ Acessórios são itens mágicos que concedem características especiais a quem o
 Há uma lista de acessórios de exemplo nas páginas 285 a 287.`,
     ['equipamento', 'itens'],
   ),
+
+  rule(
+    'Domínio de classe',
+    227,
+    'Ao investir o 10º nível numa classe, o personagem a domina e escolhe um Poder Heroico; não pode mais pôr níveis nela, e só pode ter três classes não dominadas ao mesmo tempo.',
+    `## Dominar uma classe
+
+Uma classe tem no máximo **dez níveis**. Ao investir o décimo, o personagem **domina** a classe: ela fica fechada a novos níveis e ele escolhe um **Poder Heroico** da lista (veja a página 232 do Livro Básico e a lista "Novos Poderes Heroicos" de cada Atlas).
+
+O Poder Heroico é uma **adição** ao Poder de classe que o personagem ganha normalmente ao investir aquele décimo nível.
+
+## Limite de classes abertas
+
+Um personagem **não pode ter mais de três classes não dominadas** ao mesmo tempo. Para diversificar além disso, ele precisa primeiro dominar uma das classes que já tem.
+
+## Requisitos dos Poderes Heroicos
+
+Muitos Poderes Heroicos exigem dominar uma classe específica (ou uma entre várias), e alguns exigem também um Poder ou Feitiço, ou um nível mínimo. Os poucos sem requisito servem a qualquer personagem.
+
+Veja também [[classes-e-poderes]] e [[nivel-e-experiencia]].`,
+    ['personagem', 'progressão', 'poder heroico'],
+  ),
 ];

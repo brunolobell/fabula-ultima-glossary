@@ -29,6 +29,10 @@ import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
 import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
 import { itensRarosTechnoFantasy } from './equipment/techno-fantasy/itens-raros';
 import { guides } from './guides';
+import { poderesHeroicosHighFantasy } from './heroic-skills/high-fantasy';
+import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
+import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
+import { poderesHeroicosTechnoFantasy } from './heroic-skills/techno-fantasy';
 import { inBook } from './helpers';
 import { rules } from './rules';
 import { SeedEntry } from './types';
@@ -53,6 +57,7 @@ export const seedEntries: SeedEntry[] = [
   ...orador,
   ...quimerista,
   ...armasBasicas,
+  ...poderesHeroicosLivroBasico,
   // Atlas High Fantasy
   ...inBook('high-fantasy', [
     ...comandante,
@@ -60,6 +65,7 @@ export const seedEntries: SeedEntry[] = [
     ...simbolista,
     ...virtuoso,
   ]),
+  ...inBook('high-fantasy', poderesHeroicosHighFantasy),
   ...itensRarosHighFantasy,
   // Atlas Natural Fantasy
   ...inBook('natural-fantasy', [
@@ -68,8 +74,10 @@ export const seedEntries: SeedEntry[] = [
     ...invocador,
     ...mercador,
   ]),
+  ...inBook('natural-fantasy', poderesHeroicosNaturalFantasy),
   ...itensRarosNaturalFantasy,
   // Atlas Techno Fantasy
   ...inBook('techno-fantasy', [...esper, ...mutante, ...piloto]),
+  ...inBook('techno-fantasy', poderesHeroicosTechnoFantasy),
   ...itensRarosTechnoFantasy,
 ];
