@@ -1,0 +1,487 @@
+@import '@fontsource/antonio/400.css';
+@import '@fontsource/pt-sans-narrow/400.css';
+@import '@fontsource/pt-sans-narrow/700.css';
+
+/* Credit Valley (Ray Larabie): the licence forbids altering the font, so the
+   original .ttf is served as-is. Licence text sits beside it. */
+@font-face {
+  font-family: 'Credit Valley';
+  src: url('./assets/fonts/CreditValley.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---------- Tokens (DESIGN.md §3) ---------- */
+:root {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f7f6fc;
+  --ink: #1d1b2b;
+  --ink-muted: #5b5873;
+  --line: #d8d4e8;
+  --primary: #4a4398;
+  --primary-deep: #363074;
+  --heading: #363074;
+  --on-primary: #ffffff;
+  --on-bar: #ffffff;
+  --tint-key: #ece9f8;
+  --tint-example: #fceee2;
+  --accent-ink: #8a4a1f;
+  --scrim: rgba(20, 19, 28, 0.5);
+
+  --grad-key: linear-gradient(90deg, var(--tint-key), transparent);
+  --grad-example: linear-gradient(90deg, var(--tint-example), transparent);
+  --grad-bar: linear-gradient(90deg, var(--primary-deep), transparent);
+  --grad-rule: linear-gradient(90deg, var(--primary-deep), transparent);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #14131c;
+  --surface: #1c1b27;
+  --ink: #e9e7f4;
+  --ink-muted: #a9a6c0;
+  --line: #37354d;
+  --primary: #b4aef2;
+  --primary-deep: #4a4398;
+  --heading: #e9e7f4;
+  --on-primary: #14131c;
+  --tint-key: rgba(155, 144, 240, 0.16);
+  --tint-example: rgba(242, 167, 119, 0.14);
+  --accent-ink: #f2b48a;
+}
+
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'PT Sans Narrow', sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+  a {
+    color: var(--primary);
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  ::selection {
+    background: var(--tint-key);
+  }
+}
+
+/* ---------- Header hierarchy (DESIGN.md §5) ---------- */
+@layer components {
+  .h-main {
+    font-family: 'Credit Valley', 'Antonio', sans-serif;
+    font-synthesis: none;
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--heading);
+    border-left: 4px solid var(--primary);
+    padding: 0 0 12px 12px;
+    background: var(--grad-rule) bottom / 100% 2px no-repeat;
+  }
+  @media (min-width: 640px) {
+    .h-main {
+      font-size: 2.5rem;
+    }
+  }
+
+  .h-secondary,
+  .h-tertiary,
+  .h-minor {
+    font-family: 'Antonio', sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  .h-secondary {
+    font-size: 1.5rem;
+    letter-spacing: 0.03em;
+    margin-top: 40px;
+    padding: 8px 12px;
+    color: var(--heading);
+    background: var(--grad-key);
+  }
+  .h-tertiary {
+    font-size: 1.0625rem;
+    letter-spacing: 0.04em;
+    margin-top: 28px;
+    padding: 6px 12px;
+    color: var(--on-bar);
+    background: var(--grad-bar);
+  }
+  .h-minor {
+    font-size: 1.0625rem;
+    letter-spacing: 0.03em;
+    margin-top: 20px;
+    padding-bottom: 2px;
+    color: var(--heading);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* ---------- Highlights: no lines, no contours (§6.1, 6.2) ---------- */
+  .highlight-key,
+  .highlight-example {
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .highlight-key {
+    background: var(--grad-key);
+  }
+  .highlight-example {
+    background: var(--grad-example);
+  }
+  .highlight-example > p:first-child strong:first-child {
+    color: var(--accent-ink);
+  }
+
+  /* ---------- Entry body (Markdown) ---------- */
+  .entry-body > :first-child {
+    margin-top: 0;
+  }
+  .entry-body p {
+    margin: 12px 0;
+  }
+  .entry-body strong {
+    font-weight: 700;
+  }
+  .entry-body ul {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  .bullets {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0;
+  }
+  .entry-body ul > li,
+  .bullets > li {
+    position: relative;
+    padding: 4px 12px 4px 28px;
+  }
+  .entry-body ul > li::before,
+  .bullets > li::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0.8em;
+    width: 7px;
+    height: 11px;
+    background: var(--primary);
+    clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  }
+  /* "**Título.** Texto" items use the banded default form of the guide. */
+  .entry-body ul > li:has(> strong:first-child) {
+    background: var(--grad-key);
+    margin-bottom: 2px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  .entry-body ol {
+    list-style: decimal;
+    padding-left: 1.75rem;
+    margin: 12px 0;
+  }
+  .entry-body ol > li {
+    padding-left: 4px;
+    margin: 4px 0;
+  }
+  .entry-body ol > li::marker {
+    color: var(--primary);
+    font-weight: 700;
+  }
+  .entry-body blockquote:not(.highlight-example) {
+    margin: 16px 0;
+    padding-left: 16px;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- Tables (§6.10) ---------- */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .entry-body table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+  }
+  .entry-body th {
+    background: var(--surface);
+    font-family: 'Antonio', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    text-align: left;
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+  .entry-body td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+
+  /* ---------- Check formulas: brackets drawn in CSS (§6.4) ---------- */
+  .check {
+    font-weight: 700;
+    white-space: nowrap;
+    padding: 0 6px;
+    border-left: 2px solid var(--primary);
+    border-right: 2px solid var(--primary);
+    border-radius: 3px;
+  }
+
+  /* ---------- Stat bar (§6.4) ---------- */
+  .stat-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+    gap: 12px 20px;
+    margin: 16px 0;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat-bar dt {
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.9375rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    line-height: 1.2;
+  }
+  .stat-bar dd {
+    font-weight: 700;
+    margin: 0;
+  }
+
+  /* ---------- Entry Type badge (§6.5) ---------- */
+  .badge {
+    display: inline-block;
+    font-family: 'Antonio', sans-serif;
+    font-size: 0.9375rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.2;
+    padding: 3px 8px;
+    border-radius: 2px;
+    color: var(--primary);
+    background: var(--tint-key);
+  }
+
+  /* ---------- Buttons, chips, inputs (§6.8) ---------- */
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    background: transparent;
+    cursor: pointer;
+  }
+  .icon-btn:hover {
+    background: var(--tint-key);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    padding: 0 14px;
+    border-radius: 4px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    font-family: 'Antonio', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .chip:hover {
+    background: var(--tint-key);
+  }
+  .chip[aria-pressed='true'] {
+    background: var(--tint-key);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  .search-input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 14px 0 44px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+  }
+  .search-input::placeholder {
+    color: var(--ink-muted);
+  }
+
+  /* ---------- Result row (§6.9) ---------- */
+  .result-row {
+    display: block;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .result-row:hover {
+    background: var(--grad-key);
+    text-decoration: none;
+  }
+  .result-name {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--primary);
+  }
+
+  /* ---------- Search suggestions: solid panel, readable over any page ---------- */
+  .suggest-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 50;
+    margin-top: 4px;
+    overflow: hidden;
+    background-color: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  }
+  .suggest-list {
+    max-height: 70vh;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .suggest-option {
+    cursor: pointer;
+    padding: 8px 16px;
+    background-color: var(--bg);
+  }
+  .suggest-option[aria-selected='true'] {
+    background-image: linear-gradient(var(--tint-key), var(--tint-key));
+  }
+  .suggest-name {
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .suggest-summary {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.9375rem;
+    color: var(--ink-muted);
+  }
+  .suggest-all {
+    border-top: 1px solid var(--line);
+    font-family: 'Antonio', sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--primary);
+  }
+  .suggest-message {
+    padding: 12px 16px;
+    color: var(--ink-muted);
+  }
+
+  /* ---------- Skeleton: static blocks, no motion ---------- */
+  .skeleton {
+    display: block;
+    height: 1em;
+    border-radius: 2px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+  }
+
+  /* ---------- Stepper (§6.7) ---------- */
+  .stepper {
+    list-style: none;
+    margin: 24px 0 0;
+    padding: 0;
+  }
+  .step {
+    position: relative;
+    padding: 0 0 28px 52px;
+  }
+  .step::before {
+    content: '';
+    position: absolute;
+    left: 17px;
+    top: 38px;
+    bottom: 0;
+    width: 2px;
+    background: var(--line);
+  }
+  .step:last-child::before {
+    display: none;
+  }
+  .step-marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 36px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    font-family: 'Antonio', sans-serif;
+    font-size: 1.125rem;
+    color: var(--on-bar);
+    background: var(--primary-deep);
+    clip-path: polygon(50% 0, 100% 28%, 100% 72%, 50% 100%, 0 72%, 0 28%);
+  }
+
+  .skip-link {
+    position: absolute;
+    left: 8px;
+    top: -60px;
+    z-index: 60;
+    padding: 10px 14px;
+    background: var(--primary);
+    color: var(--on-primary);
+    border-radius: 4px;
+  }
+  .skip-link:focus {
+    top: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
