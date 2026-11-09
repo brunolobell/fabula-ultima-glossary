@@ -1,4 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
+import type { IconType } from 'react-icons';
+import {
+  GiBackpack,
+  GiBookCover,
+  GiBroadsword,
+  GiChestArmor,
+  GiCharacter,
+  GiCheckedShield,
+  GiCrown,
+  GiHelmet,
+  GiHouse,
+  GiMagicSwirl,
+  GiOpenTreasureChest,
+  GiRelicBlade,
+  GiRing,
+  GiSpellBook,
+  GiStarsStack,
+} from 'react-icons/gi';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import type { EntryType, EquipmentDetails } from '../api/types';
 import { useEntryIndex } from '../hooks/useEntryIndex';
@@ -28,8 +46,27 @@ const startsOpen = () =>
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(min-width: 1024px)').matches;
 
+/** Icon beside a menu label; decorative, the label carries the meaning. */
+function MenuLabel({ icon: Icon, children }: { icon: IconType; children: ReactNode }) {
+  return (
+    <span className="flex items-center gap-2">
+      <Icon className="shrink-0" size={18} aria-hidden />
+      {children}
+    </span>
+  );
+}
+
+const KIND_ICONS: Record<string, IconType> = {
+  accessory: GiRing,
+  armor: GiChestArmor,
+  weapon: GiBroadsword,
+  artifact: GiRelicBlade,
+  shield: GiCheckedShield,
+};
+
 interface MenuItem {
   label: string;
+  icon: IconType;
   to: string;
   type: EntryType;
   /** Equipment Kind this item filters by; `null` is "all equipment". */
@@ -39,6 +76,7 @@ interface MenuItem {
 interface MenuGroup {
   id: string;
   title: string;
+  icon: IconType;
   items: MenuItem[];
 }
 
@@ -47,12 +85,14 @@ const GROUPS: MenuGroup[] = [
   {
     id: 'criacao',
     title: 'Criação de Personagem',
+    icon: GiCharacter,
     items: [
-      { label: 'Classes', to: typePath('class'), type: 'class' },
-      { label: 'Feitiços', to: typePath('spell'), type: 'spell' },
-      { label: 'Poderes', to: typePath('skill'), type: 'skill' },
+      { label: 'Classes', icon: GiHelmet, to: typePath('class'), type: 'class' },
+      { label: 'Feitiços', icon: GiMagicSwirl, to: typePath('spell'), type: 'spell' },
+      { label: 'Poderes', icon: GiStarsStack, to: typePath('skill'), type: 'skill' },
       {
         label: 'Poderes Heroicos',
+        icon: GiCrown,
         to: typePath('heroic-skill'),
         type: 'heroic-skill',
       },
@@ -61,9 +101,11 @@ const GROUPS: MenuGroup[] = [
   {
     id: 'equipamento',
     title: 'Equipamento',
+    icon: GiBackpack,
     items: [
       {
         label: 'Todo o equipamento',
+        icon: GiOpenTreasureChest,
         to: equipmentPath(),
         type: 'equipment',
         kind: null,
@@ -71,6 +113,7 @@ const GROUPS: MenuGroup[] = [
       ...EQUIPMENT_KIND_FILTERS.map(
         (f): MenuItem => ({
           label: f.label,
+          icon: KIND_ICONS[f.kind],
           to: equipmentPath(f.param),
           type: 'equipment',
           kind: f.kind,
@@ -168,13 +211,13 @@ export function Sidebar({ open, onClose }: Props) {
           <ul className="mt-4 lg:mt-0">
             <li>
               <NavLink to="/" end className={linkClass}>
-                Início
+                <MenuLabel icon={GiHouse}>Início</MenuLabel>
               </NavLink>
             </li>
             {guides.map((guide) => (
               <li key={guide.slug}>
                 <NavLink to={entryPath(guide)} className={linkClass}>
-                  {guide.name}
+                  <MenuLabel icon={GiBookCover}>{guide.name}</MenuLabel>
                 </NavLink>
               </li>
             ))}
@@ -193,7 +236,7 @@ export function Sidebar({ open, onClose }: Props) {
                     aria-controls={listId}
                     onClick={() => toggle(group.id)}
                   >
-                    {group.title}
+                    <MenuLabel icon={group.icon}>{group.title}</MenuLabel>
                     <ChevronIcon
                       className={`shrink-0 text-muted ${
                         expanded ? 'rotate-180' : ''
@@ -210,8 +253,8 @@ export function Sidebar({ open, onClose }: Props) {
                             className={itemClass(active)}
                             aria-current={active ? 'page' : undefined}
                           >
-                            <span className="flex items-baseline justify-between gap-2">
-                              {item.label}
+                            <span className="flex items-center justify-between gap-2">
+                              <MenuLabel icon={item.icon}>{item.label}</MenuLabel>
                               {!isLoading && (
                                 <span
                                   className={`text-[15px] font-normal ${
@@ -236,8 +279,8 @@ export function Sidebar({ open, onClose }: Props) {
                 className={itemClass(currentType === 'rule')}
                 aria-current={currentType === 'rule' ? 'page' : undefined}
               >
-                <span className="flex items-baseline justify-between gap-2">
-                  {TYPE_INFO.rule.plural}
+                <span className="flex items-center justify-between gap-2">
+                  <MenuLabel icon={GiSpellBook}>{TYPE_INFO.rule.plural}</MenuLabel>
                   {!isLoading && (
                     <span
                       className={`text-[15px] font-normal ${
