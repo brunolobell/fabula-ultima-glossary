@@ -257,6 +257,103 @@ Há uma lista de acessórios de exemplo nas páginas 285 a 287.`,
   ),
 
   rule(
+    'Projetos',
+    134,
+    'Regra de criação de invenções (poções, golens, aeronaves…) para personagens Inventores: o custo sai de potência × área × uso e o projeto avança 1 ponto de progresso por dia por PJ (mais 1 por Inventor) até chegar a custo ÷ 100.',
+    `Assim como conjuradores têm a magia ritualística, personagens [[inventor]] podem iniciar **projetos** e trabalhar em invenções personalizadas, de poções do amor a aeronaves. O Inventor ganha o direito de iniciar Projetos na classe; a regra em si vale para qualquer PJ que ajude no trabalho.
+
+## Passo a passo
+
+1. **Descreva a invenção.** Diga o que ela faz, como é operada, que energia usa e quais benefícios específicos oferece. O mestre tem a palavra final sobre ser possível criá-la naquelas circunstâncias.
+2. **Divida, se for complexo.** Uma invenção muito complexa (uma moto tecnomágica que é veículo e arma ao mesmo tempo) pode ser separada pelo mestre em duas ou mais invenções, cada uma com seu próprio projeto.
+3. **Defina o custo.** Com as tabelas de potência, área e uso, o mestre determina o **custo total em materiais**, pago na hora. Em invenções de potência **média ou maior**, ele também descreve um ingrediente ou material especial que não pode ser comprado: consegui-lo deve ser o foco de uma ou duas sessões.
+4. **Defeito (opcional).** Você pode negociar com o mestre um defeito terrível (recarga constante, peso, barulho, pouca confiabilidade). Ele **reduz o custo do projeto em 25%**.
+5. **Acumule progresso.** Para concluir, é preciso somar progresso igual a **um centésimo do custo em zênites** (mínimo de 1). Ao fim de cada dia, o projeto avança:
+   - +1 de progresso por PJ que trabalhou nele;
+   - +1 de progresso extra por PJ com pelo menos um nível de Inventor que trabalhou nele.
+6. **Invenção pronta.** Ao atingir o progresso necessário, a invenção é criada. Se num mesmo dia o grupo gerar mais progresso do que o necessário, ela fica pronta em uma ou duas horas.
+
+## Custo: potência, área e uso
+
+**Custo total = custo base da potência × multiplicador de área × multiplicador de uso** (e depois −25% se houver defeito).
+
+| Potência | Custo base | A invenção pode… |
+| --- | --- | --- |
+| Menor | 100z | Iluminar, transportar pessoas ou carga por terra ou água, dar uma pequena proteção. |
+| Média | 200z | Viajar submersa, suprimir um efeito mágico, emitir sons ou fala, executar uma operação específica no lugar do inventor, fornecer energia a curto prazo. |
+| Maior | 400z | Voar, alterar a natureza de uma área por pouco tempo, cancelar efeitos de um feitiço, ter inteligência rudimentar, lutar ao lado do inventor, fornecer energia a longo prazo, capturar ou imobilizar o alvo. |
+| Extrema | 800z | Alterar a natureza de uma área por um longo período, suprimir o poder de um demônio, evitar uma catástrofe, ter inteligência e personalidade completas. |
+
+| Área | Multiplicador | A invenção afeta… |
+| --- | --- | --- |
+| Individual | ×1 | Uma criatura de tamanho humano, uma porta, uma árvore, uma arma. |
+| Pequena | ×2 | Um grupo de criaturas de tamanho humano, uma criatura grande, uma pequena clareira, um vagão de trem, uma cabana. |
+| Grande | ×3 | Uma multidão, uma pequena floresta, uma aeronave ou galeão, um salão de castelo, uma casa, uma criatura gigante. |
+| Enorme | ×4 | Uma fortaleza, um lago, um cume de montanha, uma aldeia, um quarteirão. |
+
+| Uso | Multiplicador | Depois de ativada, a invenção… |
+| --- | --- | --- |
+| Consumível | ×1 | Não pode ser usada de novo, a menos que o criador faça uma cópia. |
+| Permanente | ×5 | Fica disponível para vários usos e situações. |
+
+> **Exemplo:** uma grande aeronave para cinquenta pessoas é potência Maior (400z), área Grande (×3) e uso Permanente (×5): 400 × 3 × 5 = **6.000z**, ou seja, **60 de progresso**, sem defeito.
+
+## Dano e proteção
+
+O mestre decide a potência de qualquer invenção, usando esta tabela como guia para itens que ajudam em batalha:
+
+| Potência | Dano | Cura | Proteção |
+| --- | --- | --- | --- |
+| Menor | indisponível | indisponível | Uma Resistência (somente consumíveis) |
+| Média | Fraco | Forte | Uma Resistência |
+| Maior | Forte | Intenso | Uma Imunidade ou duas Resistências |
+| Extrema | Intenso | Intenso +20 | Duas Imunidades ou três Resistências |
+
+- Evite criar invenções que deem Imunidade a dano físico.
+- Um projeto com efeitos mistos (por exemplo, dar Resistência a um tipo de dano e também causar dano) deve ser dividido em mais de um projeto.
+
+Os valores de dano e cura dependem do **nível atual do criador**:
+
+| Nível | Fraco | Forte | Intenso |
+| --- | --- | --- | --- |
+| 5+ | 10 | 30 | 40 |
+| 20+ | 20 | 40 | 60 |
+| 40+ | 30 | 50 | 80 |
+
+## Materiais
+
+Você pode pagar o custo do projeto com materiais preciosos obtidos nas aventuras, conforme o mestre aceitar. O ingrediente especial exigido pela potência da invenção (passo 3) **não** pode ser usado também para pagar o custo.
+
+## Ajudantes
+
+Para progredir mais rápido, ou para o projeto andar sem a presença do criador, é possível contratar ajudantes.
+
+- Cada ajudante exige pagamento igual à **metade do custo total** do projeto (alguns ajudam de graça, por gratidão ou gentileza).
+- Ao fim de cada dia, cada ajudante gera **+1 de progresso**.
+
+## Como usar Projetos
+
+- As regras são leves e flexíveis, não realistas nem à prova de falhas: servem para que inventores criem soluções heroicas, não itens comuns, e sem atrapalhar a progressão do jogo.
+- Projetos não devem conflitar com a narrativa: devem ajudar na missão do grupo, e não virar um minijogo separado nem um jeito de "quebrar" o sistema.
+- Prefira projetos que possam ser feitos durante uma Viagem, narrando o avanço em cenas de interlúdio.
+- Projetos caros costumam ser inviáveis por falta de tempo ou recursos: foque em consumíveis mais baratos e em apoiar o grupo com os demais Poderes.
+
+O Poder [[visionario]] acelera projetos e paga parte do custo de materiais.
+
+## Exemplos do livro
+
+| Invenção | Potência | Área | Uso | Custo | Progresso | Defeito |
+| --- | --- | --- | --- | --- | --- | --- |
+| Aeronave "Descoberta" | Maior | Grande | Permanente | 6.000z | 60 | não |
+| Metralhagolem (arma flutuante semi-inteligente que causa dano físico fraco no fim do turno do criador) | Maior | Individual | Permanente | 1.500z | 15 | sim |
+| Botas magnéticas (andar em superfícies metálicas, inclusive paredes e teto) | Média | Individual | Permanente | 1.000z | 10 | não |
+| Traje tecnomágico (armadura de quatro patas) | Média + Média | Individual | Permanente | 1.750z | 17 | sim |
+
+O traje tecnomágico é dividido pelo mestre em dois projetos, a armadura (Resistência a dano físico) e o canhão de calor (dano fraco de fogo, com teste de Precisão de (DES + AST)). O criador aceitou Vulnerabilidade a dano de raio como defeito em um deles para baratear o custo.`,
+    ['invenção', 'inventor', 'criação'],
+  ),
+
+  rule(
     'Domínio de classe',
     227,
     'Ao investir o 10º nível numa classe, o personagem a domina e escolhe um Poder Heroico; não pode mais pôr níveis nela, e só pode ter três classes não dominadas ao mesmo tempo.',
