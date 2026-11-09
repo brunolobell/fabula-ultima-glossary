@@ -1,7 +1,7 @@
 import { seedEntries } from './seed-data';
 import { classEntry, rule, skill, spell } from './seed-data/helpers';
 import { SeedEntry } from './seed-data/types';
-import { validateSeed } from './seed-validation';
+import { resolveSlug, validateSeed } from './seed-validation';
 
 const guardiao = classEntry({
   name: 'Guardião',
@@ -16,6 +16,36 @@ const guardiao = classEntry({
 describe('validateSeed', () => {
   it('accepts the real seed data', () => {
     expect(validateSeed(seedEntries)).toEqual([]);
+  });
+
+  it('seeds all 15 classes of the Livro Básico, each with Poderes', () => {
+    const classes = seedEntries.filter((e) => e.type === 'class');
+    expect(classes.map((c) => c.name).sort()).toEqual(
+      [
+        'Andarilho',
+        'Arcanista',
+        'Atirador',
+        'Elementalista',
+        'Entropista',
+        'Erudito',
+        'Espiritualista',
+        'Furioso',
+        'Guardião',
+        'Guerreiro Sombrio',
+        'Inventor',
+        'Ladino',
+        'Mestre de Armas',
+        'Orador',
+        'Quimerista',
+      ].sort(),
+    );
+    for (const cls of classes) {
+      const slug = resolveSlug(cls);
+      const skills = seedEntries.filter(
+        (e) => e.type === 'skill' && e.details.classSlug === slug,
+      );
+      expect(skills.length).toBeGreaterThan(0);
+    }
   });
 
   it('rejects duplicate slugs', () => {
@@ -54,7 +84,7 @@ describe('validateSeed', () => {
     expect(errors).toEqual([expect.stringContaining('is not a class entry')]);
   });
 
-  it('rejects a spell cost that is not "N" or "N × A"', () => {
+  it('rejects a spell cost that is not "N", "N × A" or "até N"', () => {
     const errors = validateSeed([
       guardiao,
       spell('Guardião', {
@@ -67,6 +97,21 @@ describe('validateSeed', () => {
       }),
     ]);
     expect(errors).toEqual([expect.stringContaining('mpCost')]);
+  });
+
+  it('accepts "até N" as a spell cost', () => {
+    const errors = validateSeed([
+      guardiao,
+      spell('Guardião', {
+        name: 'Apostar',
+        page: 1,
+        mpCost: 'até 20',
+        target: 'Especial',
+        duration: 'Instantânea',
+        summary: 's',
+      }),
+    ]);
+    expect(errors).toEqual([]);
   });
 
   it('rejects links to entries that do not exist', () => {

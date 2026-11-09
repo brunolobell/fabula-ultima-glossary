@@ -24,7 +24,7 @@ export interface SkillDetails {
 
 export interface SpellDetails {
   classSlug: string;
-  /** As printed, e.g. "20" or "10 × A" (10 per target). */
+  /** As printed: "20", "10 × A" (10 per target) or "até 20". */
   mpCost: string;
   target: string;
   duration: string;

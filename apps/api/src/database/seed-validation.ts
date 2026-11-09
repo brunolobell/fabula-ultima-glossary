@@ -88,8 +88,8 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         const { classSlug, mpCost, target, duration, offensive } =
           entry.details;
         expectType(slug, classSlug, 'class');
-        if (!/^\d+( × A)?$/.test(mpCost))
-          fail(`details.mpCost "${mpCost}" is not "N" or "N × A"`);
+        if (!/^(até )?\d+( × A)?$/.test(mpCost))
+          fail(`details.mpCost "${mpCost}" is not "N", "N × A" or "até N"`);
         if (!target) fail('details.target is required');
         if (!duration) fail('details.duration is required');
         if (typeof offensive !== 'boolean')

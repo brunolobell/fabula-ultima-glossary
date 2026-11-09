@@ -38,7 +38,7 @@ export interface SkillDetails {
 export interface SpellDetails {
   /** Slug of the owning Class entry. */
   classSlug: string;
-  /** PM cost as printed, e.g. "20" or "10 × A" (10 per target). */
+  /** PM cost as printed: "20", "10 × A" (10 per target) or "até 20". */
   mpCost: string;
   target: string;
   duration: string;
