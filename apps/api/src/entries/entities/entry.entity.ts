@@ -8,9 +8,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { DetailsByType, EntrySource, EntryType } from '../entry-types';
+import {
+  DetailsByType,
+  ENTRY_SOURCES,
+  ENTRY_TYPES,
+  EntrySource,
+  EntryType,
+} from '../entry-types';
 import { normalizeText } from '../slug';
 
+// Declared so `synchronize` keeps the index; the migration makes it GIN (TypeORM cannot).
+@Index('IDX_entries_tags', ['tags'])
 @Entity('entries')
 export class Entry {
   @PrimaryGeneratedColumn('uuid')
@@ -24,7 +32,7 @@ export class Entry {
   name: string;
 
   @Index()
-  @Column({ type: 'varchar' })
+  @Column({ type: 'enum', enum: ENTRY_TYPES })
   type: EntryType;
 
   /** Short account of the rules in our own words. */
@@ -36,7 +44,7 @@ export class Entry {
   body: string;
 
   /** Which book `page` refers to. */
-  @Column({ type: 'varchar', default: 'livro-basico' })
+  @Column({ type: 'enum', enum: ENTRY_SOURCES, default: 'livro-basico' })
   source: EntrySource;
 
   /** Printed page number in `source`; null only for guides. */
