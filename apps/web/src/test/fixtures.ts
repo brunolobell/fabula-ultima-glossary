@@ -438,19 +438,31 @@ const fold = (s: string) =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Stubs fetch with the fixtures; returns the mock to assert on. */
-export function mockApi() {
+/**
+ * `stale`: serve the Quick Assembly Rules as an older seed wrote them (no Negative
+ * Skills), as a browser can when it holds a cached response from before a re-seed.
+ */
+export function mockApi({ stale = false }: { stale?: boolean } = {}) {
+  const older = <T extends { slug: string; details: unknown }>(entry: T): T =>
+    stale && entry.slug === 'montagem-rapida'
+      ? {
+          ...entry,
+          details: { ...(entry.details as object), negativeSkills: undefined },
+        }
+      : entry;
   const fetchMock = vi.fn(async (input: string) => {
     const url = new URL(input, 'http://localhost');
     if (url.pathname === '/api/entries') {
       const q = fold(url.searchParams.get('search') ?? '');
       const list = Object.values(DETAILS)
         .filter((e) => fold(`${e.name} ${e.summary} ${e.body}`).includes(q))
-        .map(summaryOf);
+        .map(summaryOf)
+        .map(older);
       return { ok: true, status: 200, json: async () => list };
     }
     const entry = DETAILS[url.pathname.replace('/api/entries/', '')];
     return entry
-      ? { ok: true, status: 200, json: async () => entry }
+      ? { ok: true, status: 200, json: async () => older(entry) }
       : { ok: false, status: 404, json: async () => ({}) };
   });
   vi.stubGlobal('fetch', fetchMock);

@@ -7,6 +7,7 @@ import type {
   QuickAssemblyRoleDetails,
   QuickAssemblyRuleDetails,
   Rank,
+  Role,
   RoleAttackTemplate,
   RoleSkill,
   Species,
@@ -18,7 +19,7 @@ import type {
   SpellRef,
   SpellDetails,
 } from '../api/types';
-import { DAMAGE_LABEL, RANK_LABEL } from './creatures';
+import { DAMAGE_LABEL, RANK_LABEL, ROLE_ORDER } from './creatures';
 
 /**
  * Quick Assembly (Bestiary Vol. I p. 25-53) as a pure function. The numbers come
@@ -612,4 +613,40 @@ export function defaultInput(
     negative: null,
     ...over,
   };
+}
+
+/**
+ * Whether the Rules carry everything the Assembler reads. The Rules reach the browser
+ * as the last seed wrote them, or as an older response it still holds: one that
+ * predates a later step lacks parts (the Negative Skills, say), and the Assembler must
+ * not be offered with them rather than fail on the missing part.
+ */
+export function assemblyRulesComplete(
+  rules: QuickAssemblyRuleDetails | undefined,
+  roles: Partial<Record<Role, QuickAssemblyRoleDetails | undefined>>,
+): boolean {
+  if (
+    rules?.forge !== 'quick-assembly' ||
+    ![rules.levels, rules.amounts, rules.negativeSkills].every(Array.isArray) ||
+    !rules.elite ||
+    !rules.champion ||
+    !rules.villainTiers
+  ) {
+    return false;
+  }
+  return ROLE_ORDER.every((name) => {
+    const role = roles[name];
+    return (
+      role?.forge === 'quick-assembly-role' &&
+      [
+        role.progression,
+        role.grants,
+        role.attacks,
+        role.skills,
+        role.customizations,
+      ].every(Array.isArray) &&
+      Boolean(role.base) &&
+      typeof role.extra === 'string'
+    );
+  });
 }

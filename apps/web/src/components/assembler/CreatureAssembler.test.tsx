@@ -574,3 +574,24 @@ describe('Creature Assembler: Negative Skill', () => {
     expect(preview(dialog).getByText('Detonação Final')).toBeInTheDocument();
   });
 });
+
+describe('Creature Assembler: older Rule data', () => {
+  // A browser can hold a cached list from before a re-seed: the Rules then lack what
+  // a later step added. The Assembler must not crash on them; it is just not offered.
+  it('is not offered, and does not crash, when the Rules lack the Negative Skills', async () => {
+    mockApi({ stale: true });
+    renderAt('/criaturas');
+    const main = within(screen.getByRole('main'));
+    await main.findByText('Cactonto');
+    expect(main.queryByRole('button', { name: 'Montar criatura' })).toBeNull();
+  });
+
+  it('does not open from a link either', async () => {
+    mockApi({ stale: true });
+    renderAt('/criaturas?montagem=rapida');
+    await screen.findByText('Cactonto');
+    expect(
+      screen.queryByRole('dialog', { name: 'Montagem de Criaturas' }),
+    ).toBeNull();
+  });
+});

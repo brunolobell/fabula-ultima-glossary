@@ -7,6 +7,7 @@ import { npcSpells } from '../../../api/src/database/seed-data/npc-spells-data';
 import type { EntrySummary } from '../api/types';
 import {
   assembleCreature,
+  assemblyRulesComplete,
   buildSpellCatalog,
   type AssemblyInput,
 } from './creatureAssembly';
@@ -852,5 +853,41 @@ describe('assembleCreature: Negative Skills', () => {
       negative: 'final-delay',
     });
     expect(bought.roleSkills).toBe(plain.roleSkills + 1);
+  });
+});
+
+describe('assemblyRulesComplete', () => {
+  const roles = () => structuredClone(quickAssemblyRoles);
+  const rules = () => structuredClone(quickAssemblyRules);
+
+  it('accepts the Rules as the seed writes them', () => {
+    expect(assemblyRulesComplete(rules(), roles())).toBe(true);
+  });
+
+  it('rejects Rules that miss a part a later step added (an older seed)', () => {
+    const noNegatives = rules() as Partial<typeof quickAssemblyRules>;
+    delete noNegatives.negativeSkills;
+    expect(
+      assemblyRulesComplete(noNegatives as typeof quickAssemblyRules, roles()),
+    ).toBe(false);
+
+    for (const part of [
+      'skills',
+      'customizations',
+      'attacks',
+      'progression',
+      'extra',
+    ] as const) {
+      const incomplete = roles();
+      delete (incomplete.mage as Partial<(typeof incomplete)['mage']>)[part];
+      expect(assemblyRulesComplete(rules(), incomplete)).toBe(false);
+    }
+  });
+
+  it('rejects a missing Rule or a Role that is missing', () => {
+    expect(assemblyRulesComplete(undefined, roles())).toBe(false);
+    const partial: Partial<ReturnType<typeof roles>> = roles();
+    delete partial.support;
+    expect(assemblyRulesComplete(rules(), partial)).toBe(false);
   });
 });

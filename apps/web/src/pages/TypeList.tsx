@@ -1,5 +1,6 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { CreatureAssembler } from '../components/assembler/CreatureAssembler';
+import { assemblyRulesComplete } from '../lib/creatureAssembly';
 import { WeaponForge } from '../components/forge/WeaponForge';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
@@ -111,17 +112,14 @@ export function TypeList() {
         QuickAssemblyRoleDetails | undefined,
       ],
   );
+  const roles = Object.fromEntries(roleRules) as Record<
+    Role,
+    QuickAssemblyRoleDetails
+  >;
+  // Offered only with complete Rules: an older response can lack parts of them.
   const assembler =
-    type === 'creature' &&
-    assemblyRules?.forge === 'quick-assembly' &&
-    roleRules.every(([, d]) => d?.forge === 'quick-assembly-role')
-      ? {
-          rules: assemblyRules,
-          roles: Object.fromEntries(roleRules) as Record<
-            Role,
-            QuickAssemblyRoleDetails
-          >,
-        }
+    type === 'creature' && assemblyRules && assemblyRulesComplete(assemblyRules, roles)
+      ? { rules: assemblyRules, roles }
       : null;
   const assemblerOpen = assembler
     ? isAssemblerOpen(params.get(ASSEMBLER_PARAM))
