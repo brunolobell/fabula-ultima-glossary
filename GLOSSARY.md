@@ -115,8 +115,12 @@ A dice roll resolving an uncertain action. Shown to Readers as "Teste".
 _Avoid_: Roll, test
 
 **Clock**:
-A segmented tracker for progress or threats. Shown to Readers as "Relógio".
+A circle divided into Clock Sections that tracks progress toward a goal or the approach of a danger. The Game Master creates and runs it, and everyone at the Table can see it. It is tied to a goal or danger, never to a method. Shown to Readers as "Relógio".
 _Avoid_: Timer, counter
+
+**Clock Section**:
+One of the divisions of a Clock; filling or erasing Clock Sections is how a Clock moves. Shown to Readers as "seção".
+_Avoid_: Slice, segment, tick
 
 **Fabula Points**:
 The meta-currency spent to invoke Traits and Bonds. Shown to Readers as "Pontos de Fabula".

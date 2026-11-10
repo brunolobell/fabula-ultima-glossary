@@ -237,8 +237,8 @@ Os passos lembram os da criação de mundo, mas **não precisam seguir uma ordem
       {
         title: 'Quando as coisas apertam',
         intro:
-          'Crise e condições mudam o que o personagem consegue fazer durante um conflito.',
-        entries: ['crise', 'condicoes'],
+          'Crise e condições mudam o que o personagem consegue fazer durante um conflito, e os Relógios deixam à vista o avanço de um objetivo ou de um perigo.',
+        entries: ['crise', 'condicoes', 'relogios'],
       },
       {
         title: 'Magia',

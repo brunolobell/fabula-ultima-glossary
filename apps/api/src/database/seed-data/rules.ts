@@ -374,4 +374,76 @@ Muitos Poderes Heroicos exigem dominar uma classe específica (ou uma entre vár
 Veja também [[classes-e-poderes]] e [[nivel-e-experiencia]].`,
     ['personagem', 'progressão', 'poder heroico'],
   ),
+
+  rule(
+    'Relógios',
+    52,
+    'Um Relógio é um círculo dividido em seções (em geral de 4 a 12) que o mestre usa, à vista de todos, para medir o progresso de um objetivo ou a chegada de um perigo; testes preenchem ou apagam suas seções.',
+    `## O que é
+
+Um Relógio acompanha situações que evoluem, perigos que se aproximam ou o progresso dos personagens numa tarefa complexa demais para um único teste. É um círculo dividido em **seções**; cada seção é um passo rumo a um objetivo ou a um evento. Também ajuda o mestre a controlar o ritmo da cena.
+
+- Um Relógio de Alerta, numa infiltração, enche quando os testes falham.
+- Quando os heróis derrubam colunas para desabar o teto sobre um inimigo colossal, um Relógio mede quanto o suporte já cedeu.
+- Num ritual que pode mudar o mundo, um Relógio como "Apocalipse Arcano" mostra o tempo que resta para impedi-lo.
+
+## Quem cria e como é feito
+
+- Costuma ter de **4 a 12 seções**, conforme a complexidade.
+- O **mestre** cria e gerencia o Relógio, mas ele deve ficar **visível para todos**: gera tensão e transparência e deixa cada jogador narrar suas ações conforme o objetivo avança.
+- Ele deve estar ligado a um **objetivo ou perigo específico**, nunca a um método. Assim cada personagem pode agir sobre ele de um jeito diferente (no desabamento, atingir os pilares, pulverizá-los com magia ou arremessar inimigos contra eles).
+
+## Avançar o Relógio
+
+Em geral os Relógios avançam por **testes**.
+
+**Relógio de progresso** (enche com sucessos):
+
+- Preencha **1 seção** por sucesso.
+- Preencha **mais 1** se o resultado passou do ND (ou do resultado do oponente, em testes opostos) por **3 ou mais**, ou **mais 2** se passou por **6 ou mais**.
+- Num **sucesso crítico**, a oportunidade concedida pode pagar **mais 2 seções**.
+
+**Relógio de ameaça** (enche com falhas, sobretudo as grandes):
+
+- Preencha **1 seção** por falha.
+- Preencha **mais 1** se o resultado ficou abaixo do ND (ou do oponente) por **3 ou mais**, ou **mais 2** se ficou por **6 ou mais**.
+- Numa **falha crítica**, a oportunidade concedida pode pagar **mais 2 seções**.
+
+> **Exemplo:** Valea tira 6 num teste de ND 10 ao se esgueirar por um castelo cheio de monstros. O mestre preenche **2 seções** do Relógio "Emboscada": uma pela falha e outra por falhar por 3 ou mais.
+
+Os Relógios devem evoluir conforme a ficção. O mestre usa modificadores situacionais e ajusta a dificuldade para refletir vantagens e desvantagens criadas pelas escolhas dos jogadores.
+
+## O limite da falha
+
+Se o Relógio representa uma série complexa de ações, defina quando o objetivo se perde para sempre: com um só teste falho, com vários, ou com um "Relógio de fracasso" paralelo que enche a cada rolagem ruim. O mestre decide caso a caso, mas precisa **avisar os jogadores** antes do desafio.
+
+## Voltar o Relógio
+
+Os personagens também podem **desacelerar** o avanço ou **apagar seções** até o Relógio voltar a 0, pelo mesmo método do preenchimento. Ao chegar a 0, o mestre pode remover a ameaça ou deixá-la à espreita.
+
+> **Exemplo:** Crona, uma feiticeira, está quase terminando um ritual que abrirá uma fenda para o Reino Demoníaco. O mestre usa um Relógio de **10 seções** e preenche **1** ao fim de cada turno dela. Se encher, a cena termina em derrota automática. Os jogadores dividem as ações entre derrotá-la e atrasar o ritual.
+
+Uma cena centrada num único Relógio que avança e recua o tempo todo tende a virar empate. Quase sempre vale incluir **outra fonte de pressão**, como o perigo da batalha no exemplo.
+
+## Outros eventos
+
+- Se o mestre julga que um evento (mesmo sem teste) preenche ou apaga seções, ele pode preencher ou apagar **1 seção** ou, em eventos importantes, **2 seções**.
+- Algumas escolhas preenchem um Relógio por completo ou o inutilizam, como destruir o Cristal da Vida e tornar irrelevante o Relógio "Canalizar o Poder do Cristal".
+- O mestre deve descartar Relógios que perderam a importância para a história, desde que isso não tire dos jogadores a autonomia de moldá-la.
+
+## Cenas de conflito
+
+Em perseguições, batalhas, audiências e outras cenas de conflito, PJs e NPCs agem uns contra os outros, e os Relógios acompanham o progresso de todos. O livro explica isso na ação Objetivo (p. 72) e na seção sobre cenas de conflito (a partir da p. 58).
+
+> **Exemplo:** num duelo entre Bertrand e Duma, o mestre dá um Relógio de **6 seções** a cada um. Quem completar o seu primeiro vence.
+
+## Ritmo e pressão
+
+Relógios também servem de **contador de tempo**: mostram quanto os heróis têm para impedir o plano do vilão, obter um item ou descobrir algo, e assim eles gerenciam melhor os recursos e sentem que suas ações importam. Esses Relógios raramente avançam só por testes e costumam ser o foco de uma ou mais sessões.
+
+> **Exemplo:** a Aeronave Obliteradora Babel começa a operar em quatro dias. O mestre desenha no mapa do mundo um Relógio de **4 seções**.
+
+O livro trata dos Relógios nas páginas 52 a 55.`,
+    ['regra', 'mestre', 'narrativa', 'cena'],
+  ),
 ];

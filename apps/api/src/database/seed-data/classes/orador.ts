@@ -77,6 +77,6 @@ Em seguida, se você tem um Laço com esse personagem, ele recupera **(NP × 10)
     217,
     2,
     'Ao passar em um teste para preencher ou apagar seções de um relógio usando charme, diplomacia, enganação ou intimidação, você pode gastar até (NP × 20) PM para preencher ou apagar uma seção adicional a cada 20 PM.',
-    `Quando você passa em um teste para **preencher ou apagar** seções de um relógio, se sua abordagem envolveu **charme, diplomacia, enganação ou intimidação**, pode gastar até **(NP × 20) PM**. Se fizer isso, preencha ou apague **uma seção adicional** desse relógio para cada **20 PM** gastos.`,
+    `Quando você passa em um teste para **preencher ou apagar** seções de um relógio (veja [[relogios]]), se sua abordagem envolveu **charme, diplomacia, enganação ou intimidação**, pode gastar até **(NP × 20) PM**. Se fizer isso, preencha ou apague **uma seção adicional** desse relógio para cada **20 PM** gastos.`,
   ),
 ];
