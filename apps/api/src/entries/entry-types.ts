@@ -420,8 +420,10 @@ export interface RareWeaponRuleDetails {
 export interface AssemblySlot {
   id: string;
   label: string;
-  /** How many options to pick. */
+  /** How many options to pick (at most). */
   count: number;
+  /** How many are required; defaults to `count`. "Choose one or two" is count 2, min 1. */
+  min?: number;
   options: { value: string; label: string }[];
 }
 
@@ -493,6 +495,35 @@ export interface LevelGrant {
   slots?: AssemblySlot[];
 }
 
+/** Where one effect of a Role Skill lands on the stat block. */
+export interface SkillEffect {
+  /** A special rule, an "outra ação", or a change to the normal or strong attack. */
+  to: 'rule' | 'action' | 'normal' | 'strong';
+  /** Names the rule or action; defaults to the Skill's name. */
+  name?: string;
+  /** Our own words; `{id}` is a slot choice, `{minor}`, `{heavy}` and `{massive}` the level's amounts. */
+  text: string;
+  /** For an effect on the strong attack: it becomes ranged / uses this Precisão formula. */
+  patch?: { range?: 'melee' | 'ranged'; accuracy?: string };
+}
+
+/** One Role Skill or customization of a Role (Bestiary Vol. I p. 30-53). */
+export interface RoleSkill {
+  id: string;
+  name: string;
+  effects: SkillEffect[];
+  slots?: AssemblySlot[];
+  /** Only these Ranks may take it. */
+  ranks?: Rank[];
+  /** A basic attack the Skill adds (the hunter's and the saboteur's strong attack). */
+  addsAttack?: RoleAttackTemplate;
+  /** Affinities the Reader must also choose. */
+  resistances?: number;
+  immunities?: number;
+  notPhysical?: boolean;
+  extraVulnerabilities?: number;
+}
+
 /** The profile of one Role (Bestiary Vol. I p. 30-53). */
 export interface QuickAssemblyRoleDetails {
   forge: 'quick-assembly-role';
@@ -519,6 +550,12 @@ export interface QuickAssemblyRoleDetails {
   }[];
   grants: LevelGrant[];
   attacks: RoleAttackTemplate[];
+  /** The Role Skills a Creature of this Role can take (spells come in a later step). */
+  skills: RoleSkill[];
+  /** What a soldier or elite may add: the "customization" list. */
+  customizations: RoleSkill[];
+  /** What the customization slot gives instead of one of those: more Hit Points, an Immunity, or a Role Skill. */
+  extra: 'hp' | 'immunity' | 'skill';
 }
 
 export type RuleDetails =

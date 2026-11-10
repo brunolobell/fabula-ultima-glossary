@@ -690,6 +690,174 @@ describe('validateSeed', () => {
       });
       expect(errors).toEqual([expect.stringContaining('{status}')]);
     });
+
+    it('lists the Skills and customizations in the page of each Role, naming the choices', () => {
+      const body = (name: string) => role(name)?.body ?? '';
+      expect(body('Bruto')).toContain('## Poderes de função');
+      expect(body('Bruto')).toContain('## Personalização');
+      expect(body('Bruto')).toContain('**Esmagar**');
+      expect(body('Bruto')).toContain('perder 20 PV');
+      expect(body('Bruto')).toContain('**Mau Humor**');
+      expect(body('Caçador')).toContain('**Mira Fixa**');
+      // A choice reads as "(escolha: …)", an amount as the three values of the table.
+      expect(body('Bruto')).toContain('(escolha: tipo de dano)');
+      expect(body('Bruto')).toContain('pequena (10/20/30)');
+      expect(body('Bruto')).not.toMatch(/\{\w+\}/);
+      // Who may take it.
+      expect(body('Bruto')).toContain(
+        '**Relógio de Colapso** (só elite e campeão)',
+      );
+    });
+
+    describe('role skills and customizations', () => {
+      type Skill = {
+        id: string;
+        name: string;
+        effects: { to: string; name?: string; text: string }[];
+        slots?: {
+          id: string;
+          count: number;
+          min?: number;
+          options: unknown[];
+        }[];
+        ranks?: string[];
+        addsAttack?: { id: string };
+        resistances?: number;
+        extraVulnerabilities?: number;
+      };
+      const skillsOf = (roleName: string) => {
+        const d = role(roleName)?.details as unknown as {
+          skills: Skill[];
+          customizations: Skill[];
+          extra: string;
+        };
+        return d;
+      };
+
+      it('lists the Role Skills and customizations of every Role (spells come later)', () => {
+        const counts = Object.fromEntries(
+          ['Bruto', 'Caçador', 'Mago', 'Sabotador', 'Sentinela', 'Apoio'].map(
+            (name) => [
+              name,
+              [
+                skillsOf(name).skills.length,
+                skillsOf(name).customizations.length,
+              ],
+            ],
+          ),
+        );
+        expect(counts).toEqual({
+          Bruto: [8, 5],
+          Caçador: [8, 4],
+          Mago: [7, 3],
+          Sabotador: [8, 5],
+          Sentinela: [8, 4],
+          Apoio: [11, 3],
+        });
+      });
+
+      it('says what the customization slot gives instead of a customization', () => {
+        expect(
+          Object.fromEntries(
+            ['Bruto', 'Caçador', 'Mago', 'Sabotador', 'Sentinela', 'Apoio'].map(
+              (name) => [name, skillsOf(name).extra],
+            ),
+          ),
+        ).toEqual({
+          Bruto: 'hp',
+          Caçador: 'skill',
+          Mago: 'immunity',
+          Sabotador: 'skill',
+          Sentinela: 'skill',
+          Apoio: 'skill',
+        });
+      });
+
+      it("keeps the book's limits: some Skills are for elites and champions only", () => {
+        const restricted = (name: string) =>
+          skillsOf(name)
+            .skills.filter((skill) => skill.ranks)
+            .map((skill) => [skill.name, skill.ranks]);
+        expect(restricted('Bruto')).toEqual([
+          ['Relógio de Colapso', ['elite', 'champion']],
+        ]);
+        expect(restricted('Sentinela')).toEqual([
+          ['Ataque normal múltiplo', ['elite', 'champion']],
+          ['Vingança', ['elite', 'champion']],
+        ]);
+        expect(restricted('Apoio')).toEqual([
+          ['Aconselhar e Inspirar', ['champion']],
+        ]);
+      });
+
+      it('has the Barricada choose one or two damage types', () => {
+        const barricade = skillsOf('Sentinela').skills.find(
+          (skill) => skill.name === 'Barricada',
+        );
+        expect(barricade?.effects[0].to).toBe('action');
+        expect(barricade?.slots?.[0]).toMatchObject({ count: 2, min: 1 });
+        expect(barricade?.slots?.[0].options).toHaveLength(9);
+      });
+
+      it('makes the support champion Skill add both actions and one Vulnerability', () => {
+        const both = skillsOf('Apoio').skills.find(
+          (skill) => skill.name === 'Aconselhar e Inspirar',
+        );
+        expect(both?.effects.map((e) => [e.to, e.name])).toEqual([
+          ['action', 'Aconselhar'],
+          ['action', 'Inspirar'],
+        ]);
+        expect(both?.extraVulnerabilities).toBe(1);
+      });
+
+      it('lets the hunter and the saboteur add a strong attack', () => {
+        for (const name of ['Caçador', 'Sabotador']) {
+          const strongAttack = skillsOf(name).skills.filter(
+            (skill) => skill.addsAttack?.id === 'strong',
+          );
+          expect(strongAttack).toHaveLength(1);
+        }
+      });
+
+      const withSkill = (change: (skill: Skill) => void) => {
+        const brute = structuredClone(role('Bruto')) as SeedEntry & {
+          details: { skills: Skill[] };
+        };
+        brute.body = '';
+        change(brute.details.skills[0]);
+        return validateSeed([brute]);
+      };
+
+      it('rejects a Skill text that names a choice it does not offer', () => {
+        const errors = withSkill((skill) => {
+          skill.effects[0].text = 'Imune a {inexistente}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{inexistente}')]);
+      });
+
+      it('rejects a Skill effect that goes nowhere', () => {
+        const errors = withSkill((skill) => {
+          skill.effects[0].to = 'nowhere';
+        });
+        expect(errors).toEqual([expect.stringContaining('nowhere')]);
+      });
+
+      it('rejects two Skills with the same id', () => {
+        const errors = withSkill((skill) => {
+          skill.id = 'estrutura-repetida';
+        });
+        // The first Skill now has a fresh id: no error. Repeat it on the second one too.
+        expect(errors).toEqual([]);
+        const brute = structuredClone(role('Bruto')) as SeedEntry & {
+          details: { skills: Skill[] };
+        };
+        brute.body = '';
+        brute.details.skills[1].id = brute.details.skills[0].id;
+        expect(validateSeed([brute])).toEqual([
+          expect.stringContaining('repeated'),
+        ]);
+      });
+    });
   });
   describe('services and transport', () => {
     const named = (type: 'service' | 'transport', name: string) =>

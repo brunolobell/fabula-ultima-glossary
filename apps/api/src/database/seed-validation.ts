@@ -118,7 +118,10 @@ function checkTokens(
   fail: Fail,
 ) {
   for (const [, id] of (text ?? '').matchAll(TOKEN)) {
-    if (id !== 'minor' && !(slots ?? []).some((slot) => slot.id === id)) {
+    if (
+      !['minor', 'heavy', 'massive'].includes(id) &&
+      !(slots ?? []).some((slot) => slot.id === id)
+    ) {
       fail(`${where} uses {${id}} but offers no such choice`);
     }
   }
@@ -201,6 +204,50 @@ function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
   for (const g of d.grants) {
     if (!levels.includes(g.level)) fail(`grant at unknown level ${g.level}`);
     checkTokens(g.rule, g.slots, `grant ${g.level}`, fail);
+  }
+
+  if (!['hp', 'immunity', 'skill'].includes(d.extra))
+    fail(`unknown extra "${d.extra}"`);
+  const ids = new Set<string>();
+  for (const [kind, list] of [
+    ['skill', d.skills],
+    ['customization', d.customizations],
+  ] as const) {
+    for (const skill of list) {
+      const where = `${kind} "${skill.id}"`;
+      if (ids.has(skill.id)) fail(`${where} is repeated`);
+      ids.add(skill.id);
+      if (!skill.name.trim()) fail(`${where} needs a name`);
+      const hasEffect =
+        skill.effects.length > 0 ||
+        skill.addsAttack ||
+        skill.resistances ||
+        skill.immunities ||
+        skill.extraVulnerabilities;
+      if (!hasEffect) fail(`${where} does nothing`);
+      for (const slot of skill.slots ?? []) {
+        if (slot.options.length < slot.count)
+          fail(`${where} slot "${slot.id}" has fewer options than choices`);
+        if (slot.min !== undefined && (slot.min < 1 || slot.min > slot.count))
+          fail(`${where} slot "${slot.id}" has a bad minimum`);
+      }
+      for (const effect of skill.effects) {
+        if (!['rule', 'action', 'normal', 'strong'].includes(effect.to))
+          fail(`${where} has an effect that goes to "${effect.to}"`);
+        checkTokens(effect.text, skill.slots, where, fail);
+      }
+      for (const rank of skill.ranks ?? []) {
+        if (!RANKS.includes(rank)) fail(`${where} has unknown rank "${rank}"`);
+      }
+      const added = skill.addsAttack;
+      if (added) {
+        for (const accuracy of added.accuracies) {
+          if (!ACCURACY.test(accuracy))
+            fail(`${where} has bad accuracy "${accuracy}"`);
+        }
+        checkTokens(added.effect, added.slots, where, fail);
+      }
+    }
   }
 
   if (d.attacks.length === 0) fail('a role needs a basic attack');

@@ -7,6 +7,8 @@ import type {
   RoleAttackTemplate,
 } from '../../entries/entry-types';
 
+import { quickAssemblySkills } from './quick-assembly-skills';
+
 /**
  * Numbers of Quick Assembly (Bestiary Vol. I, English, printed p. 25-53), with the
  * texts in our own words. Keep this file importing only types: the web tests
@@ -121,6 +123,7 @@ const brute: QuickAssemblyRoleDetails = {
     }),
     strong({ accuracies: ['VIG + VIG'], damage: 10 }),
   ],
+  ...quickAssemblySkills.brute,
 };
 
 const hunter: QuickAssemblyRoleDetails = {
@@ -193,6 +196,7 @@ const hunter: QuickAssemblyRoleDetails = {
       ],
     }),
   ],
+  ...quickAssemblySkills.hunter,
 };
 
 const mage: QuickAssemblyRoleDetails = {
@@ -227,6 +231,7 @@ const mage: QuickAssemblyRoleDetails = {
     ...skillsAt(60),
   ],
   attacks: [normal({ accuracies: ['DES + AST', 'AST + VON'], damage: 5 })],
+  ...quickAssemblySkills.mage,
 };
 
 const saboteur: QuickAssemblyRoleDetails = {
@@ -302,6 +307,7 @@ const saboteur: QuickAssemblyRoleDetails = {
       ],
     }),
   ],
+  ...quickAssemblySkills.saboteur,
 };
 
 const sentinel: QuickAssemblyRoleDetails = {
@@ -354,6 +360,7 @@ const sentinel: QuickAssemblyRoleDetails = {
       damage: 10,
     }),
   ],
+  ...quickAssemblySkills.sentinel,
 };
 
 const support: QuickAssemblyRoleDetails = {
@@ -385,6 +392,7 @@ const support: QuickAssemblyRoleDetails = {
     ...skillsAt(60),
   ],
   attacks: [normal({ accuracies: ['DES + VON', 'AST + VON'], damage: 5 })],
+  ...quickAssemblySkills.support,
 };
 
 export const quickAssemblyRoles: Record<Role, QuickAssemblyRoleDetails> = {

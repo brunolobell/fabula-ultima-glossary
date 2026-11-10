@@ -1,4 +1,9 @@
-import { AttributeCode, Role } from '../../entries/entry-types';
+import {
+  AttributeCode,
+  Rank,
+  Role,
+  RoleSkill,
+} from '../../entries/entry-types';
 import { rule } from './helpers';
 import { quickAssemblyRoles, quickAssemblyRules } from './quick-assembly-data';
 import { SeedEntry } from './types';
@@ -54,6 +59,38 @@ const ROLE_BODY: Record<Role, string> = {
 
 const attrs: AttributeCode[] = ['DES', 'AST', 'VIG', 'VON'];
 
+const RANK_PT: Record<Rank, string> = {
+  soldier: 'soldado',
+  elite: 'elite',
+  champion: 'campeão',
+};
+
+/** A choice reads as "(escolha: tipo de dano)"; an amount as the three values of the table. */
+const readable = (text: string, skill: RoleSkill) =>
+  text.replace(/\{(\w+)\}/g, (_, id: string) => {
+    if (id === 'minor' || id === 'heavy' || id === 'massive') {
+      return quickAssemblyRules.amounts.map((a) => a[id]).join('/');
+    }
+    const slot = skill.slots?.find((s) => s.id === id);
+    return `(escolha: ${(slot?.label ?? id).toLowerCase()})`;
+  });
+
+const skillLine = (skill: RoleSkill) => {
+  const only = skill.ranks
+    ? ` (só ${skill.ranks.map((r) => RANK_PT[r]).join(' e ')})`
+    : '';
+  const effects = skill.effects.map((e) => readable(e.text, skill));
+  const affinity = [
+    skill.resistances &&
+      `Resistência a ${skill.resistances} tipos de dano${skill.notPhysical ? ' (exceto físico)' : ''}.`,
+    skill.immunities && `Imunidade a ${skill.immunities} tipo de dano.`,
+    skill.addsAttack &&
+      `Ganha um ${skill.addsAttack.name.toLowerCase()} (RA + ${skill.addsAttack.damage}), com Precisão (${skill.addsAttack.accuracies.join(') ou (')}).`,
+    skill.extraVulnerabilities && 'Fica Vulnerável a um tipo de dano a mais.',
+  ].filter(Boolean);
+  return `- **${skill.name}**${only}: ${[...effects, ...affinity].join(' ')}`;
+};
+
 const roleTable = (role: Role) => {
   const d = quickAssemblyRoles[role];
   const dice = (a: Partial<Record<AttributeCode, number>>) =>
@@ -82,6 +119,7 @@ ${rows}`;
 const roleRule = (role: Role): SeedEntry => {
   const name = `Montagem Rápida: ${ROLE_NAME[role]}`;
   const { amounts, elite, champion } = quickAssemblyRules;
+  const roleDetails = quickAssemblyRoles[role];
   return {
     ...rule(
       name,
@@ -106,7 +144,19 @@ Os valores "pequeno, grande e enorme" das habilidades dependem do nível: ${amou
           (a) =>
             `${a.minor}/${a.heavy}/${a.massive} a partir do nível ${a.fromLevel}`,
         )
-        .join('; ')}.`,
+        .join('; ')}.
+
+## Poderes de função
+
+Um poder de função é escolhido da lista abaixo. Os poderes que ensinam feitiços ainda não estão nesta lista.
+
+${roleDetails.skills.map(skillLine).join('\n')}
+
+## Personalização
+
+Um soldado ou elite pode, em vez de um poder, escolher uma destas opções (um campeão não).
+
+${roleDetails.customizations.map(skillLine).join('\n')}`,
       ['montagem rápida', 'quick assembly', role, 'função', 'criatura'],
     ),
     source: 'bestiary-vol-1',
