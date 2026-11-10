@@ -10,7 +10,8 @@ const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   level: 5,
   rank: 'soldier',
   championX: 2,
-  extraHp: false,
+  customization: null,
+  skills: {},
   species: 'monster',
   traits: [],
   villain: false,
@@ -38,12 +39,17 @@ describe('assembleCreature: the Juggernaut of the book (Bestiary Vol. I p. 28)',
       name: 'Juggernaut',
       level: 30,
       rank: 'elite',
-      extraHp: true,
+      customization: 'extra',
       species: 'construct',
       traits: ['bulky', 'destructive', 'predictable', 'watchful'],
       vulnerabilities: ['bolt', 'ice'],
       resistances: ['dark', 'physical'],
       immunities: ['air'],
+      // "Enhancing Guard (tied to the missile salvo) and Steady Recovery".
+      skills: {
+        'enhancing-guard': { attack: ['normal'] },
+        'steady-recovery': {},
+      },
       attacks: {
         normal: {
           name: 'Missile Salvo',
@@ -133,7 +139,7 @@ describe('assembleCreature: ranks and levels', () => {
       level: 10,
       rank: 'champion',
       championX: 2,
-      extraHp: true,
+      customization: 'extra',
     });
     expect(result.details.hp).toBe(160);
   });
@@ -263,6 +269,7 @@ describe('assembleCreature: what is still missing', () => {
       'Escolha 2 Vulnerabilidades (há 0).',
       'Escolha 2 Resistências (há 0).',
       'Escolha 1 Imunidade (há 0).',
+      'Escolha 1 poder de função (há 0).',
     ]);
   });
 
@@ -317,5 +324,215 @@ describe('assembleCreature: what is still missing', () => {
     expect(result.warnings).toContain(
       'O nível deve ser 5, 10, 20, 30, 40, 50 ou 60.',
     );
+  });
+});
+
+describe('assembleCreature: Role Skills', () => {
+  const brute = (over: Partial<AssemblyInput> = {}) => assemble('brute', over);
+  const sentinel = (over: Partial<AssemblyInput> = {}) =>
+    assemble('sentinel', over);
+
+  it('adds a named Skill as a special rule or an "outra ação"', () => {
+    const { details } = brute({
+      level: 20,
+      skills: { 'steady-recovery': {}, crush: {} },
+    });
+    expect(details.specialRules.map((r) => r.name)).toContain(
+      'Recuperação Constante',
+    );
+    const crush = details.otherActions.find((a) => a.name === 'Esmagar');
+    expect(crush?.effect).toContain(
+      'perder 20 PV (30 PV se o NPC for de nível 30 ou mais)',
+    );
+  });
+
+  it('writes a Skill that changes an attack into the text of that attack', () => {
+    const { details } = brute({
+      level: 20,
+      skills: { crush: {}, 'normal-magic-defense': {} },
+    });
+    const [normal, strong] = details.attacks;
+    expect(normal.effect).toBe(
+      'O ataque tem multi (2). Atinge a Defesa Mágica em vez da Defesa.',
+    );
+    expect(strong.effect).toContain('ficam envolvidas');
+  });
+
+  it('lets a Skill turn the strong attack ranged with another formula', () => {
+    const { details } = brute({
+      level: 20,
+      skills: { 'ranged-strong': { condition: ['slow'] } },
+    });
+    const strong = details.attacks[1];
+    expect([strong.range, strong.accuracy]).toEqual(['ranged', 'DES + VIG']);
+    expect(strong.effect).toBe('Cada alvo atingido sofre a condição lento.');
+  });
+
+  it('fills the choices of a Skill into its text, joining several with "e"', () => {
+    const { details } = sentinel({
+      level: 20,
+      skills: { barricade: { types: ['fire', 'ice'] } },
+    });
+    expect(details.otherActions[0]).toEqual({
+      name: 'Barricada',
+      effect: expect.stringContaining('Resistentes a dano do tipo fogo e gelo'),
+    });
+  });
+
+  it('accepts one damage type for the Barricada, but asks for at least one', () => {
+    const one = sentinel({
+      level: 20,
+      skills: { barricade: { types: ['fire'] } },
+    });
+    expect(one.warnings.join(' ')).not.toContain('Tipos de dano');
+    const none = sentinel({ level: 20, skills: { barricade: { types: [] } } });
+    expect(none.warnings).toContain('Escolha tipos de dano em Barricada.');
+  });
+
+  it("adds the strong attack a Skill gives (hunter), with the Reader's picks", () => {
+    const { details } = assemble('hunter', {
+      level: 20,
+      skills: { 'strong-attack': {} },
+      attacks: {
+        strong: {
+          name: 'Golpe Mortal',
+          range: 'melee',
+          accuracy: 'DES + VIG',
+          damageType: 'dark',
+          choices: {},
+        },
+      },
+    });
+    const strong = details.attacks.find((a) => a.name === 'Golpe Mortal');
+    // RA + 15, plus 5 extra damage at level 20; +2 from the table and +3 the hunter gets at level 10.
+    expect([strong?.damage, strong?.accuracyBonus, strong?.damageType]).toEqual(
+      [20, 5, 'dark'],
+    );
+    expect(strong?.effect).toContain('multi (2)');
+  });
+
+  it('applies a Skill to the strong attack only when there is one', () => {
+    const result = assemble('hunter', {
+      level: 20,
+      skills: { 'strong-magic-defense': {} },
+    });
+    expect(result.warnings).toContain(
+      'Ataque forte contra Defesa Mágica precisa de um ataque forte.',
+    );
+    const withStrong = assemble('hunter', {
+      level: 20,
+      skills: { 'strong-attack': {}, 'strong-magic-defense': {} },
+    });
+    expect(withStrong.details.attacks[1].effect).toContain(
+      'Atinge a Defesa Mágica',
+    );
+  });
+
+  it('warns when a soldier takes a Skill that is for elites and champions only', () => {
+    const result = brute({
+      level: 20,
+      skills: { collapse: { type: ['fire'] } },
+    });
+    expect(result.warnings).toContain(
+      'Relógio de Colapso é só para elite e campeão.',
+    );
+    const elite = brute({
+      level: 20,
+      rank: 'elite',
+      skills: { collapse: { type: ['fire'] } },
+    });
+    expect(elite.warnings.join(' ')).not.toContain('só para');
+  });
+
+  it('counts the Skills against what the level and rank give', () => {
+    // A level 5 soldier gets none; an elite gets one.
+    expect(brute({ skills: { 'steady-recovery': {} } }).warnings).toContain(
+      'Há 1 poder de função, mas o perfil dá 0.',
+    );
+    expect(brute({ rank: 'elite' }).warnings).toContain(
+      'Escolha 1 poder de função (há 0).',
+    );
+    const done = brute({ rank: 'elite', skills: { 'steady-recovery': {} } });
+    expect(done.warnings.join(' ')).not.toContain('poder de função');
+  });
+
+  it('asks for the choices of a picked Skill', () => {
+    const result = brute({ level: 20, skills: { 'ranged-strong': {} } });
+    expect(result.warnings).toContain(
+      'Escolha condição em Ataque forte à distância.',
+    );
+  });
+
+  it('ignores a Skill id the Role does not have', () => {
+    expect(
+      brute({ level: 20, skills: { nonsense: {} } }).details.specialRules,
+    ).toEqual([]);
+  });
+
+  it('asks for more Resistances and Vulnerabilities when a Skill adds them', () => {
+    // The 2 the level 10 grant already asks for, plus the 2 of the Skill.
+    expect(
+      sentinel({ level: 20, skills: { 'resist-two': {} } }).required
+        .resistances,
+    ).toBe(4);
+    const support = assemble('support', {
+      level: 40,
+      rank: 'champion',
+      championX: 2,
+      skills: {
+        'advise-and-inspire': { resource: ['hp'], attribute: ['VON'] },
+      },
+    });
+    expect(support.required.vulnerabilities).toBe(2);
+    expect(support.details.otherActions.map((a) => a.name)).toEqual([
+      'Aconselhar',
+      'Inspirar',
+    ]);
+    // The minor amount of level 40 is 30.
+    expect(support.details.otherActions[1].effect).toContain(
+      'uma quantidade pequena (30) de PV',
+    );
+    expect(support.details.otherActions[1].effect).toContain('dado de Vontade');
+  });
+});
+
+describe('assembleCreature: customization', () => {
+  it('gives a brute +10 Hit Points (before the Rank multiplier) and nothing for a champion', () => {
+    const soldier = assemble('brute', { customization: 'extra' });
+    expect(soldier.details.hp).toBe(80);
+    const champion = assemble('brute', {
+      rank: 'champion',
+      customization: 'extra',
+    });
+    expect(champion.details.hp).toBe(140);
+    expect(champion.warnings).toContain(
+      'Campeões não escolhem personalização.',
+    );
+  });
+
+  it('gives a mage an Immunity to choose, and the others one more Role Skill', () => {
+    expect(
+      assemble('mage', { customization: 'extra' }).required.immunities,
+    ).toBe(1);
+    const hunter = assemble('hunter', {
+      rank: 'elite',
+      customization: 'extra',
+    });
+    // Elite 1 + customization 1 = 2 Skills to pick.
+    expect(hunter.warnings).toContain('Escolha 2 poderes de função (há 0).');
+  });
+
+  it('adds a customization as a special rule, with its choice filled in', () => {
+    const { details } = assemble('brute', {
+      customization: 'c:bad-temper',
+      skills: { 'c:bad-temper': { benefit: ['damage'] } },
+    });
+    expect(details.specialRules).toEqual([
+      {
+        name: 'Mau Humor',
+        effect:
+          'Enquanto estiver em crise, o NPC causa 5 de dano adicional com o ataque normal.',
+      },
+    ]);
   });
 });

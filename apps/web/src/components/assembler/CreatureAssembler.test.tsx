@@ -220,7 +220,7 @@ describe('Creature Assembler: the build', () => {
     ).toHaveTextContent('Escolha 2 Vulnerabilidades (há 0).');
   });
 
-  it('says how many Role Skills the build gets, which this version does not offer yet', async () => {
+  it('asks for the Role Skills a level and rank give, and counts the ones picked', async () => {
     const dialog = await openDialog();
     fireEvent.change(dialog.getByLabelText('Nível'), {
       target: { value: '30' },
@@ -228,7 +228,17 @@ describe('Creature Assembler: the build', () => {
     fireEvent.change(dialog.getByLabelText('Patente'), {
       target: { value: 'elite' },
     });
-    expect(dialog.getByText(/2 poderes de função/)).toBeInTheDocument();
+    const warnings = dialog.getByRole('status', { name: 'Pendências' });
+    expect(warnings).toHaveTextContent('Escolha 2 poderes de função (há 0).');
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    expect(skills.getByText(/0 de 2/)).toBeInTheDocument();
+    fireEvent.click(
+      skills.getByRole('checkbox', { name: /Recuperação Constante/ }),
+    );
+    expect(skills.getByText(/1 de 2/)).toBeInTheDocument();
+    expect(warnings).toHaveTextContent('Escolha 1 poder de função (há 1).');
   });
 });
 
@@ -253,5 +263,129 @@ describe('Creature Assembler: copying', () => {
     ).toBe(true);
     expect(text).toContain('**PV** 70 (Crise 35)');
     expect(await dialog.findByText('Ficha copiada.')).toBeInTheDocument();
+  });
+});
+
+describe('Creature Assembler: Skills and customization', () => {
+  const setup = async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Nível'), {
+      target: { value: '20' },
+    });
+    return dialog;
+  };
+  const preview = (dialog: ReturnType<typeof within>) =>
+    within(dialog.getByRole('region', { name: 'Ficha' }));
+
+  it('puts a picked Skill in the stat block', async () => {
+    const dialog = await setup();
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    fireEvent.click(
+      skills.getByRole('checkbox', { name: /Recuperação Constante/ }),
+    );
+    const rules = within(
+      preview(dialog).getByRole('region', { name: 'Regras especiais' }),
+    );
+    expect(rules.getByText('Recuperação Constante')).toBeInTheDocument();
+  });
+
+  it('asks for the choices of a picked Skill and fills them into its text', async () => {
+    const dialog = await setup();
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    fireEvent.click(skills.getByRole('checkbox', { name: /Mau Perdedor/ }));
+    fireEvent.change(skills.getByLabelText('Condição'), {
+      target: { value: 'slow' },
+    });
+    expect(
+      preview(dialog).getByText(/sofre a condição lento/),
+    ).toBeInTheDocument();
+  });
+
+  it('says who may take a Skill', async () => {
+    const dialog = await setup();
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    expect(
+      skills.getByText(/Relógio de Colapso/).closest('label'),
+    ).toHaveTextContent('só elite e campeão');
+  });
+
+  it('offers +10 PV, or a customization, to a soldier or elite', async () => {
+    const dialog = await openDialog();
+    const custom = dialog.getByLabelText('Personalização');
+    fireEvent.change(custom, { target: { value: 'extra' } });
+    expect(
+      stat(within(dialog.getByRole('region', { name: 'Ficha' })), 'PV'),
+    ).toBe('80');
+    fireEvent.change(custom, { target: { value: 'c:die-hard' } });
+    expect(
+      stat(within(dialog.getByRole('region', { name: 'Ficha' })), 'PV'),
+    ).toBe('70');
+    expect(preview(dialog).getByText('Vida Dura')).toBeInTheDocument();
+  });
+
+  it('fills the choice of a customization', async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Personalização'), {
+      target: { value: 'c:bad-temper' },
+    });
+    fireEvent.change(dialog.getByLabelText('Benefício'), {
+      target: { value: 'damage' },
+    });
+    expect(
+      preview(dialog).getByText(
+        /causa 5 de dano adicional com o ataque normal/,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('does not offer a customization to a champion', async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Patente'), {
+      target: { value: 'champion' },
+    });
+    expect(dialog.queryByLabelText('Personalização')).toBeNull();
+  });
+
+  it('adds the strong attack a Skill gives, with its own editor', async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Função'), {
+      target: { value: 'hunter' },
+    });
+    fireEvent.change(dialog.getByLabelText('Nível'), {
+      target: { value: '20' },
+    });
+    expect(dialog.queryByRole('group', { name: 'Ataque Forte' })).toBeNull();
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    fireEvent.click(skills.getByRole('checkbox', { name: /^Ataque forte$/ }));
+    const editor = within(dialog.getByRole('group', { name: 'Ataque Forte' }));
+    fireEvent.change(editor.getByLabelText('Nome do ataque'), {
+      target: { value: 'Golpe Mortal' },
+    });
+    expect(preview(dialog).getByText('Golpe Mortal')).toBeInTheDocument();
+  });
+
+  it('starts the Skills over when the Role changes', async () => {
+    const dialog = await setup();
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    fireEvent.click(
+      skills.getByRole('checkbox', { name: /Recuperação Constante/ }),
+    );
+    fireEvent.change(dialog.getByLabelText('Função'), {
+      target: { value: 'sentinel' },
+    });
+    const next = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    expect(next.getByText(/0 de 1/)).toBeInTheDocument();
   });
 });

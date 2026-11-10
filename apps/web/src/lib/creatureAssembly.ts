@@ -4,15 +4,15 @@ import type {
   CreatureDetails,
   DamageType,
   Die,
-  LevelGrant,
   QuickAssemblyRoleDetails,
   QuickAssemblyRuleDetails,
   Rank,
   RoleAttackTemplate,
+  RoleSkill,
   Species,
   VillainTier,
 } from '../api/types';
-import { DAMAGE_LABEL } from './creatures';
+import { DAMAGE_LABEL, RANK_LABEL } from './creatures';
 
 /**
  * Quick Assembly (Bestiary Vol. I p. 25-53) as a pure function. The numbers come
@@ -35,14 +35,20 @@ export interface AttackChoice {
   choices: Choices;
 }
 
+/** The key of a customization among `AssemblyInput.skills`. */
+export const customKey = (id: string) => `c:${id}`;
+
+/** The value of `AssemblyInput.customization` that takes what the Role gives in place of one. */
+export const EXTRA_CUSTOMIZATION = 'extra';
+
 export interface AssemblyInput {
   name: string;
   level: number;
   rank: Rank;
   /** How many soldiers a champion replaces; used only for a champion. */
   championX: number;
-  /** +extraHp Hit Points instead of a customization (soldier or elite). */
-  extraHp: boolean;
+  /** Soldier or elite: `extra` (more Hit Points, an Immunity or a Role Skill), or `c:<id>`. */
+  customization: string | null;
   species: Species;
   traits: string[];
   villain: boolean;
@@ -54,6 +60,8 @@ export interface AssemblyInput {
   attacks: Partial<Record<RoleAttackTemplate['id'], AttackChoice>>;
   /** The Reader's choices for the slots of the level grants. */
   choices: Choices;
+  /** Role Skills picked (and the customization, under `c:<id>`), with their slot choices. */
+  skills: Record<string, Choices>;
 }
 
 export interface AssemblyResult {
@@ -74,6 +82,8 @@ export interface AssemblyResult {
   warnings: string[];
 }
 
+type Amounts = { minor: number; heavy: number; massive: number };
+
 const slotLabels = (slot: AssemblySlot | undefined, values: string[] = []) =>
   values.map(
     (value) =>
@@ -85,21 +95,29 @@ const list = (items: string[]) =>
     ? (items[0] ?? '…')
     : `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`;
 
-/** Fills `{slot}` with the Reader's choices and `{minor}` with the level's amount. */
+/** Fills `{slot}` with the Reader's choices and `{minor}`, `{heavy}`, `{massive}` with the level's amounts. */
 function fill(
   text: string,
   slots: AssemblySlot[],
   choices: Choices,
-  minor: number,
+  amounts: Amounts,
 ): string {
   return text.replace(/\{(\w+)\}/g, (_, id: string) => {
-    if (id === 'minor') return String(minor);
+    if (id === 'minor' || id === 'heavy' || id === 'massive')
+      return String(amounts[id]);
     const slot = slots.find((s) => s.id === id);
     return list(slotLabels(slot, choices[id]));
   });
 }
 
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
+
+/** What a built attack carries while Skills are still adding to it. */
+interface Built {
+  id: RoleAttackTemplate['id'];
+  attack: CreatureAttack;
+  effects: string[];
+}
 
 export function assembleCreature(
   rules: QuickAssemblyRuleDetails,
@@ -131,9 +149,16 @@ export function assembleCreature(
     : rank === 'elite'
       ? rules.elite.hpMultiplier
       : 1;
+
+  // The customization slot of a soldier or elite.
+  const picksExtra = input.customization === EXTRA_CUSTOMIZATION && !champion;
+  if (input.customization && champion) {
+    warnings.push('Campeões não escolhem personalização.');
+  }
+
   const hp =
     ((row?.hp ?? role.base.hp) +
-      (input.extraHp && !champion ? rules.extraHp : 0)) *
+      (picksExtra && role.extra === 'hp' ? rules.extraHp : 0)) *
     multiplier;
   const mp =
     (row?.mp ?? role.base.mp) * (champion ? rules.champion.mpMultiplier : 1);
@@ -145,15 +170,15 @@ export function assembleCreature(
         ? rules.elite.initiative
         : 0);
 
-  const amount =
+  const amounts: Amounts =
     [...rules.amounts].reverse().find((a) => a.fromLevel <= level) ??
     rules.amounts[0];
   const accuracyBonus = (row?.accuracy ?? 0) + sum('accuracy');
   const extraDamage = row?.extraDamage ?? 0;
 
-  // Basic attacks.
+  // Basic attacks, then the ones a Skill adds.
   let extraVulnerabilities = 0;
-  const attacks: CreatureAttack[] = role.attacks.map((template) => {
+  const build = (template: RoleAttackTemplate): Built => {
     const picked = input.attacks[template.id];
     const name = picked?.name?.trim() || template.name;
     const choices = picked?.choices ?? {};
@@ -164,7 +189,7 @@ export function assembleCreature(
       warnings.push(`Escolha uma opção para o ${name}.`);
     }
     for (const slot of slots) {
-      if ((choices[slot.id] ?? []).length < slot.count) {
+      if ((choices[slot.id] ?? []).length < (slot.min ?? slot.count)) {
         warnings.push(`Escolha ${slot.label.toLowerCase()} do ${name}.`);
       }
     }
@@ -177,45 +202,111 @@ export function assembleCreature(
       extraVulnerabilities += 1;
     }
 
-    const effect = [
-      template.effect && fill(template.effect, slots, choices, amount.minor),
-      option && fill(option.effect, slots, choices, amount.minor),
-    ]
-      .filter(Boolean)
-      .join(' ');
     return {
-      name,
-      range: picked?.range ?? template.ranges[0],
-      accuracy: picked?.accuracy ?? template.accuracies[0],
-      accuracyBonus,
-      damage: template.damage + extraDamage,
-      damageType: picked?.damageType ?? 'physical',
-      ...(effect && { effect }),
+      id: template.id,
+      effects: [
+        template.effect && fill(template.effect, slots, choices, amounts),
+        option && fill(option.effect, slots, choices, amounts),
+      ].filter((text): text is string => Boolean(text)),
+      attack: {
+        name,
+        range: picked?.range ?? template.ranges[0],
+        accuracy: picked?.accuracy ?? template.accuracies[0],
+        accuracyBonus,
+        damage: template.damage + extraDamage,
+        damageType: picked?.damageType ?? 'physical',
+      },
     };
-  });
+  };
+  const built: Built[] = role.attacks.map(build);
 
-  // Special rules granted by the level.
-  const specialRules = grants
-    .filter((g): g is LevelGrant & { rule: string } => Boolean(g.rule))
-    .map((g) => {
-      for (const slot of g.slots ?? []) {
-        if ((input.choices[slot.id] ?? []).length < slot.count) {
-          warnings.push(
-            `Escolha ${slot.label.toLowerCase()} (nível ${g.level}).`,
-          );
-        }
+  // Skills: the picked Role Skills, then the customization if it is one.
+  const pickedSkills = role.skills.filter((skill) => skill.id in input.skills);
+  const customization = input.customization?.startsWith('c:')
+    ? role.customizations.find((c) => customKey(c.id) === input.customization)
+    : undefined;
+  const chosen: [RoleSkill, string][] = [
+    ...pickedSkills.map((skill): [RoleSkill, string] => [skill, skill.id]),
+    ...(customization
+      ? [[customization, customKey(customization.id)] as [RoleSkill, string]]
+      : []),
+  ];
+
+  for (const [skill] of chosen) {
+    if (skill.addsAttack) built.push(build(skill.addsAttack));
+  }
+
+  const specialRules: CreatureDetails['specialRules'] = [];
+  const otherActions: CreatureDetails['otherActions'] = [];
+  const need = { resistances: 0, immunities: 0 };
+  for (const [skill, key] of chosen) {
+    const choices = input.skills[key] ?? {};
+    if (skill.ranks && !skill.ranks.includes(rank)) {
+      const only = skill.ranks.map((r) => RANK_LABEL[r].toLowerCase());
+      warnings.push(`${skill.name} é só para ${only.join(' e ')}.`);
+    }
+    for (const slot of skill.slots ?? []) {
+      if ((choices[slot.id] ?? []).length < (slot.min ?? slot.count)) {
+        warnings.push(`Escolha ${slot.label.toLowerCase()} em ${skill.name}.`);
       }
-      return {
+    }
+    for (const effect of skill.effects) {
+      const text = fill(effect.text, skill.slots ?? [], choices, amounts);
+      if (effect.to === 'rule') {
+        specialRules.push({ name: effect.name ?? skill.name, effect: text });
+      } else if (effect.to === 'action') {
+        otherActions.push({ name: effect.name ?? skill.name, effect: text });
+      } else {
+        const target = built.find((b) => b.id === effect.to);
+        if (!target) {
+          warnings.push(
+            `${skill.name} precisa de um ataque ${effect.to === 'strong' ? 'forte' : 'normal'}.`,
+          );
+          continue;
+        }
+        target.effects.push(text);
+        if (effect.patch?.range) target.attack.range = effect.patch.range;
+        if (effect.patch?.accuracy)
+          target.attack.accuracy = effect.patch.accuracy;
+      }
+    }
+    need.resistances += skill.resistances ?? 0;
+    need.immunities += skill.immunities ?? 0;
+    extraVulnerabilities += skill.extraVulnerabilities ?? 0;
+  }
+
+  const attacks: CreatureAttack[] = built.map(({ attack, effects }) => ({
+    ...attack,
+    ...(effects.length > 0 && { effect: effects.join(' ') }),
+  }));
+
+  // Special rules granted by the level come before those of the Skills.
+  const granted = grants.flatMap((g) => {
+    if (!g.rule) return [];
+    for (const slot of g.slots ?? []) {
+      if ((input.choices[slot.id] ?? []).length < (slot.min ?? slot.count)) {
+        warnings.push(
+          `Escolha ${slot.label.toLowerCase()} (nível ${g.level}).`,
+        );
+      }
+    }
+    return [
+      {
         name: `Benefício do nível ${g.level}`,
-        effect: fill(g.rule, g.slots ?? [], input.choices, amount.minor),
-      };
-    });
+        effect: fill(g.rule, g.slots ?? [], input.choices, amounts),
+      },
+    ];
+  });
 
   // Affinities.
   const required = {
     vulnerabilities: role.base.vulnerabilities + extraVulnerabilities,
-    resistances: grants.reduce((n, g) => n + (g.resistances ?? 0), 0),
-    immunities: grants.reduce((n, g) => n + (g.immunities ?? 0), 0),
+    resistances:
+      grants.reduce((n, g) => n + (g.resistances ?? 0), 0) + need.resistances,
+    immunities:
+      grants.reduce((n, g) => n + (g.immunities ?? 0), 0) +
+      need.immunities +
+      (picksExtra && role.extra === 'immunity' ? 1 : 0),
   };
   const affinities: CreatureDetails['affinities'] = {};
   const seen = new Set<DamageType>();
@@ -231,7 +322,7 @@ export function assembleCreature(
       seen.add(type);
     }
   }
-  for (const [have, need, one, many] of [
+  for (const [have, wanted, one, many] of [
     [
       input.vulnerabilities.length,
       required.vulnerabilities,
@@ -246,14 +337,37 @@ export function assembleCreature(
     ],
     [input.immunities.length, required.immunities, 'Imunidade', 'Imunidades'],
   ] as const) {
-    if (have < need) {
-      warnings.push(`Escolha ${need} ${plural(need, one, many)} (há ${have}).`);
+    if (have < wanted) {
+      warnings.push(
+        `Escolha ${wanted} ${plural(wanted, one, many)} (há ${have}).`,
+      );
     }
   }
   for (const type of conflicted) {
     const label = DAMAGE_LABEL[type];
     warnings.push(
       `${label[0].toUpperCase()}${label.slice(1)} tem mais de uma Afinidade.`,
+    );
+  }
+
+  // How many Role Skills the build gets, against how many it took.
+  const roleSkills =
+    sum('roleSkills') +
+    (champion
+      ? input.championX
+      : rank === 'elite'
+        ? rules.elite.roleSkills
+        : 0) +
+    (picksExtra && role.extra === 'skill' ? 1 : 0);
+  const taken = pickedSkills.length;
+  if (taken < roleSkills) {
+    const missing = roleSkills - taken;
+    warnings.push(
+      `Escolha ${missing} ${plural(missing, 'poder de função', 'poderes de função')} (há ${taken}).`,
+    );
+  } else if (taken > roleSkills) {
+    warnings.push(
+      `Há ${taken} ${plural(taken, 'poder de função', 'poderes de função')}, mas o perfil dá ${roleSkills}.`,
     );
   }
 
@@ -275,26 +389,30 @@ export function assembleCreature(
     affinities,
     attacks,
     spells: [],
-    otherActions: [],
-    specialRules,
+    otherActions,
+    specialRules: [...granted, ...specialRules],
   };
 
   return {
     name: input.name,
     details,
     ultimaPoints: input.villain ? rules.villainTiers[input.tier] : null,
-    roleSkills:
-      sum('roleSkills') +
-      (champion
-        ? input.championX
-        : rank === 'elite'
-          ? rules.elite.roleSkills
-          : 0),
+    roleSkills,
     bossSkills: champion ? rules.champion.bossSkills : 0,
     required,
     warnings,
   };
 }
+
+/** The first range, formula and damage type of an attack, before the Reader picks. */
+export const defaultAttackChoice = (
+  template: RoleAttackTemplate,
+): AttackChoice => ({
+  range: template.ranges[0],
+  accuracy: template.accuracies[0],
+  damageType: 'physical',
+  choices: {},
+});
 
 /** A valid starting build for a Role: a level 5 soldier with each attack's first options. */
 export function defaultInput(
@@ -306,7 +424,7 @@ export function defaultInput(
     level: 5,
     rank: 'soldier',
     championX: 2,
-    extraHp: false,
+    customization: null,
     species: 'monster',
     traits: [],
     villain: false,
@@ -317,15 +435,11 @@ export function defaultInput(
     attacks: Object.fromEntries(
       role.attacks.map((template) => [
         template.id,
-        {
-          range: template.ranges[0],
-          accuracy: template.accuracies[0],
-          damageType: 'physical' as const,
-          choices: {},
-        },
+        defaultAttackChoice(template),
       ]),
     ),
     choices: {},
+    skills: {},
     ...over,
   };
 }

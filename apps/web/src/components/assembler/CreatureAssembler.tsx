@@ -7,14 +7,19 @@ import type {
   Rank,
   Role,
   RoleAttackTemplate,
+  RoleSkill,
   Species,
   VillainTier,
 } from '../../api/types';
 import {
   assembleCreature,
+  customKey,
+  defaultAttackChoice,
   defaultInput,
+  EXTRA_CUSTOMIZATION,
   type AssemblyInput,
   type AttackChoice,
+  type Choices,
 } from '../../lib/creatureAssembly';
 import { creatureToMarkdown } from '../../lib/creatureMarkdown';
 import {
@@ -49,6 +54,35 @@ const options = <T extends string>(
   values: readonly T[],
   label: Record<T, string>,
 ) => values.map((value) => ({ value, label: label[value] }));
+
+/** The first effect of a Skill with its choices left as "…", to read before picking it. */
+const skillPreview = (skill: RoleSkill) =>
+  (skill.effects[0]?.text ?? '').replace(/\{(\w+)\}/g, '…');
+
+/** What picking `skill` asks the Reader besides ticking it: its choices, then its own attack. */
+function SkillChoices({
+  skill,
+  value,
+  onChange,
+}: {
+  skill: RoleSkill;
+  value: Choices;
+  onChange: (value: Choices) => void;
+}) {
+  if (!skill.slots?.length) return null;
+  return (
+    <div className="mb-2 ml-7 grid gap-3 sm:grid-cols-2">
+      {skill.slots.map((slot) => (
+        <SlotField
+          key={slot.id}
+          slot={slot}
+          value={value[slot.id] ?? []}
+          onChange={(picked) => onChange({ ...value, [slot.id]: picked })}
+        />
+      ))}
+    </div>
+  );
+}
 
 /** The slots of a basic attack: its own and those of the option picked. */
 const attackSlots = (template: RoleAttackTemplate, picked?: AttackChoice) => [
@@ -184,7 +218,13 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
     setRole(next);
     // Each Role has its own attacks: start those over, keep the rest.
     const fresh = defaultInput(roles[next]);
-    setInput((prev) => ({ ...prev, attacks: fresh.attacks, choices: {} }));
+    setInput((prev) => ({
+      ...prev,
+      attacks: fresh.attacks,
+      choices: {},
+      skills: {},
+      customization: null,
+    }));
   };
 
   const grantSlots = profile.grants
@@ -206,12 +246,34 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
   };
 
   const { required } = result;
-  const skillsNote = [
-    result.roleSkills > 0 &&
-      `${result.roleSkills} ${result.roleSkills === 1 ? 'poder de função' : 'poderes de função'}`,
-    result.bossSkills > 0 &&
-      `${result.bossSkills} ${result.bossSkills === 1 ? 'poder de chefe' : 'poderes de chefe'}`,
-  ].filter(Boolean);
+  const skillsNote =
+    result.bossSkills > 0
+      ? `${result.bossSkills} ${result.bossSkills === 1 ? 'poder de chefe' : 'poderes de chefe'}`
+      : null;
+
+  const toggleSkill = (skill: RoleSkill, on: boolean) =>
+    setInput((prev) => {
+      const skills = { ...prev.skills };
+      if (on) skills[skill.id] = {};
+      else delete skills[skill.id];
+      return { ...prev, skills };
+    });
+  const setSkillChoices = (key: string, choices: Choices) =>
+    setInput((prev) => ({
+      ...prev,
+      skills: { ...prev.skills, [key]: choices },
+    }));
+  const pickedSkills = profile.skills.filter(
+    (skill) => skill.id in input.skills,
+  );
+  const extraLabel = {
+    hp: `+${rules.extraHp} PV`,
+    immunity: 'Imunidade a um tipo de dano',
+    skill: 'Mais um poder de função',
+  }[profile.extra];
+  const customization = profile.customizations.find(
+    (c) => customKey(c.id) === input.customization,
+  );
 
   return (
     <Modal open={open} onClose={onClose} title="Montagem de Criaturas">
@@ -294,12 +356,39 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
               />
             </div>
 
-            <CheckField
-              label={`+${rules.extraHp} PV (em vez de uma personalização)`}
-              checked={input.extraHp}
-              disabled={input.rank === 'champion'}
-              onChange={(extraHp) => set({ extraHp })}
-            />
+            {input.rank !== 'champion' && (
+              <div className="mt-3">
+                <SelectField
+                  label="Personalização"
+                  value={input.customization ?? ''}
+                  onChange={(value) => set({ customization: value || null })}
+                  options={[
+                    { value: '', label: 'Nenhuma' },
+                    { value: EXTRA_CUSTOMIZATION, label: extraLabel },
+                    ...profile.customizations.map((c) => ({
+                      value: customKey(c.id),
+                      label: c.name,
+                    })),
+                  ]}
+                />
+                {customization && (
+                  <>
+                    <p className="mt-1 text-[15px] text-muted">
+                      {skillPreview(customization)}
+                    </p>
+                    <div className="mt-2">
+                      <SkillChoices
+                        skill={customization}
+                        value={input.skills[customKey(customization.id)] ?? {}}
+                        onChange={(choices) =>
+                          setSkillChoices(customKey(customization.id), choices)
+                        }
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
             <div className="grid gap-3 sm:grid-cols-2">
               <CheckField
                 label="Vilão"
@@ -340,14 +429,68 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
               />
             )}
 
+            <fieldset className="mt-4">
+              <legend className="h-tertiary">
+                Poderes de função ({pickedSkills.length} de {result.roleSkills})
+              </legend>
+              <ul className="mt-2">
+                {profile.skills.map((skill) => {
+                  const on = skill.id in input.skills;
+                  return (
+                    <li key={skill.id}>
+                      <label className="flex min-h-[44px] items-start gap-2">
+                        <input
+                          type="checkbox"
+                          className="mt-1"
+                          checked={on}
+                          onChange={(event) =>
+                            toggleSkill(skill, event.target.checked)
+                          }
+                        />
+                        <span>
+                          <strong>{skill.name}</strong>
+                          {skill.ranks && (
+                            <span className="text-muted">
+                              {' '}
+                              (só{' '}
+                              {skill.ranks
+                                .map((r) => RANK_LABEL[r].toLowerCase())
+                                .join(' e ')}
+                              )
+                            </span>
+                          )}
+                          <span className="block text-[15px] text-muted">
+                            {skillPreview(skill)}
+                          </span>
+                        </span>
+                      </label>
+                      {on && (
+                        <SkillChoices
+                          skill={skill}
+                          value={input.skills[skill.id]}
+                          onChange={(choices) =>
+                            setSkillChoices(skill.id, choices)
+                          }
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </fieldset>
+
             <h3 className="h-tertiary mt-4">Ataques básicos</h3>
-            {profile.attacks.map((template) => (
+            {[
+              ...profile.attacks,
+              ...pickedSkills.flatMap((skill) =>
+                skill.addsAttack ? [skill.addsAttack] : [],
+              ),
+            ].map((template) => (
               <AttackEditor
                 key={`${role}-${template.id}`}
                 template={template}
                 value={
-                  input.attacks[template.id] ??
-                  defaultInput(profile).attacks[template.id]!
+                  input.attacks[template.id] ?? defaultAttackChoice(template)
                 }
                 onChange={(value) =>
                   set({ attacks: { ...input.attacks, [template.id]: value } })
@@ -392,10 +535,10 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
                     ))}
                   </ul>
                 )}
-                {skillsNote.length > 0 && (
+                {skillsNote && (
                   <p className="mt-2">
-                    Escolha {skillsNote.join(' e ')}. Esta versão ainda não
-                    oferece os poderes: anote-os à parte.
+                    Escolha {skillsNote}. Os poderes de chefe ainda não são
+                    oferecidos aqui: anote-os à parte.
                   </p>
                 )}
               </div>

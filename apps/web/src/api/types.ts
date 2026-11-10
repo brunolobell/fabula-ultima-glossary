@@ -312,8 +312,10 @@ export interface RareWeaponRuleDetails {
 export interface AssemblySlot {
   id: string;
   label: string;
-  /** How many options to pick. */
+  /** How many options to pick (at most). */
   count: number;
+  /** How many are required; defaults to `count`. */
+  min?: number;
   options: { value: string; label: string }[];
 }
 
@@ -363,6 +365,29 @@ export interface LevelGrant {
   slots?: AssemblySlot[];
 }
 
+/** Where one effect of a Role Skill lands on the stat block. */
+export interface SkillEffect {
+  to: 'rule' | 'action' | 'normal' | 'strong';
+  name?: string;
+  /** `{id}` is a slot choice, `{minor}`, `{heavy}` and `{massive}` the level's amounts. */
+  text: string;
+  patch?: { range?: 'melee' | 'ranged'; accuracy?: string };
+}
+
+/** One Role Skill or customization of a Role (Bestiary Vol. I p. 30-53). */
+export interface RoleSkill {
+  id: string;
+  name: string;
+  effects: SkillEffect[];
+  slots?: AssemblySlot[];
+  ranks?: Rank[];
+  addsAttack?: RoleAttackTemplate;
+  resistances?: number;
+  immunities?: number;
+  notPhysical?: boolean;
+  extraVulnerabilities?: number;
+}
+
 /** The profile of one Role (Bestiary Vol. I p. 30-53). */
 export interface QuickAssemblyRoleDetails {
   forge: 'quick-assembly-role';
@@ -386,6 +411,10 @@ export interface QuickAssemblyRoleDetails {
   }[];
   grants: LevelGrant[];
   attacks: RoleAttackTemplate[];
+  skills: RoleSkill[];
+  customizations: RoleSkill[];
+  /** What the customization slot gives instead of a customization. */
+  extra: 'hp' | 'immunity' | 'skill';
 }
 
 export type RuleDetails =
