@@ -6,7 +6,10 @@ import {
   DAMAGE_TYPES,
   DICE,
   DamageType,
+  QuickAssemblyRoleDetails,
+  QuickAssemblyRuleDetails,
   RANKS,
+  ROLES,
   RareWeaponRuleDetails,
   SPECIES,
   ENTRY_SOURCES,
@@ -105,6 +108,121 @@ function validateRareWeapon(
   for (const slug of d.excludedBases) expectEquipment(slug);
 }
 
+const TOKEN = /\{(\w+)\}/g;
+
+/** Every `{id}` in a text must be a slot the same entry offers (or `{minor}`). */
+function checkTokens(
+  text: string | undefined,
+  slots: { id: string }[] | undefined,
+  where: string,
+  fail: Fail,
+) {
+  for (const [, id] of (text ?? '').matchAll(TOKEN)) {
+    if (id !== 'minor' && !(slots ?? []).some((slot) => slot.id === id)) {
+      fail(`${where} uses {${id}} but offers no such choice`);
+    }
+  }
+}
+
+function validateQuickAssembly(d: QuickAssemblyRuleDetails, fail: Fail) {
+  if (d.levels.join() !== '5,10,20,30,40,50,60')
+    fail('quick assembly levels must be 5, 10, 20, 30, 40, 50, 60');
+  let previous = 0;
+  for (const a of d.amounts) {
+    if (a.fromLevel <= previous) fail('amounts must go up by level');
+    previous = a.fromLevel;
+    if (!(a.minor > 0 && a.minor < a.heavy && a.heavy < a.massive))
+      fail(
+        `amounts from level ${a.fromLevel} must grow: minor < heavy < massive`,
+      );
+  }
+  if (d.amounts[0]?.fromLevel !== 5) fail('amounts must start at level 5');
+  for (const [name, value] of [
+    ['elite.hpMultiplier', d.elite.hpMultiplier],
+    ['champion.mpMultiplier', d.champion.mpMultiplier],
+    ['extraHp', d.extraHp],
+    ...Object.entries(d.villainTiers).map(
+      ([tier, points]) => [`villainTiers.${tier}`, points] as const,
+    ),
+  ] as const) {
+    if (!Number.isInteger(value) || value < 1)
+      fail(`quick assembly ${name} must be a positive integer`);
+  }
+}
+
+function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
+  if (!ROLES.includes(d.role)) fail(`unknown role "${d.role}"`);
+  const { base } = d;
+  for (const code of ATTRIBUTES) {
+    if (!DICE.includes(base.attributes[code]))
+      fail(`base attribute ${code} must be a die from d6 to d12`);
+  }
+  if (
+    base.initiative !==
+    Math.floor((base.attributes.DES + base.attributes.AST) / 2)
+  )
+    fail(
+      `base initiative (${base.initiative}) must be (DES + AST) / 2, rounded down`,
+    );
+  for (const [name, value] of [
+    ['hp', base.hp],
+    ['mp', base.mp],
+  ] as const) {
+    if (!Number.isInteger(value) || value < 1)
+      fail(`base ${name} must be a positive integer`);
+  }
+  if (!Number.isInteger(base.vulnerabilities) || base.vulnerabilities < 1)
+    fail('base vulnerabilities must be at least 1');
+
+  const levels = d.progression.map((r) => r.level);
+  if (levels.join() !== '10,20,30,40,50,60')
+    fail(`progression must have the levels 10 to 60, in order (has ${levels})`);
+  let hp = base.hp;
+  let mp = base.mp;
+  let extra = 0;
+  for (const r of d.progression) {
+    for (const [code, die] of Object.entries(r.attributes)) {
+      if (!DICE.includes(die as never) || die < base.attributes[code as never])
+        fail(`progression ${r.level}: ${code} d${die} is not a larger die`);
+    }
+    if (r.hp < hp || r.mp < mp)
+      fail(`progression ${r.level}: hp and mp must not go down`);
+    hp = r.hp;
+    mp = r.mp;
+    if (r.accuracy !== r.level / 10)
+      fail(`progression ${r.level}: accuracy must be ${r.level / 10}`);
+    if (r.extraDamage % 5 !== 0 || r.extraDamage < extra)
+      fail(
+        `progression ${r.level}: extraDamage must be a growing multiple of 5`,
+      );
+    extra = r.extraDamage;
+  }
+
+  for (const g of d.grants) {
+    if (!levels.includes(g.level)) fail(`grant at unknown level ${g.level}`);
+    checkTokens(g.rule, g.slots, `grant ${g.level}`, fail);
+  }
+
+  if (d.attacks.length === 0) fail('a role needs a basic attack');
+  for (const attack of d.attacks) {
+    if (attack.ranges.length === 0) fail(`${attack.id} attack needs a range`);
+    for (const accuracy of attack.accuracies) {
+      if (!ACCURACY.test(accuracy)) fail(`bad accuracy "${accuracy}"`);
+    }
+    if (!Number.isInteger(attack.damage))
+      fail(`${attack.id} damage must be an integer`);
+    checkTokens(attack.effect, attack.slots, `${attack.id} attack`, fail);
+    for (const option of attack.options ?? []) {
+      checkTokens(
+        option.effect,
+        [...(attack.slots ?? []), ...(option.slots ?? [])],
+        `${attack.id} attack option "${option.id}"`,
+        fail,
+      );
+    }
+  }
+}
+
 /** Returns every problem found in the seed data; empty means it is valid. */
 export function validateSeed(entries: SeedEntry[]): string[] {
   const errors: string[] = [];
@@ -164,6 +282,10 @@ export function validateSeed(entries: SeedEntry[]): string[] {
           validateRareWeapon(details, fail, (target) =>
             expectType(slug, target, 'equipment'),
           );
+        } else if (details.forge === 'quick-assembly') {
+          validateQuickAssembly(details, fail);
+        } else if (details.forge === 'quick-assembly-role') {
+          validateQuickAssemblyRole(details, fail);
         } else if (details.forge !== undefined) {
           fail('unknown details.forge');
         }

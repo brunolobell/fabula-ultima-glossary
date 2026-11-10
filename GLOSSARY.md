@@ -205,7 +205,7 @@ The modal on the Creatures list where a Reader builds a Creature by following Qu
 _Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb for invoking a Trait or Bond), creature builder, generator
 
 **Role**:
-One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation).
+One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation), with the Roles named Bruto, Caçador, Mago, Sabotador, Sentinela and Apoio (also unofficial).
 _Avoid_: Class (a Class belongs to a Player's character), archetype
 
 **Boss Skill**:

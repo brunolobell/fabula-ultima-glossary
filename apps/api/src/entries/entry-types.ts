@@ -416,8 +416,117 @@ export interface RareWeaponRuleDetails {
   notes: string[];
 }
 
+/** A choice the Reader makes while assembling a Creature (a damage type, a status effect…). */
+export interface AssemblySlot {
+  id: string;
+  label: string;
+  /** How many options to pick. */
+  count: number;
+  options: { value: string; label: string }[];
+}
+
+/** The Quick Assembly rules every Role shares (Bestiary Vol. I p. 25-29). */
+export interface QuickAssemblyRuleDetails {
+  forge: 'quick-assembly';
+  /** The only levels a Quick Assembly Creature can have. */
+  levels: number[];
+  /** "Minor, heavy and massive" amounts, by the level they start at (p. 28). */
+  amounts: {
+    fromLevel: number;
+    minor: number;
+    heavy: number;
+    massive: number;
+  }[];
+  /** An elite: Hit Points times `hpMultiplier`, Initiative up, Role Skills added. */
+  elite: { hpMultiplier: number; initiative: number; roleSkills: number };
+  /** A champion that replaces X soldiers: Hit Points and Initiative by X, Mana Points and Boss Skills as given. */
+  champion: { mpMultiplier: number; bossSkills: number };
+  /** Hit Points a soldier or elite may add instead of a customization. */
+  extraHp: number;
+  /** Ultima Points by Villain Tier (Livro Básico p. 101). */
+  villainTiers: Record<'minor' | 'major' | 'supreme', number>;
+}
+
+/** One "choose one option" of a Role's basic attack. */
+export interface AttackOption {
+  id: string;
+  label: string;
+  /** Our own words; `{id}` is a slot choice and `{minor}` the minor amount of the level. */
+  effect: string;
+  slots?: AssemblySlot[];
+  /** Picking one of these values gives the NPC one more Vulnerability. */
+  extraVulnerability?: { slot: string; values: string[] };
+}
+
+/** A basic attack of a Role: the Reader picks range, formula, damage type and option. */
+export interface RoleAttackTemplate {
+  id: 'normal' | 'strong';
+  name: string;
+  ranges: ('melee' | 'ranged')[];
+  /** Precisão formulas to pick from, "DES + VIG" style. */
+  accuracies: string[];
+  /** Added to the high roll (RA) before the level's extra damage. */
+  damage: number;
+  /** Always applies; may use slots. */
+  effect?: string;
+  slots?: AssemblySlot[];
+  /** The Reader picks exactly one. */
+  options?: AttackOption[];
+}
+
+/** What a level from 10 up adds to a Role. */
+export interface LevelGrant {
+  level: number;
+  roleSkills?: number;
+  /** Bonus to Defesa / Defesa Mágica from this level on. */
+  defense?: number;
+  magicDefense?: number;
+  /** Bonus to Precisão checks from this level on. */
+  accuracy?: number;
+  /** Affinities the Reader must choose. */
+  resistances?: number;
+  immunities?: number;
+  /** The Affinity picks cannot be physical damage. */
+  notPhysical?: boolean;
+  /** A special rule the Creature gets (our own words, may use slots). */
+  rule?: string;
+  slots?: AssemblySlot[];
+}
+
+/** The profile of one Role (Bestiary Vol. I p. 30-53). */
+export interface QuickAssemblyRoleDetails {
+  forge: 'quick-assembly-role';
+  role: Role;
+  /** The level 5 profile. */
+  base: {
+    attributes: Record<AttributeCode, Die>;
+    hp: number;
+    mp: number;
+    initiative: number;
+    defense: number;
+    magicDefense: number;
+    /** Vulnerabilities the Reader must give it. */
+    vulnerabilities: number;
+  };
+  /** One row per level from 10: the dice that differ from the base, then the numbers. */
+  progression: {
+    level: number;
+    attributes: Partial<Record<AttributeCode, Die>>;
+    hp: number;
+    mp: number;
+    accuracy: number;
+    extraDamage: number;
+  }[];
+  grants: LevelGrant[];
+  attacks: RoleAttackTemplate[];
+}
+
 export type RuleDetails =
-  PlainRuleDetails | CustomWeaponRuleDetails | RareWeaponRuleDetails;
+  | PlainRuleDetails
+  | CustomWeaponRuleDetails
+  | RareWeaponRuleDetails
+  | QuickAssemblyRuleDetails
+  | QuickAssemblyRoleDetails;
 
 export interface DetailsByType {
   rule: RuleDetails;

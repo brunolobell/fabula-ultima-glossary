@@ -579,6 +579,118 @@ describe('validateSeed', () => {
     });
   });
 
+  describe('quick assembly', () => {
+    const rules = seedEntries.filter(
+      (e) => e.type === 'rule' && e.source === 'bestiary-vol-1',
+    );
+    const role = (name: string) =>
+      rules.find((e) => e.name === `Montagem Rápida: ${name}`);
+
+    it('seeds the process Rule and one Rule per Role, from the Bestiary Vol. I', () => {
+      expect(rules.map((e) => [e.name, e.page])).toEqual([
+        ['Montagem Rápida', 25],
+        ['Montagem Rápida: Bruto', 30],
+        ['Montagem Rápida: Caçador', 34],
+        ['Montagem Rápida: Mago', 38],
+        ['Montagem Rápida: Sabotador', 42],
+        ['Montagem Rápida: Sentinela', 46],
+        ['Montagem Rápida: Apoio', 50],
+      ]);
+      // The English names stay searchable.
+      expect(role('Bruto')?.tags).toEqual(
+        expect.arrayContaining(['quick assembly', 'brute']),
+      );
+    });
+
+    it('keeps the book numbers of the level tables (p. 32-52)', () => {
+      const row = (name: string, level: number) => {
+        const d = role(name)?.details as { progression: { level: number }[] };
+        return d.progression.find((r) => r.level === level);
+      };
+      expect(row('Bruto', 60)).toEqual({
+        level: 60,
+        attributes: { AST: 8, VIG: 12, VON: 10 },
+        hp: 200,
+        mp: 110,
+        accuracy: 6,
+        extraDamage: 15,
+      });
+      expect(row('Caçador', 40)).toEqual({
+        level: 40,
+        attributes: { DES: 12, VON: 8 },
+        hp: 120,
+        mp: 80,
+        accuracy: 4,
+        extraDamage: 10,
+      });
+      expect(row('Mago', 20)).toMatchObject({ hp: 70, mp: 70, extraDamage: 5 });
+      expect(row('Sabotador', 10)).toMatchObject({
+        hp: 60,
+        mp: 50,
+        accuracy: 1,
+      });
+      expect(row('Sentinela', 60)).toMatchObject({ hp: 170, mp: 110 });
+      expect(row('Apoio', 60)).toMatchObject({
+        attributes: { AST: 12, VIG: 8 },
+        hp: 170,
+      });
+    });
+
+    it('keeps the level 5 profile of each Role', () => {
+      const base = (name: string) =>
+        (role(name)?.details as { base: Record<string, unknown> }).base;
+      expect(base('Bruto')).toMatchObject({
+        attributes: { DES: 8, AST: 6, VIG: 10, VON: 8 },
+        hp: 70,
+        mp: 45,
+        initiative: 7,
+        vulnerabilities: 2,
+      });
+      expect(base('Mago')).toMatchObject({
+        hp: 40,
+        mp: 55,
+        defense: 1,
+        magicDefense: 2,
+      });
+      expect(base('Sentinela')).toMatchObject({
+        vulnerabilities: 2,
+        defense: 2,
+      });
+    });
+
+    const withRole = (change: (d: Record<string, unknown>) => void) => {
+      const brute = structuredClone(role('Bruto')) as SeedEntry & {
+        details: Record<string, unknown>;
+      };
+      // Only the details are under test: drop the links of the body.
+      brute.body = '';
+      change(brute.details);
+      return validateSeed([brute]);
+    };
+
+    it('rejects a base Initiative that is not (DES + AST) / 2 rounded down', () => {
+      const errors = withRole((d) => {
+        (d.base as { initiative: number }).initiative = 9;
+      });
+      expect(errors).toEqual([expect.stringContaining('initiative')]);
+    });
+
+    it('rejects a progression that skips a level', () => {
+      const errors = withRole((d) => {
+        // Level 50: no grant of the brute points at it.
+        (d.progression as unknown[]).splice(4, 1);
+      });
+      expect(errors).toEqual([expect.stringContaining('progression')]);
+    });
+
+    it('rejects a text that names a choice the entry does not offer', () => {
+      const errors = withRole((d) => {
+        const attacks = d.attacks as { effect?: string }[];
+        attacks[0].effect = 'Causa dano e o alvo fica {status}.';
+      });
+      expect(errors).toEqual([expect.stringContaining('{status}')]);
+    });
+  });
   describe('services and transport', () => {
     const named = (type: 'service' | 'transport', name: string) =>
       seedEntries.find((e) => e.type === type && e.name === name);
