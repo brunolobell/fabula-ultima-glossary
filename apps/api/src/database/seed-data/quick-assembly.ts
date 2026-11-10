@@ -12,7 +12,7 @@ import { quickAssemblyRoles, quickAssemblyRules } from './quick-assembly-data';
 import { SeedEntry } from './types';
 
 /** Bestiary Vol. I, printed pages (the PDF index is one higher). */
-const ASSEMBLY = '/criaturas?montagem=rapida';
+const ASSEMBLY = '/laboratorio-oroboros';
 
 const ROLE_NAME: Record<Role, string> = {
   brute: 'Bruto',

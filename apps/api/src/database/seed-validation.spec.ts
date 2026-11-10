@@ -730,7 +730,7 @@ describe('validateSeed', () => {
     });
 
     it('names the tool the Rules link to, the Laboratório Oroboros', () => {
-      const link = '[Laboratório Oroboros](/criaturas?montagem=rapida)';
+      const link = '[Laboratório Oroboros](/laboratorio-oroboros)';
       for (const name of [
         'Montagem Rápida',
         'Montagem Rápida: Bruto',
