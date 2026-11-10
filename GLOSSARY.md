@@ -11,7 +11,7 @@ A single self-contained reference page about one piece of the game, with a name,
 _Avoid_: Term, article, record, page
 
 **Entry Type**:
-The kind of an Entry: Rule, Class, Skill, Heroic Skill, Spell, Equipment, Service, Transport, or Guide.
+The kind of an Entry: Rule, Class, Skill, Heroic Skill, Spell, Equipment, Creature, Service, Transport, or Guide.
 _Avoid_: Category (a Fabula Ultima game term for weapons), kind (reserved for Equipment Kind)
 
 **Rule**:
@@ -54,6 +54,14 @@ _Avoid_: Item, gear
 Which of weapon, armor, shield, accessory, or artifact an Equipment Entry is.
 _Avoid_: Equipment type, equipment category
 
+**Creature**:
+An Entry for one adversary of the Game Master's: a stat block with a level, a Species, Attributes, Hit Points, defenses, damage Affinities and its attacks, spells and special rules. A Villain is a Creature the Game Master declares one; it is not a separate type. Shown to Readers as "criatura".
+_Avoid_: Monster ("Monstro" is a Species, not a type), enemy, adversary, NPC (the book also calls a Creature the Game Master builds an NPC)
+
+**Creature Group**:
+A Creature Entry with no stat block of its own that gathers the Creatures that fight together or belong together: the parts of one boss (a head and its tentacles) or the members of a family (such as the Ghosts). It carries the shared description, tactics and routine; each member is a Creature that points to it, and its page shows the members' stat blocks inline. Shown to Readers as "grupo de criaturas".
+_Avoid_: Family (one kind of Creature Group), Party (the heroes' group)
+
 **Custom Weapon**:
 A weapon a Reader assembles from a base weapon category plus customizations, following the Atlas High Fantasy rules. It is not an Entry. Shown to Readers as "arma personalizada".
 _Avoid_: Homebrew weapon, crafted weapon
@@ -91,11 +99,15 @@ The Brazilian edition of the Fabula Ultima core rulebook ("Livro Básico", Jamb�
 _Avoid_: Livro (alone), manual, SRD
 
 **Atlas**:
-One of the three Jambô supplement books, "Atlas High Fantasy", "Atlas Natural Fantasy" and "Atlas Techno Fantasy" (1st edition, November 2025), which add Classes, rare Equipment and artifacts. Together with the Core Rulebook they are the four **Sources** of an Entry.
+One of the three Jambô supplement books, "Atlas High Fantasy", "Atlas Natural Fantasy" and "Atlas Techno Fantasy" (1st edition, November 2025), which add Classes, rare Equipment and artifacts. Together with the Core Rulebook they are four of the five **Sources** of an Entry (the fifth is the Bestiary Vol. I).
 _Avoid_: Expansion, supplement (in the UI), setting book
 
+**Bestiary Vol. I**:
+The English-language "Fabula Ultima Bestiary, Volume I" (Need Games and Rooster Games, 2026), a fifth **Source** for Creatures. It has no Brazilian edition, so every Entry from it is the app's own translation into Portuguese: unofficial terms are marked as such, the original English name is kept and searchable, and the Page Reference is the page printed in the English book.
+_Avoid_: Bestiário (the Core Rulebook's own, shorter Bestiário is a different Source), Vol. 1
+
 **Page Reference**:
-The page number printed on the page, in the Entry's Source (the Core Rulebook unless the Entry says otherwise), where its full rules appear, shown on every Entry with the book's name. It is not the PDF page index, which is 4 higher in the Core Rulebook and 2 higher in the Atlas books.
+The page number printed on the page, in the Entry's Source (the Core Rulebook unless the Entry says otherwise), where its full rules appear, shown on every Entry with the book's name. It is not the PDF page index, which is 4 higher in the Core Rulebook, 2 higher in the Atlas books and 1 higher in the Bestiary Vol. I.
 _Avoid_: Source, citation, footnote
 
 **Summary**:
@@ -125,6 +137,10 @@ _Avoid_: Health, energy
 **Crisis**:
 The state of having current Hit Points at or below half of the maximum, rounded down. Shown to Readers as "Crise".
 _Avoid_: Bloodied, wounded
+
+**Species**:
+What kind of being a Creature is, one of eight: Construct, Demon, Elemental, Beast, Humanoid, Monster, Undead or Plant ("Construto", "Demônio", "Elemental", "Fera", "Humanoide", "Monstro", "Morto-vivo", "Planta"). It sets a few special rules (immunities, Vulnerabilities) and how many powers a built Creature starts with.
+_Avoid_: Race, kind, creature type
 
 **Inventory Points**:
 The pool a character spends to pull items from the backpack during play. Shown to Readers as "Pontos de Inventário (PI)".
@@ -165,6 +181,40 @@ _Avoid_: Villain level, rank
 **Escalation**:
 The Game Master's declaration that a Villain has taken a new, darker form one Villain Tier higher (a supreme Villain cannot escalate). The Villain counts as new, so its Ultima Points reset to the new Tier's value. Shown to Readers as "escalonamento".
 _Avoid_: Level up, evolution (neither a Skill Level nor a Class level is involved)
+
+### Building Creatures
+
+**Rank**:
+How much of a fight a Creature is worth: soldier (about one Player's character of its level), elite (two soldiers) or champion (any number of soldiers it replaces; a boss is a champion). Shown to Readers as "patente" (soldado, elite, campeão).
+_Avoid_: Tier (reserved for Villain Tier), class, grade
+
+**Affinity**:
+How a Creature fares against one of the nine damage types: Vulnerable, Resistant, Immune, Absorbs, or none. Shown to Readers as "Afinidade".
+_Avoid_: Weakness, resistance (alone; Resistant is one Affinity)
+
+**Study**:
+The action in which a character tries to learn about someone or something; a Creature's stat block may list what a successful Study reveals. Shown to Readers as "Estudo".
+_Avoid_: Scan, identify, lore check
+
+**Quick Assembly**:
+The method in the Bestiary Vol. I for building a Creature fast: pick a Role, a level and a Rank, copy that Role's profile, then add Role Skills, Boss Skills, Negative Skills and a Species's options. It is what the Creature builder follows. Shown to Readers as "Montagem Rápida" (unofficial translation).
+_Avoid_: Standard creation (the Core Rulebook's own method is not offered by the app's builder)
+
+**Creature Assembler**:
+The modal on the Creatures list where a Reader builds a Creature by following Quick Assembly. Nothing built there is saved: the Reader can only copy the finished stat block as text, and closing the modal or reloading the page discards it. Shown to Readers as "Montagem de Criaturas", opened by the button "Montar criatura".
+_Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb for invoking a Trait or Bond), creature builder, generator
+
+**Role**:
+One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation).
+_Avoid_: Class (a Class belongs to a Player's character), archetype
+
+**Boss Skill**:
+A special ability that only a champion Creature may take under Quick Assembly, giving a boss its own gimmick. Shown to Readers as "poder de chefe" (unofficial translation).
+_Avoid_: Villain Skill, Heroic Skill (a different thing, taken by a Player's character)
+
+**Negative Skill**:
+A deliberate weakness a Creature may take under Quick Assembly in exchange for an extra Role Skill or Boss Skill. Shown to Readers as "poder negativo" (unofficial translation).
+_Avoid_: Flaw, drawback, debuff
 
 ### Travel and money
 
