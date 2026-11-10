@@ -241,6 +241,14 @@ function validateQuickAssembly(
       );
   }
   if (d.amounts[0]?.fromLevel !== 5) fail('amounts must start at level 5');
+  const groupIds = new Set(d.bossGroups.map((g) => g.id));
+  if (groupIds.size !== d.bossGroups.length) fail('boss groups are repeated');
+  const bossIds = new Set<string>();
+  for (const skill of d.bossSkills) {
+    checkSkill(skill, 'boss skill', bossIds, fail, expectSpell, npcIds);
+    if (!skill.group || !groupIds.has(skill.group))
+      fail(`boss skill "${skill.id}" is in the unknown group "${skill.group}"`);
+  }
   const negativeIds = new Set<string>();
   for (const negative of d.negativeSkills) {
     checkSkill(

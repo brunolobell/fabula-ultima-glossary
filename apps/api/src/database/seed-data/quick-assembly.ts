@@ -105,6 +105,24 @@ const skillLine = (skill: RoleSkill) => {
 const negativeLine = (skill: RoleSkill) =>
   `- **${skill.name}** (${skill.advice}): ${skill.effects.map((e) => readable(e.text, skill)).join(' ')}`;
 
+const bossLine = (skill: RoleSkill) => {
+  const text = [
+    ...skill.effects.map((e) => readable(e.text, skill)),
+    ...(skill.spells ? [grantText(skill.spells)] : []),
+  ].join(' ');
+  return `- **${skill.name}**${skill.advice ? ` (${skill.advice})` : ''}: ${text}`;
+};
+
+const bossSection = quickAssemblyRules.bossGroups
+  .map(
+    (group) =>
+      `### ${group.name}\n\n${group.summary}\n\n${quickAssemblyRules.bossSkills
+        .filter((b) => b.group === group.id)
+        .map(bossLine)
+        .join('\n')}`,
+  )
+  .join('\n\n');
+
 const roleTable = (role: Role) => {
   const d = quickAssemblyRoles[role];
   const dice = (a: Partial<Record<AttributeCode, number>>) =>
@@ -233,6 +251,18 @@ ${amountsTable}
 Um poder negativo dá ao NPC uma desvantagem própria e, em troca, **um poder de função ou de chefe a mais**. A maioria foi pensada para NPCs com uma função específica no conflito, e o conselho do livro vem junto do nome.
 
 ${quickAssemblyRules.negativeSkills.map(negativeLine).join('\n')}
+
+## Poderes de chefe
+
+Um campeão recebe poderes de chefe conforme a patente, e um poder negativo pode comprar um para um soldado. Algumas regras do livro:
+
+- Alguns poderes de chefe exigem Pontos de Ultima e foram pensados para vilões.
+- Alguns dependem de o chefe estar em crise. Em um conflito de Relógios, em que os PV não contam, considere o chefe em crise enquanto metade ou mais do relógio de resolução dos PJs estiver preenchida.
+- Para dar mais poderes de chefe, troque-os por poderes de função na mesma quantidade, mas tome muito cuidado com mais de dois no mesmo chefe e evite vários da mesma lista.
+- Cada poder combina de um jeito com os poderes dos outros NPCs da cena: procure sinergias e crie situações que desafiem os PJs sem esmagá-los. O desafio deve ser interessante e até tenso, nunca malvado ou injusto.
+- As escolhas de um poder de chefe são feitas ao criar o chefe, não a cada uso.
+
+${bossSection}
 
 ## Patentes
 

@@ -658,6 +658,15 @@ describe('validateSeed', () => {
       });
     });
 
+    /** The NPC spell Rule without its body links: what the process Rule's spell references need. */
+    const npcAlone = () =>
+      ({
+        ...seedEntries.find(
+          (e) => e.type === 'rule' && e.name === 'Feitiços de NPC',
+        )!,
+        body: '',
+      }) as SeedEntry;
+
     /** A Role Rule on its own: no body links, and no spell references (their targets are not in the list). */
     const aloneWithoutSpells = (name: string) => {
       const clone = structuredClone(role(name)) as SeedEntry & {
@@ -735,6 +744,173 @@ describe('validateSeed', () => {
       );
     });
 
+    describe('boss skills', () => {
+      type Boss = {
+        id: string;
+        name: string;
+        group: string;
+        effects: { to: string; text: string }[];
+        slots?: {
+          id: string;
+          count: number;
+          min?: number;
+          options: unknown[];
+        }[];
+        spells?: { from: { id: string; minLevel?: number }[] };
+      };
+      type Group = { id: string; name: string; summary: string };
+      const process = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Montagem Rápida',
+      );
+      const details = () =>
+        process?.details as unknown as {
+          bossSkills: Boss[];
+          bossGroups: Group[];
+        };
+      const inGroup = (group: string) =>
+        details()
+          .bossSkills.filter((b) => b.group === group)
+          .map((b) => b.name);
+
+      it('lists the 40 Boss Skills of the book (p. 54-67) in their 7 groups', () => {
+        expect(details().bossSkills).toHaveLength(40);
+        expect(details().bossGroups.map((g) => g.name)).toEqual([
+          'Campo de batalha',
+          'Controle',
+          'Destrutivos',
+          'Elementais',
+          'Objetivo',
+          'Invocação',
+          'Sobrevivência',
+        ]);
+        expect(inGroup('battlefield')).toEqual([
+          'Aura de Sofrimento',
+          'Vida e Morte',
+          'Perto e Longe',
+          'Zumbificação',
+        ]);
+        expect(inGroup('control')).toEqual([
+          'Contra-ataque Automático',
+          'Condição na Crise',
+          'Marca da Dor Compartilhada',
+          'Observar e Punir',
+          'Decreto do Tirano',
+          'Você Acabou de Provar Meu Ponto',
+        ]);
+        expect(inGroup('destructive')).toEqual([
+          'Carregador de Catástrofe',
+          'Condição Corrosiva',
+          'Formação Destrutiva',
+          'Devastação',
+          'Condenação',
+          'Aposta Infernal',
+          'Nihilo',
+        ]);
+        expect(inGroup('elemental')).toEqual([
+          'Elementos Binários',
+          'Crise Elemental',
+          'Postura Elemental',
+        ]);
+        expect(inGroup('objective')).toEqual([
+          'Desgaste',
+          'Contagem Regressiva',
+          'Reviravolta Cruel',
+          'Vantagem Esmagadora',
+          'Eu Conheço Vocês',
+          'Influência Ruinosa',
+        ]);
+        expect(inGroup('summoner')).toEqual([
+          'Chamar Reforços',
+          'Contra-invocação',
+          'Reforços de Emergência',
+          'Regeneração de Partes',
+          'Coordenação Perfeita',
+        ]);
+        expect(inGroup('survival')).toEqual([
+          'Afinidades Adaptativas',
+          'Camuflagem',
+          'Pegue-me se Puder',
+          'Postura Defensiva',
+          'Regeneração',
+          'Segundo Fôlego',
+          'Defesas Temporárias',
+          'Desfazer',
+          'Formação Vampírica',
+        ]);
+      });
+
+      it('keeps the choices the book asks for', () => {
+        const by = (name: string) =>
+          details().bossSkills.find((b) => b.name === name);
+        // "Choose two to five stances", then one change trigger.
+        expect(
+          by('Postura Elemental')?.slots?.map((s) => [
+            s.id,
+            s.count,
+            s.min,
+            s.options.length,
+          ]),
+        ).toEqual([
+          ['stances', 5, 2, 7],
+          ['trigger', 1, undefined, 4],
+          ['twist', 1, undefined, 5],
+        ]);
+        // "Choose one, two, or three" forbidden actions.
+        expect(by('Decreto do Tirano')?.slots?.[0]).toMatchObject({
+          count: 3,
+          min: 1,
+        });
+        expect(by('Decreto do Tirano')?.slots?.[0].options).toHaveLength(7);
+        // "Choose one or both: Hit Points, Mind Points".
+        expect(by('Regeneração')?.slots?.[0]).toMatchObject({
+          count: 2,
+          min: 1,
+        });
+        expect(by('Defesas Temporárias')?.slots?.[0].options).toHaveLength(2);
+      });
+
+      it('makes Devastação teach the spell, for level 30 and up', () => {
+        const spell = details().bossSkills.find((b) => b.name === 'Devastação');
+        expect(spell?.spells?.from).toEqual([
+          expect.objectContaining({ id: 'devastation', minLevel: 30 }),
+        ]);
+      });
+
+      it('lists them by group in the page of the process Rule, naming the choices', () => {
+        expect(process?.body).toContain('## Poderes de chefe');
+        expect(process?.body).toContain('### Campo de batalha');
+        expect(process?.body).toContain('**Aura de Sofrimento**');
+        expect(process?.body).toContain('**Postura Elemental**');
+        expect(process?.body).toContain('(escolha: condição)');
+        expect(process?.body).not.toMatch(/\{\w+\}/);
+      });
+
+      const withBoss = (
+        change: (b: Boss, d: { bossGroups: Group[] }) => void,
+      ) => {
+        const rule = structuredClone(process) as SeedEntry & {
+          details: { bossSkills: Boss[]; bossGroups: Group[] };
+        };
+        rule.body = '';
+        change(rule.details.bossSkills[0], rule.details);
+        return validateSeed([npcAlone(), rule]);
+      };
+
+      it('rejects a Boss Skill of a group that does not exist', () => {
+        const errors = withBoss((b) => {
+          b.group = 'fantasma';
+        });
+        expect(errors).toEqual([expect.stringContaining('"fantasma"')]);
+      });
+
+      it('rejects a Boss Skill text that names a choice it does not offer', () => {
+        const errors = withBoss((b) => {
+          b.effects[0].text = 'Sofre {nada}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{nada}')]);
+      });
+    });
+
     describe('negative skills', () => {
       type Negative = {
         id: string;
@@ -801,7 +977,7 @@ describe('validateSeed', () => {
         };
         rule.body = '';
         change(rule.details.negativeSkills[0]);
-        return validateSeed([rule]);
+        return validateSeed([npcAlone(), rule]);
       };
 
       it('rejects a Negative Skill text that names a choice it does not offer', () => {
@@ -818,7 +994,7 @@ describe('validateSeed', () => {
           };
           rule.body = '';
           rule.details.negativeSkills[1].id = rule.details.negativeSkills[0].id;
-          return validateSeed([rule]);
+          return validateSeed([npcAlone(), rule]);
         })();
         expect(errors).toEqual([expect.stringContaining('repeated')]);
       });

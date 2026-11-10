@@ -7,6 +7,7 @@ import type {
   RoleAttackTemplate,
 } from '../../entries/entry-types';
 
+import { bossGroups, bossSkills } from './quick-assembly-boss';
 import { negativeSkills } from './quick-assembly-negative';
 import { quickAssemblySkills } from './quick-assembly-skills';
 
@@ -29,6 +30,8 @@ export const quickAssemblyRules: QuickAssemblyRuleDetails = {
   extraHp: 10,
   villainTiers: { minor: 5, major: 10, supreme: 15 },
   negativeSkills,
+  bossSkills,
+  bossGroups,
 };
 
 const status = (id: string, count = 1, only?: string[]): AssemblySlot => {
