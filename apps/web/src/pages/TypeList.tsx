@@ -174,7 +174,7 @@ export function TypeList() {
               className="btn-primary"
               onClick={() => setAssemblerOpen(true, false)}
             >
-              Montar criatura
+              Laboratório Oroboros
             </button>{' '}
             <span className="text-[15px] text-muted">
               Monte uma criatura pela Montagem Rápida. Nada é salvo.

@@ -669,12 +669,12 @@ describe('Creatures', () => {
     await waitFor(() => expect(link).toHaveTextContent('Criaturas1'));
   });
 
-  it('adds a "Montar criatura" shortcut that opens the Assembler and is never the current page', async () => {
+  it('adds a "Laboratório Oroboros" shortcut that opens the Assembler and is never the current page', async () => {
     mockApi();
     renderAt('/criaturas');
     const nav = within(menu());
     fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
-    const shortcut = nav.getByRole('link', { name: 'Montar criatura' });
+    const shortcut = nav.getByRole('link', { name: 'Laboratório Oroboros' });
     expect(shortcut).toHaveAttribute('href', '/criaturas?montagem=rapida');
     expect(shortcut).not.toHaveAttribute('aria-current');
     expect(nav.getByRole('link', { name: /^Criaturas/ })).toHaveAttribute('aria-current', 'page');

@@ -101,7 +101,7 @@ const GROUPS: MenuGroup[] = [
         types: ['creature'],
       },
       {
-        label: 'Montar criatura',
+        label: 'Laboratório Oroboros',
         icon: GiMagicSwirl,
         to: `${typePath('creature')}?${ASSEMBLER_PARAM}=${ASSEMBLER_METHOD}`,
         types: ['creature'],

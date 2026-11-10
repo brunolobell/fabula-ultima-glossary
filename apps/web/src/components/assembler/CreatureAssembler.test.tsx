@@ -30,7 +30,7 @@ const openDialog = async () => {
   mockApi();
   renderAt('/criaturas?montagem=rapida');
   const dialog = await screen.findByRole('dialog', {
-    name: 'Montagem de Criaturas',
+    name: 'Laboratório Oroboros',
   });
   return within(dialog);
 };
@@ -44,17 +44,17 @@ describe('Creature Assembler: opening and closing', () => {
     renderAt('/criaturas');
     const main = within(screen.getByRole('main'));
     fireEvent.click(
-      await main.findByRole('button', { name: 'Montar criatura' }),
+      await main.findByRole('button', { name: 'Laboratório Oroboros' }),
     );
     expect(
-      await screen.findByRole('dialog', { name: 'Montagem de Criaturas' }),
+      await screen.findByRole('dialog', { name: 'Laboratório Oroboros' }),
     ).toBeInTheDocument();
   });
 
   it('opens straight from a link with ?montagem=rapida, as the Rules link to it', async () => {
     const dialog = await openDialog();
     expect(
-      dialog.getByRole('heading', { name: 'Montagem de Criaturas' }),
+      dialog.getByRole('heading', { name: 'Laboratório Oroboros' }),
     ).toBeInTheDocument();
   });
 
@@ -63,7 +63,7 @@ describe('Creature Assembler: opening and closing', () => {
     fireEvent.click(dialog.getByRole('button', { name: 'Fechar' }));
     await waitFor(() =>
       expect(
-        screen.queryByRole('heading', { name: 'Montagem de Criaturas' }),
+        screen.queryByRole('heading', { name: 'Laboratório Oroboros' }),
       ).toBeNull(),
     );
   });
@@ -73,7 +73,7 @@ describe('Creature Assembler: opening and closing', () => {
     renderAt('/regras');
     await screen.findByRole('heading', { level: 1, name: 'Regras' });
     expect(
-      screen.queryByRole('button', { name: 'Montar criatura' }),
+      screen.queryByRole('button', { name: 'Laboratório Oroboros' }),
     ).toBeNull();
   });
 });
@@ -583,7 +583,9 @@ describe('Creature Assembler: older Rule data', () => {
     renderAt('/criaturas');
     const main = within(screen.getByRole('main'));
     await main.findByText('Cactonto');
-    expect(main.queryByRole('button', { name: 'Montar criatura' })).toBeNull();
+    expect(
+      main.queryByRole('button', { name: 'Laboratório Oroboros' }),
+    ).toBeNull();
   });
 
   it('does not open from a link either', async () => {
@@ -591,7 +593,7 @@ describe('Creature Assembler: older Rule data', () => {
     renderAt('/criaturas?montagem=rapida');
     await screen.findByText('Cactonto');
     expect(
-      screen.queryByRole('dialog', { name: 'Montagem de Criaturas' }),
+      screen.queryByRole('dialog', { name: 'Laboratório Oroboros' }),
     ).toBeNull();
   });
 });

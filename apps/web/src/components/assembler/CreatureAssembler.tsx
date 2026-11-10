@@ -226,7 +226,7 @@ function AttackEditor({
 }
 
 /**
- * The Creature Assembler ("Montagem de Criaturas"): builds a Creature by Quick
+ * The Creature Assembler ("Laboratório Oroboros"): builds a Creature by Quick
  * Assembly. The draft lives in this component's state only; the stat block can be
  * copied as text, and nothing is saved.
  */
@@ -332,7 +332,7 @@ export function CreatureAssembler({
   );
 
   return (
-    <Modal open={open} onClose={onClose} title="Montagem de Criaturas">
+    <Modal open={open} onClose={onClose} title="Laboratório Oroboros">
       <div className="flex-1 overflow-y-auto px-4 pb-6 sm:px-6">
         <p className="mt-3 text-muted">
           Siga a <strong>Montagem Rápida</strong> do Bestiary Vol. I (livro em
