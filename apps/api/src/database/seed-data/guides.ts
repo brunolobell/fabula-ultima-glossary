@@ -231,8 +231,13 @@ Os passos lembram os da criação de mundo, mas **não precisam seguir uma ordem
       {
         title: 'Recursos',
         intro:
-          'Pontos de Vida, Pontos de Mana e Pontos de Fabula: o que cada um representa e como são gastos.',
-        entries: ['pontos-de-vida', 'pontos-de-mana', 'pontos-de-fabula'],
+          'Pontos de Vida, Pontos de Mana e Pontos de Fabula: o que cada um representa e como são gastos. Os Pontos de Ultima são a reserva dos vilões, do lado do mestre.',
+        entries: [
+          'pontos-de-vida',
+          'pontos-de-mana',
+          'pontos-de-fabula',
+          'pontos-de-ultima',
+        ],
       },
       {
         title: 'Quando as coisas apertam',

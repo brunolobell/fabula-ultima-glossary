@@ -46,16 +46,92 @@ O livro trata dos Laços em detalhe na página 56.`,
 
   rule(
     'Pontos de Fabula',
-    35,
-    'Moeda de troca poderosa: você os ganha ao superar adversidades e os gasta para evocar Traços e Laços, reforçar efeitos especiais ou acrescentar elementos à história.',
-    `## Como funcionam
+    96,
+    'Moeda de troca dos PJs: cada um começa com 3, ganha mais ao enfrentar adversidades e os gasta para evocar Traços e Laços, mudar a história ou ativar Poderes. Gastá-los também faz o grupo subir de nível.',
+    `## Ganhar
 
-- **Ganhar.** Você recebe Pontos de Fabula ao superar adversidades.
-- **Gastar.** Eles pagam a evocação de [[tracos]] e [[lacos]] e melhoram uma variedade de efeitos especiais.
-- **Moldar a história.** Jogadores também podem gastá-los para apresentar novos elementos na história e moldar o mundo ao redor de seus personagens.
+Cada personagem recém-criado começa com **3** Pontos de Fabula. Depois disso, ganha-se assim:
 
-O livro detalha esse recurso na página 96.`,
+- **Sessão sem pontos.** Se um PJ começa a sessão sem nenhum Ponto de Fabula, recebe **1**.
+- **Falha crítica.** Sempre que um PJ rola uma falha crítica, recebe **1**.
+- **Vilão em cena.** Sempre que um vilão entra em cena, cada PJ recebe **1**, mesmo em cenas do mestre sem PJs presentes (veja "Vilões e Pontos de Fabula" abaixo).
+- **Rendição.** Um PJ que chega a 0 [[pontos-de-vida]] e decide se render recebe **2** (veja [[zero-ponto-de-vida]]).
+- **Falha automática (regra opcional, p. 47).** Se um PJ evoca um Laço ou Traço para falhar automaticamente em um teste, recebe **1**.
+
+Não há limite máximo de Pontos de Fabula. Mas gastá-los é uma das principais formas de ganhar pontos de experiência e subir de nível (p. 226), então guardá-los demais atrasa o grupo inteiro.
+
+## Gastar
+
+| Efeito | Custo | O que faz |
+| --- | --- | --- |
+| Mudar a história | 1 | Muda um fato existente ou acrescenta um novo. |
+| Evocar [[lacos]] | 1 | Soma a força do Laço a um teste (p. 47). |
+| Evocar [[tracos]] | 1 | Rola novamente os dados de um teste (p. 46). |
+| Usar um Poder | varia | Ativa um [[classes-e-poderes]] que exige Pontos de Fabula. |
+
+## Mudar a história
+
+Gastando 1 Ponto de Fabula, o jogador faz uma afirmação sobre a história: molda parte do mundo, do povo ou das criaturas para preencher lacunas, abrir uma oportunidade, ajustar um detalhe a seu favor ou até trazer uma reviravolta conveniente. Limites:
+
+- Para alterar ou acrescentar detalhes a um personagem, local ou item que o **mestre** já estabeleceu, é preciso a permissão dele.
+- Se a mudança afeta diretamente outro PJ, é preciso a permissão do **jogador** dele.
+- Não dá para negar uma afirmação já feita por alguém, só expandi-la ou dar-lhe um toque especial.
+- Não dá para fazer mudanças **mecânicas**: ganhar ou mudar um Poder, alterar as Vulnerabilidades de uma criatura, causar uma condição. O mestre pode decidir que o elemento novo dá alguma vantagem mecânica, mas a decisão é dele.
+- Os NPCs criados assim ficam sob controle do mestre.
+
+Antes de jogar, combinem na mesa quais elementos todos se sentem à vontade para mudar (veja [[antes-de-comecar-sessao-zero]]).
+
+> **Exemplo:** o grupo derrota um golem e fica com um disco de marfim escrito numa língua antiga que ninguém lê. Uma jogadora gasta 1 Ponto de Fabula e afirma que seu personagem conhece um estudioso que vive ali perto. Como isso não contradiz nada já estabelecido, vira verdade na hora.
+
+> **Exemplo:** o grupo encontra um dragão, apresentado pelo mestre. Um jogador gasta 1 Ponto de Fabula para dizer que ele está dormindo. Como o dragão é do mestre, é preciso permissão; o mestre concorda, mas decide que não é um sono mágico e o grupo ainda terá de fazer testes para não acordá-lo.
+
+## Vilões e Pontos de Fabula
+
+O vilão que aparece em cena dá 1 Ponto de Fabula a cada PJ. Com ressalvas:
+
+- **Várias identidades.** Se o vilão tem mais de uma, os PJs só ganham quando ele aparece como "persona de antagonista". Depois que a farsa é descoberta, ganham sempre que ele entra em cena, disfarçado ou não.
+- **Vários vilões.** Cada PJ ganha 1 por vilão na cena, até **3** por cena. Vilões que vão se unir durante a campanha podem ser tratados como um só: o grupo divide uma única reserva de [[pontos-de-ultima]] e foge junto.
+- **Várias cenas.** Se a presença de um vilão passa por cenas seguidas, os PJs só ganham 1 na **primeira** delas.
+
+Quando o grupo está com poucos Pontos de Fabula, o mestre pode fazer uma cena do mestre mostrando um vilão em ação: avança a história e dá "energia" aos heróis. Do outro lado, os vilões têm os [[pontos-de-ultima]].`,
     ['recurso', 'narrativa'],
+  ),
+
+  rule(
+    'Pontos de Ultima',
+    101,
+    'Reserva do vilão, o reflexo sombrio dos Pontos de Fabula: 5, 10 ou 15 conforme o porte (menor, maior, supremo), gasta em fuga, em evocar um Traço ou em recuperação, e nunca recarregada. Quando acaba, o vilão deixa de ser vilão.',
+    `## Pontos iniciais
+
+Ao apresentar um vilão, o mestre decide se ele é **menor**, **maior** ou **supremo**; pode manter essa escolha em segredo ou revelá-la. Ela define os Pontos de Ultima do vilão:
+
+| Vilão | Pontos de Ultima | Exemplos |
+| --- | --- | --- |
+| Menor | 5 | Comandantes inimigos, monstros únicos e infames, antagonistas que causam problemas em pequenos assentamentos. |
+| Maior | 10 | Tiranos, magos poderosos, criaturas lendárias, entidades que ameaçam países inteiros. |
+| Supremo | 15 | Arquidemônios, deuses alienígenas que buscam destruição ou dominação, entidades imortais. |
+
+## Gastar
+
+| Efeito | Custo | O que faz |
+| --- | --- | --- |
+| Fuga | 1 | O vilão sai de cena em segurança; o mestre descreve como (talvez deixando capangas para cuidar dos heróis). |
+| Evocar [[tracos]] | 1 | Depois de fazer um teste, o vilão evoca um Traço e rola novamente um ou ambos os dados (p. 46). |
+| Recuperação | 1 | Gastando uma ação, o vilão se recupera de todas as condições e recupera 50 [[pontos-de-mana]]. |
+
+Ao contrário dos PJs, que ganham [[pontos-de-fabula]] de várias formas, o vilão **não recarrega** seus Pontos de Ultima: eles representam a determinação dele de perseguir seus objetivos. Quando acabam, o personagem deixa de ser vilão e vira um NPC comum. O mestre também pode escalonar o vilão.
+
+## Escalonamento
+
+A qualquer momento, o mestre pode declarar que um vilão assumiu uma nova forma, com mais poderes e ambições mais sombrias. Na história, é o instante em que ele rejeita a chance de redenção e se obceca ainda mais pelo objetivo.
+
+- Um vilão **menor** pode virar **maior**; um **maior** pode virar **supremo**; um **supremo** não fica mais poderoso.
+- Depois da transformação, ele conta como um **novo vilão**: na primeira vez que aparecer em cena, seus Pontos de Ultima voltam ao valor do novo porte.
+- Se um vilão **sem Pontos de Ultima** chega a 0 [[pontos-de-vida]], pode escalonar durante a cena. Isso devolve seus pontos e ele não precisa mais se render (veja [[zero-ponto-de-vida]]).
+- Se o vilão escalona **em cena**, é tratado como novo vilão na hora e **cada jogador recebe 1 Ponto de Fabula**.
+
+Para decidir se um vilão deve escalonar, o mestre considera a importância dele para a história, sua personalidade e como os heróis o enfrentam. O escalonamento mostra que o grupo pode vencer um conflito e ainda assim piorar a situação. Normalmente é melhor que o vilão seja derrotado (talvez desanime, ou perceba que estava errado e se alie aos PJs). Escalonar em ritmo espaçado torna os vilões mais memoráveis: o livro sugere de **dois a quatro** escalonamentos por campanha.`,
+    ['recurso', 'vilão', 'mestre'],
   ),
 
   rule(
@@ -151,10 +227,10 @@ Inimigos mais fracos ou sem consciência (um zumbi, um drone autômato, uma part
 
 Ao chegar a 0 PV, o vilão escolhe entre **fuga** e **rendição**.
 
-- **Fuga.** O vilão gasta **1 Ponto de Ultima** (página 101) e sai de cena em segurança; o mestre descreve como. Sem Pontos de Ultima, ele ainda pode escapar escalonando para uma versão mais perigosa de si (página 102).
+- **Fuga.** O vilão gasta **1 Ponto de Ultima** (veja [[pontos-de-ultima]]) e sai de cena em segurança; o mestre descreve como. Sem Pontos de Ultima, ele ainda pode escapar escalonando para uma versão mais perigosa de si.
 - **Rendição.** O vilão se rende e passa a ser tratado como qualquer outro NPC: seu destino fica nas mãos de quem o derrotou. É um bom momento para os jogadores propor um arco de redenção, que termine com o antagonista virando aliado (e talvez um novo PJ).
 
-Um vilão cujos propósito e objetivos ainda valem **só se rende se não tiver mais Pontos de Ultima**. O mestre pode, porém, considerar a rendição de um vilão cujas motivações foram resolvidas ou removidas, ou cuja sobrevivência alongaria a campanha sem necessidade (por exemplo, o chefe final derrotado ainda com 2 ou 3 Pontos de Ultima).
+Um vilão cujos propósito e objetivos ainda valem **só se rende se não tiver mais [[pontos-de-ultima]]**. O mestre pode, porém, considerar a rendição de um vilão cujas motivações foram resolvidas ou removidas, ou cuja sobrevivência alongaria a campanha sem necessidade (por exemplo, o chefe final derrotado ainda com 2 ou 3 Pontos de Ultima).
 
 > **Exemplo:** sob a mira da pirata celeste Morgan, o comandante Duna pula do convés e despenca rumo ao oceano. Quando Morgan olha por cima do corrimão, ele está agarrado a uma enorme salamandra alada, que o leva embora em direção à capital.
 
@@ -181,7 +257,7 @@ PJs que se sacrificam aceitam a morte e, em geral, **não voltam à vida**: entr
 O PJ fica **inconsciente** e incapaz de agir ou afetar a cena com efeitos ou habilidades, **mesmo que seus PV sejam restaurados** a mais de 0. Em um conflito, ele sai da lista de participantes.
 
 - O mestre **não pode matar** um PJ rendido, mas pode impor uma **consequência** (agora ou mais tarde), escolhida na lista abaixo ou qualquer outra que faça sentido.
-- O PJ que se rende recebe **2 Pontos de Fabula**.
+- O PJ que se rende recebe **2** [[pontos-de-fabula]].
 - No início da próxima cena em que aparecer, recupera a consciência e PV suficientes para ficar em [[crise]].
 - Mesmo severas, as consequências devem evitar ferimentos incapacitantes ou permanentes, pelo clima geral de Fabula Ultima.
 - Se vários PJs (ou o grupo todo) se renderem, o mestre impõe consequências separadas ou uma única reviravolta dramática, como uma "derrota roteirizada" de videogame.

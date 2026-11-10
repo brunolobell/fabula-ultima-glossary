@@ -127,8 +127,24 @@ One of the divisions of a Clock; filling or erasing Clock Sections is how a Cloc
 _Avoid_: Slice, segment, tick
 
 **Fabula Points**:
-The meta-currency spent to invoke Traits and Bonds. Shown to Readers as "Pontos de Fabula".
+The meta-currency of the Players' characters. Each starts with three, gains more by facing adversity (including every time a Villain enters a scene), and spends them to invoke Traits and Bonds, to change the story, or to power certain Skills. Spending them is also a main way the Party earns experience. Shown to Readers as "Pontos de Fabula".
 _Avoid_: Hero points
+
+**Ultima Points**:
+The Game Master's counterpart to Fabula Points, held by a Villain: a fixed reserve set by its Villain Tier, spent to flee, invoke a Trait or recover, and never recharged. A Villain with none left is an ordinary NPC. Shown to Readers as "Pontos de Ultima".
+_Avoid_: Boss points, villain HP
+
+**Villain**:
+A powerful antagonist the Game Master declares to be one, with a Villain Tier and a reserve of Ultima Points. Its entering a scene gives every Player's character a Fabula Point. Shown to Readers as "vilão".
+_Avoid_: Boss, enemy (an ordinary enemy is an NPC)
+
+**Villain Tier**:
+How important a Villain is to the story: minor, major or supreme, giving 5, 10 or 15 Ultima Points. The Game Master may keep it secret. Shown to Readers as "vilão menor / maior / supremo".
+_Avoid_: Villain level, rank
+
+**Escalation**:
+The Game Master's declaration that a Villain has taken a new, darker form one Villain Tier higher (a supreme Villain cannot escalate). The Villain counts as new, so its Ultima Points reset to the new Tier's value. Shown to Readers as "escalonamento".
+_Avoid_: Level up, evolution (neither a Skill Level nor a Class level is involved)
 
 ### Travel and money
 
