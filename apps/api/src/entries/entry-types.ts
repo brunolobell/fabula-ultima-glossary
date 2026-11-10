@@ -427,6 +427,45 @@ export interface AssemblySlot {
   options: { value: string; label: string }[];
 }
 
+/** One option a Species offers under Quick Assembly (Bestiary Vol. I p. 70-73). */
+export interface SpeciesOption {
+  id: string;
+  label: string;
+  kind: 'hp' | 'spell' | 'rule' | 'role-skill' | 'resistances' | 'absorb';
+  /** How many times it may be taken; once when absent. */
+  max?: number;
+  /** `hp`: how many Hit Points it adds. */
+  amount?: number;
+  /** A special rule the option adds (flying, thorns, a bonus, an immunity). */
+  rule?: { name: string; text: string };
+  /** `spell`: the spells it offers, with +10 PM. */
+  spells?: SpellGrant;
+  /** `absorb`: swaps a Resistance or an Immunity for an Absorption. */
+  swaps?: 'resistant' | 'immune';
+  /** `absorb`: the damage type it swaps, when the book fixes it. */
+  swapType?: DamageType;
+  slots?: AssemblySlot[];
+}
+
+/** The rule of one Species under Quick Assembly; it replaces the Livro Básico's (p. 304-305). */
+export interface SpeciesRule {
+  species: Species;
+  /** What the Species always has. */
+  affinities: Partial<Record<DamageType, Affinity>>;
+  statusImmunities: string[];
+  /** Resistances / Immunities to damage types of the Reader's choice. */
+  resistances?: number;
+  immunities?: number;
+  /** The Reader picks one Vulnerability from these types. */
+  vulnerability?: DamageType[];
+  /** How many options it takes. */
+  picks: number;
+  /** An optional extra Vulnerability that buys more options. */
+  extra?: { vulnerability: DamageType[]; picks: number };
+  note?: string;
+  options: SpeciesOption[];
+}
+
 /** The Quick Assembly rules every Role shares (Bestiary Vol. I p. 25-29). */
 export interface QuickAssemblyRuleDetails {
   forge: 'quick-assembly';
@@ -452,6 +491,8 @@ export interface QuickAssemblyRuleDetails {
   /** The Boss Skills (p. 54-67) a champion takes, and the groups the book sorts them in. */
   bossSkills: RoleSkill[];
   bossGroups: { id: string; name: string; summary: string }[];
+  /** The eight Species rules (p. 70-73). */
+  species: SpeciesRule[];
 }
 
 /** One "choose one option" of a Role's basic attack. */

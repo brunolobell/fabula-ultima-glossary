@@ -3,6 +3,8 @@ import {
   Rank,
   Role,
   RoleSkill,
+  SpeciesOption,
+  SpeciesRule,
   SpellGrant,
 } from '../../entries/entry-types';
 import { rule } from './helpers';
@@ -121,6 +123,109 @@ const bossSection = quickAssemblyRules.bossGroups
         .map(bossLine)
         .join('\n')}`,
   )
+  .join('\n\n');
+
+const SPECIES_PT: Record<string, string> = {
+  beast: 'Fera',
+  construct: 'Construto',
+  demon: 'Demônio',
+  elemental: 'Elemental',
+  humanoid: 'Humanoide',
+  monster: 'Monstro',
+  plant: 'Planta',
+  undead: 'Morto-vivo',
+};
+
+const TYPE_PT: Record<string, string> = {
+  physical: 'físico',
+  air: 'ar',
+  bolt: 'raio',
+  dark: 'trevas',
+  earth: 'terra',
+  fire: 'fogo',
+  ice: 'gelo',
+  light: 'luz',
+  poison: 'veneno',
+};
+
+const STATUS_NAME: Record<string, string> = {
+  dazed: 'atordoado',
+  enraged: 'enfurecido',
+  poisoned: 'envenenado',
+  shaken: 'abalado',
+  slow: 'lento',
+  weak: 'fraco',
+};
+
+const dmg = (type: string) =>
+  type === 'physical' ? 'físico' : `de ${TYPE_PT[type]}`;
+const joinE = (items: string[]) =>
+  items.length <= 1
+    ? (items[0] ?? '')
+    : `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`;
+
+const optionLine = (o: SpeciesOption) => {
+  const times = o.max && o.max > 1 ? ` (até ${o.max} vezes)` : '';
+  const text = (() => {
+    if (o.rule) {
+      return o.rule.text.replace(/\{(\w+)\}/g, (_, id: string) => {
+        const slot = o.slots?.find((sl) => sl.id === id);
+        return `(escolha: ${(slot?.label ?? id).toLowerCase()})`;
+      });
+    }
+    if (o.spells) return grantText(o.spells);
+    if (o.kind === 'hp') return 'Aumenta os PV máximos em 10.';
+    if (o.kind === 'role-skill')
+      return 'Dá um poder de função a mais, da função do NPC.';
+    if (o.kind === 'resistances')
+      return 'Resistência a dois tipos de dano, exceto físico.';
+    return `Troca ${o.swaps === 'resistant' ? 'uma Resistência' : o.swapType ? `a Imunidade a dano ${dmg(o.swapType)}` : 'uma Imunidade'} por uma Absorção${o.swapType ? ` (dano ${dmg(o.swapType)})` : ''}.`;
+  })();
+  return `- **${o.label}**${times}: ${text}`;
+};
+
+const speciesBlock = (r: SpeciesRule) => {
+  const always = [
+    ...Object.entries(r.affinities).map(
+      ([type, affinity]) =>
+        `${{ resistant: 'Resistência', immune: 'Imunidade', vulnerable: 'Vulnerabilidade', absorbs: 'Absorção' }[affinity as string]} a dano ${dmg(type)}`,
+    ),
+    ...(r.statusImmunities.length
+      ? [
+          `imunidade ${r.statusImmunities.length > 1 ? 'às condições' : 'à condição'} ${joinE(r.statusImmunities.map((c) => STATUS_NAME[c]))}`,
+        ]
+      : []),
+    ...(r.resistances
+      ? [`Resistência a ${r.resistances} tipos de dano à sua escolha`]
+      : []),
+    ...(r.immunities
+      ? [`Imunidade a mais ${r.immunities} tipo de dano à sua escolha`]
+      : []),
+    ...(r.vulnerability
+      ? [
+          `Vulnerabilidade a um destes tipos de dano: ${joinE(r.vulnerability.map((t) => TYPE_PT[t]))}`,
+        ]
+      : []),
+  ];
+  const lines = [
+    `### ${SPECIES_PT[r.species]}`,
+    '',
+    ...(always.length ? [`**Sempre tem:** ${always.join('; ')}.`, ''] : []),
+    ...(r.note ? [r.note, ''] : []),
+    ...(r.picks > 0 ? [`Escolha ${r.picks} das opções abaixo.`, ''] : []),
+    ...(r.extra
+      ? [
+          `Opcional: uma Vulnerabilidade a mais (${joinE(r.extra.vulnerability.map((t) => TYPE_PT[t]))}). Se a escolher, escolha ${r.extra.picks} das opções abaixo.`,
+          '',
+        ]
+      : []),
+    ...r.options.map(optionLine),
+  ];
+  return lines.join('\n');
+};
+
+const speciesSection = quickAssemblyRules.species
+  .map(speciesBlock)
   .join('\n\n');
 
 const roleTable = (role: Role) => {
@@ -263,6 +368,12 @@ Um campeão recebe poderes de chefe conforme a patente, e um poder negativo pode
 - As escolhas de um poder de chefe são feitas ao criar o chefe, não a cada uso.
 
 ${bossSection}
+
+## Espécies
+
+Estas regras substituem as de Espécie do Livro Básico (p. 304-305) para uma criatura montada assim. Escolha pela aparência e pela função do NPC na cena: por exemplo, evite aumentar os PV de um caçador fera, porque caçadores não devem ser duráveis, mas dê a ele Resistências, que os jogadores podem identificar e contornar. Os humanoides não ganham Usar Equipamento (a Montagem Rápida não usa equipamento de NPC) e as Vulnerabilidades adicionais opcionais se restringem a certos tipos de dano. Desvie das opções para dar personalidade ao NPC, sem perder de vista a função dele.
+
+${speciesSection}
 
 ## Patentes
 

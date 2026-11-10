@@ -744,6 +744,309 @@ describe('validateSeed', () => {
       );
     });
 
+    describe('species', () => {
+      type Option = {
+        id: string;
+        label: string;
+        kind: string;
+        max?: number;
+        spells?: { from: { name: string }[]; options: { mp: number }[] };
+        swaps?: string;
+        swapType?: string;
+        slots?: { id: string }[];
+        rule?: { name: string; text: string };
+      };
+      type SpeciesRule = {
+        species: string;
+        affinities: Record<string, string>;
+        statusImmunities: string[];
+        resistances?: number;
+        immunities?: number;
+        vulnerability?: string[];
+        picks: number;
+        extra?: { vulnerability: string[]; picks: number };
+        note?: string;
+        options: Option[];
+      };
+      const process = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Montagem Rápida',
+      );
+      const all = () =>
+        (process?.details as unknown as { species: SpeciesRule[] }).species;
+      const of = (species: string) => all().find((r) => r.species === species)!;
+      const ids = (species: string) => of(species).options.map((o) => o.id);
+
+      it('has a rule for each of the eight Species, in the book order (p. 70-73)', () => {
+        expect(all().map((r) => r.species)).toEqual([
+          'beast',
+          'construct',
+          'demon',
+          'elemental',
+          'humanoid',
+          'monster',
+          'plant',
+          'undead',
+        ]);
+      });
+
+      it('keeps what each Species always has', () => {
+        expect(of('construct').affinities).toEqual({
+          earth: 'resistant',
+          poison: 'immune',
+        });
+        expect(of('construct').statusImmunities).toEqual(['poisoned']);
+        expect(of('elemental').affinities).toEqual({ poison: 'immune' });
+        expect(of('elemental').immunities).toBe(1);
+        expect(of('elemental').statusImmunities).toEqual(['poisoned']);
+        expect(of('demon').resistances).toBe(2);
+        expect(of('plant').statusImmunities).toEqual([
+          'dazed',
+          'enraged',
+          'shaken',
+        ]);
+        expect(of('undead').affinities).toEqual({
+          light: 'vulnerable',
+          dark: 'immune',
+          poison: 'immune',
+        });
+        expect(of('undead').statusImmunities).toEqual(['poisoned']);
+        expect(of('undead').note).toContain('PV');
+        expect(of('beast').affinities).toEqual({});
+        expect(of('monster').statusImmunities).toEqual([]);
+      });
+
+      it('restricts the Vulnerability a Species asks for, as the book does', () => {
+        expect(of('humanoid').vulnerability).toEqual([
+          'dark',
+          'light',
+          'physical',
+          'poison',
+        ]);
+        expect(of('plant').vulnerability).toEqual([
+          'air',
+          'bolt',
+          'fire',
+          'ice',
+        ]);
+        expect(of('beast').vulnerability).toBeUndefined();
+        // The optional extra Vulnerability, and what it buys.
+        expect(of('construct').extra).toEqual({
+          vulnerability: ['air', 'bolt', 'fire', 'ice'],
+          picks: 1,
+        });
+        expect(of('undead').extra?.vulnerability).toEqual([
+          'air',
+          'bolt',
+          'earth',
+          'fire',
+          'ice',
+        ]);
+        expect(of('elemental').extra?.picks).toBe(1);
+        expect(of('monster').extra).toBeUndefined();
+      });
+
+      it('says how many options each Species takes', () => {
+        expect(
+          Object.fromEntries(all().map((r) => [r.species, r.picks])),
+        ).toEqual({
+          beast: 2,
+          construct: 0,
+          demon: 1,
+          elemental: 0,
+          humanoid: 3,
+          monster: 2,
+          plant: 1,
+          undead: 0,
+        });
+      });
+
+      it('lists the options of each Species', () => {
+        expect(ids('beast')).toEqual([
+          'hp',
+          'spell',
+          'opposed',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('construct')).toEqual([
+          'status-immunity',
+          'opposed',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('demon')).toEqual([
+          'absorb',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('elemental')).toEqual([
+          'absorb',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('humanoid')).toEqual([
+          'resistances',
+          'spell',
+          'opposed',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('monster')).toEqual([
+          'hp',
+          'resistances',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('plant')).toEqual([
+          'hp',
+          'resistances',
+          'spell',
+          'thorns',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('undead')).toEqual([
+          'absorb',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+      });
+
+      it('lets the Role Skill be taken twice by the Species that may', () => {
+        const max = (species: string) =>
+          of(species).options.find((o) => o.id === 'role-skill')?.max;
+        expect([max('beast'), max('humanoid'), max('monster')]).toEqual([
+          2, 2, 2,
+        ]);
+        expect([max('construct'), max('demon'), max('plant')]).toEqual([
+          undefined,
+          undefined,
+          undefined,
+        ]);
+      });
+
+      it('names the spells each Species may learn, with +10 PM', () => {
+        const names = (species: string) =>
+          of(species)
+            .options.find((o) => o.id === 'spell')
+            ?.spells?.from.map((r) => r.name);
+        expect(names('beast')).toEqual([
+          'Lamber Feridas',
+          'Concha',
+          'Brado de Guerra',
+        ]);
+        expect(names('demon')).toEqual([
+          'Sopro',
+          'Ultramaldição',
+          'Roubo de Mana',
+          'Enfraquecer',
+        ]);
+        expect(names('elemental')).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Lamber Feridas',
+        ]);
+        expect(names('humanoid')).toEqual([
+          'Lamber Feridas',
+          'Concha',
+          'Brado de Guerra',
+        ]);
+        expect(names('plant')).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Roubo de Vida',
+          'Envenenar',
+        ]);
+        expect(names('undead')).toEqual([
+          'Sopro',
+          'Maldição',
+          'Roubo de Vida',
+          'Envenenar',
+        ]);
+        for (const species of ['beast', 'demon', 'plant']) {
+          expect(
+            of(species).options.find((o) => o.id === 'spell')?.spells
+              ?.options[0].mp,
+          ).toBe(10);
+        }
+      });
+
+      it('keeps the +10 Hit Points in the data, and lets the Reader pick the type an Absorption swaps', () => {
+        const opt = (species: string, id: string) =>
+          of(species).options.find((o) => o.id === id) as Option & {
+            amount?: number;
+          };
+        for (const species of ['beast', 'monster', 'plant']) {
+          expect(opt(species, 'hp').amount).toBe(10);
+        }
+        // The book fixes the type for the undead (dark) and leaves it open for the others.
+        expect(opt('demon', 'absorb').slots?.map((sl) => sl.id)).toEqual([
+          'type',
+        ]);
+        expect(opt('elemental', 'absorb').slots?.map((sl) => sl.id)).toEqual([
+          'type',
+        ]);
+        expect(opt('undead', 'absorb').slots).toBeUndefined();
+      });
+
+      it('keeps the Absorption swaps and the Plant thorns', () => {
+        const opt = (species: string, id: string) =>
+          of(species).options.find((o) => o.id === id)!;
+        expect(opt('demon', 'absorb').swaps).toBe('resistant');
+        expect(opt('elemental', 'absorb').swaps).toBe('immune');
+        expect(opt('undead', 'absorb')).toMatchObject({
+          swaps: 'immune',
+          swapType: 'dark',
+        });
+        expect(opt('plant', 'thorns').rule?.text).toContain('5 de dano físico');
+        expect(opt('plant', 'thorns').rule?.text).toContain('10');
+      });
+
+      it('lists the Species in the page of the process Rule', () => {
+        expect(process?.body).toContain('## Espécies');
+        expect(process?.body).toContain('### Construto');
+        expect(process?.body).toContain('### Morto-vivo');
+        expect(process?.body).toContain('Resistência a dano de terra');
+        expect(process?.body).not.toMatch(/\{\w+\}/);
+      });
+
+      const withSpecies = (change: (r: SpeciesRule[]) => void) => {
+        const rule = structuredClone(process) as SeedEntry & {
+          details: { species: SpeciesRule[] };
+        };
+        rule.body = '';
+        change(rule.details.species);
+        return validateSeed([
+          {
+            ...(seedEntries.find(
+              (e) => e.name === 'Feitiços de NPC',
+            ) as SeedEntry),
+            body: '',
+          },
+          rule,
+        ]);
+      };
+
+      it('rejects a missing or repeated Species', () => {
+        const errors = withSpecies((r) => {
+          r.pop();
+        });
+        expect(errors).toEqual([expect.stringContaining('species')]);
+      });
+
+      it('rejects a Species option whose text names a choice it does not offer', () => {
+        const errors = withSpecies((r) => {
+          const rule = r[1].options.find((o) => o.id === 'status-immunity')!;
+          rule.rule!.text = 'Imune a {nada}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{nada}')]);
+      });
+    });
+
     describe('boss skills', () => {
       type Boss = {
         id: string;

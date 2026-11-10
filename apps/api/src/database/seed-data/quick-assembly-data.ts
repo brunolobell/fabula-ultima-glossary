@@ -9,6 +9,7 @@ import type {
 
 import { bossGroups, bossSkills } from './quick-assembly-boss';
 import { negativeSkills } from './quick-assembly-negative';
+import { speciesRules } from './quick-assembly-species';
 import { quickAssemblySkills } from './quick-assembly-skills';
 
 /**
@@ -32,6 +33,7 @@ export const quickAssemblyRules: QuickAssemblyRuleDetails = {
   negativeSkills,
   bossSkills,
   bossGroups,
+  species: speciesRules,
 };
 
 const status = (id: string, count = 1, only?: string[]): AssemblySlot => {

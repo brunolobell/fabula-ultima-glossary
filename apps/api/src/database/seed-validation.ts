@@ -223,6 +223,66 @@ function checkSkill(
   }
 }
 
+const STATUS_CODES = ['dazed', 'enraged', 'poisoned', 'shaken', 'slow', 'weak'];
+
+function validateSpecies(
+  rules: QuickAssemblyRuleDetails['species'],
+  fail: Fail,
+  expectSpell: (slug: string) => void,
+  npcIds: Set<string>,
+) {
+  const present = rules.map((r) => r.species);
+  if (
+    present.length !== SPECIES.length ||
+    SPECIES.some((species) => present.filter((p) => p === species).length !== 1)
+  )
+    fail(`every species needs exactly one rule (have ${present})`);
+  for (const rule of rules) {
+    const where = `species "${rule.species}"`;
+    for (const [type, affinity] of Object.entries(rule.affinities)) {
+      if (!DAMAGE_TYPES.includes(type as DamageType))
+        fail(`${where} has an affinity to the unknown type "${type}"`);
+      if (!AFFINITIES.includes(affinity))
+        fail(`${where} has the unknown affinity "${affinity}"`);
+    }
+    for (const code of rule.statusImmunities) {
+      if (!STATUS_CODES.includes(code))
+        fail(`${where} is immune to the unknown condition "${code}"`);
+    }
+    for (const type of [
+      ...(rule.vulnerability ?? []),
+      ...(rule.extra?.vulnerability ?? []),
+    ]) {
+      if (!DAMAGE_TYPES.includes(type))
+        fail(`${where} offers the unknown type "${type}"`);
+    }
+    if (!Number.isInteger(rule.picks) || rule.picks < 0)
+      fail(`${where} picks must be a non-negative integer`);
+    if (
+      rule.extra &&
+      (!Number.isInteger(rule.extra.picks) || rule.extra.picks < 1)
+    )
+      fail(`${where} extra picks must be a positive integer`);
+    const optionIds = new Set<string>();
+    for (const option of rule.options) {
+      const at = `${where} option "${option.id}"`;
+      if (optionIds.has(option.id)) fail(`${at} is repeated`);
+      optionIds.add(option.id);
+      if (
+        option.max !== undefined &&
+        (!Number.isInteger(option.max) || option.max < 2)
+      )
+        fail(`${at} max must be 2 or more`);
+      if (option.kind === 'absorb' && !option.swaps) fail(`${at} needs swaps`);
+      if (option.kind === 'spell' && !option.spells) fail(`${at} needs spells`);
+      if (option.kind === 'rule' && !option.rule) fail(`${at} needs a rule`);
+      if (option.spells)
+        checkGrant(option.spells, at, fail, expectSpell, npcIds);
+      checkTokens(option.rule?.text, option.slots, at, fail);
+    }
+  }
+}
+
 function validateQuickAssembly(
   d: QuickAssemblyRuleDetails,
   fail: Fail,
@@ -241,6 +301,7 @@ function validateQuickAssembly(
       );
   }
   if (d.amounts[0]?.fromLevel !== 5) fail('amounts must start at level 5');
+  validateSpecies(d.species, fail, expectSpell, npcIds);
   const groupIds = new Set(d.bossGroups.map((g) => g.id));
   if (groupIds.size !== d.bossGroups.length) fail('boss groups are repeated');
   const bossIds = new Set<string>();
