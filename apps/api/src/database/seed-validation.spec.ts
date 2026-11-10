@@ -393,6 +393,90 @@ describe('validateSeed', () => {
         ...entry,
       }) as SeedEntry;
 
+    const bestiary = seedEntries.filter(
+      (e): e is Extract<SeedEntry, { type: 'creature' }> =>
+        e.type === 'creature',
+    );
+    const ofSpecies = (species: string) =>
+      bestiary.filter((e) => e.details.species === species);
+
+    it('seeds the 56 creatures of the Livro Básico Bestiário (p. 324-353)', () => {
+      expect(bestiary).toHaveLength(56);
+      expect(
+        Object.fromEntries(
+          [
+            'construct',
+            'demon',
+            'elemental',
+            'beast',
+            'humanoid',
+            'monster',
+            'undead',
+            'plant',
+          ].map((species) => [species, ofSpecies(species).length]),
+        ),
+      ).toEqual({
+        construct: 7,
+        demon: 4,
+        elemental: 7,
+        beast: 8,
+        humanoid: 8,
+        monster: 8,
+        undead: 8,
+        plant: 6,
+      });
+      for (const e of bestiary) {
+        expect(e.source ?? 'livro-basico').toBe('livro-basico');
+        expect(e.details.rank).toBe('soldier');
+        expect(e.page).toBeGreaterThanOrEqual(324);
+        expect(e.page).toBeLessThanOrEqual(353);
+        // "organizadas em aumentos de cinco em cinco níveis" (p. 292): 5 to 20.
+        expect([5, 10, 15, 20]).toContain(e.details.level);
+        expect(e.details.attacks.length).toBeGreaterThan(0);
+      }
+    });
+
+    it('gives every Species the Affinities its rule demands (p. 303-305)', () => {
+      for (const e of ofSpecies('construct')) {
+        expect(e.details.affinities).toMatchObject({
+          poison: 'immune',
+          earth: 'resistant',
+        });
+      }
+      for (const e of ofSpecies('elemental')) {
+        expect(e.details.affinities.poison).toBe('immune');
+      }
+      for (const e of ofSpecies('undead')) {
+        expect(e.details.affinities).toMatchObject({
+          dark: 'immune',
+          poison: 'immune',
+          light: 'vulnerable',
+        });
+      }
+      for (const e of ofSpecies('plant')) {
+        const weak = ['air', 'fire', 'ice', 'bolt'].filter(
+          (type) =>
+            e.details.affinities[type as keyof typeof e.details.affinities] ===
+            'vulnerable',
+        );
+        expect(weak.length).toBeGreaterThanOrEqual(1);
+      }
+    });
+
+    it('prints a fixed Defesa, not a bonus, for the six creatures that have one', () => {
+      const fixed = bestiary
+        .filter((e) => e.details.defense.fixed)
+        .map((e) => [e.name, e.details.defense.value]);
+      expect(fixed).toEqual([
+        ['Soldado Tecnomágico', 11],
+        ['Guarda', 11],
+        ['Mercenário', 11],
+        ['Mago de Batalha', 11],
+        ['Soldado Esqueleto', 12],
+        ['Vinha-daninha', 12],
+      ]);
+    });
+
     it('seeds the Cactonto with the numbers printed on p. 352', () => {
       const cactonto = seedEntries.find((e) => e.name === 'Cactonto');
       expect(cactonto).toMatchObject({ type: 'creature', page: 352 });

@@ -78,8 +78,9 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
                   {attack.damage !== null && (
                     <>
                       {' · '}
-                      {decorateChecks(`(RA + ${attack.damage})`)} de dano{' '}
-                      {DAMAGE_LABEL[attack.damageType]}
+                      {decorateChecks(`(RA + ${attack.damage})`)} de dano
+                      {attack.damageType &&
+                        ` ${DAMAGE_LABEL[attack.damageType]}`}
                     </>
                   )}
                 </p>

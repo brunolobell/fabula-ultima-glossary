@@ -160,7 +160,8 @@ export interface CreatureAttack {
   accuracyBonus: number;
   /** Added to the high roll (RA); null when the attack does no damage. */
   damage: number | null;
-  damageType: DamageType;
+  /** Null when a rule sets the type instead of the book printing one. */
+  damageType: DamageType | null;
   effect?: string;
 }
 
