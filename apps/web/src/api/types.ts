@@ -83,6 +83,8 @@ export interface GuideStep {
 }
 
 export interface GuideDetails {
+  /** Position among the guides in the menu and on the home page. */
+  order: number;
   steps: GuideStep[];
 }
 

@@ -1,3 +1,4 @@
+import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
   classEntry,
@@ -225,12 +226,58 @@ describe('validateSeed', () => {
         page: null,
         summary: 'a',
         details: {
+          order: 1,
           steps: [{ title: 'Traços', intro: 'x', entries: ['nada'] }],
         },
       },
     ]);
     expect(errors).toEqual([expect.stringContaining('unknown entry "nada"')]);
   });
+  describe('game setup', () => {
+    const bySlug = (slug: string) =>
+      seedEntries.find((e) => slugify(e.name) === slug);
+
+    it('seeds the world and party guides with the page of the book', () => {
+      expect(bySlug('criar-um-mundo')?.page).toBe(148);
+      expect(bySlug('criar-um-grupo')?.page).toBe(152);
+    });
+
+    it('orders the guides as the book does: world, party, character, play', () => {
+      const ordered = seedEntries
+        .filter((e) => e.type === 'guide')
+        .sort(
+          (a, b) =>
+            (a.details as { order: number }).order -
+            (b.details as { order: number }).order,
+        )
+        .map((e) => slugify(e.name));
+      expect(ordered).toEqual([
+        'criar-um-mundo',
+        'criar-um-grupo',
+        'criar-um-personagem',
+        'como-jogar',
+      ]);
+    });
+
+    it('names all five party types in the party guide', () => {
+      const body = bySlug('criar-um-grupo')?.body ?? '';
+      for (const type of [
+        'Exploradores',
+        'Guardiões',
+        'Heróis da Resistência',
+        'Revolucionários',
+        'Unidos pelo Destino',
+      ]) {
+        expect(body).toContain(`## ${type}`);
+      }
+    });
+
+    it('seeds the Eight Pillars and the Session Zero rules', () => {
+      expect(bySlug('os-oito-pilares')?.type).toBe('rule');
+      expect(bySlug('antes-de-comecar-sessao-zero')?.type).toBe('rule');
+    });
+  });
+
   describe('heroic skills', () => {
     const heroicBy = (source: string) =>
       seedEntries.filter(

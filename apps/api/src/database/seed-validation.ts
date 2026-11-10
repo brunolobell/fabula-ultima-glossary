@@ -159,7 +159,8 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         break;
       }
       case 'guide': {
-        const { steps } = entry.details;
+        const { steps, order } = entry.details;
+        if (typeof order !== 'number') fail('guide needs a numeric order');
         if (!Array.isArray(steps) || steps.length === 0)
           fail('guide needs steps');
         for (const step of steps ?? []) {

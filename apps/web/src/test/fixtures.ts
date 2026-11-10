@@ -135,6 +135,7 @@ const criar: Entry = {
   body: 'Crie junto com o grupo.',
   page: 154,
   details: {
+    order: 3,
     steps: [
       { title: 'Identidade', intro: 'Crie uma frase curta.', entries: ['tracos'] },
       { title: 'Tema', intro: 'Crie um ideal.', entries: ['tracos'] },

@@ -25,6 +25,7 @@ import {
   equipmentPath,
   kindFromParam,
 } from '../lib/equipmentKinds';
+import { sortedGuides } from '../lib/guides';
 import { TYPE_INFO, entryPath, typeFromSlug, typePath } from '../lib/entryTypes';
 import { ChevronIcon, CloseIcon } from './Icons';
 
@@ -131,7 +132,7 @@ interface Props {
 export function Sidebar({ open, onClose }: Props) {
   const { entries, bySlug, isLoading } = useEntryIndex();
   const { pathname, search } = useLocation();
-  const guides = entries.filter((e) => e.type === 'guide');
+  const guides = sortedGuides(entries);
 
   // Where the Reader is: the Entry Type and, for Equipment, the Kind.
   const [first, second] = pathname.split('/').filter(Boolean);

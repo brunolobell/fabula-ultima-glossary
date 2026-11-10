@@ -9,12 +9,13 @@ import {
   entryPath,
   typePath,
 } from '../lib/entryTypes';
+import { sortedGuides } from '../lib/guides';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 
 export function Home() {
   useDocumentTitle();
   const { entries, isLoading, isError, refetch } = useEntryIndex();
-  const guides = entries.filter((e) => e.type === 'guide');
+  const guides = sortedGuides(entries);
 
   return (
     <div>

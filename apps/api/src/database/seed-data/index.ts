@@ -28,6 +28,7 @@ import { armasBasicas } from './equipment/armas-basicas';
 import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
 import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
 import { itensRarosTechnoFantasy } from './equipment/techno-fantasy/itens-raros';
+import { gameSetupRules } from './game-setup';
 import { guides } from './guides';
 import { poderesHeroicosHighFantasy } from './heroic-skills/high-fantasy';
 import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
@@ -40,6 +41,7 @@ import { SeedEntry } from './types';
 export const seedEntries: SeedEntry[] = [
   ...guides,
   ...rules,
+  ...gameSetupRules,
   // The 15 classes, in the book's (alphabetical) order.
   ...andarilho,
   ...arcanista,

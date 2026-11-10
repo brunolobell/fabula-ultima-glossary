@@ -15,7 +15,7 @@ The kind of an Entry: Rule, Class, Skill, Heroic Skill, Spell, Equipment, or Gui
 _Avoid_: Category (a Fabula Ultima game term for weapons), kind (reserved for Equipment Kind)
 
 **Rule**:
-An Entry explaining a core play concept or a character-creation concept, such as Checks, Crisis, Fabula Points, Bonds, or Clocks.
+An Entry explaining a core play concept or a character-creation concept, such as Checks, Crisis, Fabula Points, Bonds, or Clocks, or a game-setup concept such as Session Zero or the Eight Pillars.
 _Avoid_: Term, concept, mechanic
 
 **Class**:
@@ -57,7 +57,7 @@ _Avoid_: Equipment type, equipment category
 ### Guidance
 
 **Guide**:
-An Entry that walks a Reader through an ordered list of Guide Steps toward a goal, such as "Build a character" or "How to play".
+An Entry that walks a Reader through an ordered list of Guide Steps toward a goal, such as "Create a world", "Create a party", "Build a character" or "How to play".
 _Avoid_: Tutorial, wizard, path
 
 **Guide Step**:
@@ -122,8 +122,34 @@ _Avoid_: Timer, counter
 The meta-currency spent to invoke Traits and Bonds. Shown to Readers as "Pontos de Fabula".
 _Avoid_: Hero points
 
+### Setting up a game
+
+**Session Zero**:
+The first meeting of the Table, before play, where the Table settles its expectations, tone and themes, creates the World, picks a Party Type and creates the characters. Shown to Readers as "sessão zero".
+_Avoid_: Setup session, prologue (the Prologue is a different thing, played in the first session)
+
+**World**:
+The shared setting the Table creates for its adventures: there is no default or canonical one. Recorded on a world sheet ("ficha de mundo") and a map sheet ("ficha de mapa"). Shown to Readers as "mundo", or "cenário".
+_Avoid_: Campaign, setting book (an Atlas describes example locations, not the Table's World)
+
+**Eight Pillars**:
+The eight traits every World shares, whatever else the Table invents. Shown to Readers as "Oito Pilares".
+_Avoid_: Core themes, canon
+
+**Party**:
+The group of heroes the Players create together, defined by a Party Type. It may be given a name. Shown to Readers as "grupo".
+_Avoid_: Group (alone; in the book it also means the people at the Table), team, guild
+
+**Party Type**:
+One of five premises for a Party: Explorers, Guardians, Resistance Heroes, Revolutionaries, or United by Fate ("Exploradores", "Guardiões", "Heróis da Resistência", "Revolucionários", "Unidos pelo Destino"). It says which themes the first adventures focus on, with guiding questions, and works as a reference for creating heroes, not a restriction. Shown to Readers as "tipo de grupo".
+_Avoid_: Archetype, party class
+
 ### People
 
 **Reader**:
 A Player or the Game Master using the app. Both roles are equally important and are always capitalized.
 _Avoid_: User, visitor, customer
+
+**Table**:
+The Players and the Game Master who play together. Its agreements (frequency, tone, lines and veils) are made in Session Zero. Shown to Readers as "seu grupo" or "a mesa".
+_Avoid_: Group (alone; see Party), campaign group

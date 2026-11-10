@@ -136,6 +136,8 @@ export const spell = (
 
 export interface GuideInput {
   name: string;
+  /** Position among the guides, following the book (world, party, character, play). */
+  order: number;
   page: number | null;
   summary: string;
   body: string;
@@ -143,10 +145,10 @@ export interface GuideInput {
 }
 
 /** A Guide: an ordered list of steps, each pointing at entries to read. */
-export const guide = ({ steps, ...rest }: GuideInput): Of<'guide'> => ({
+export const guide = ({ steps, order, ...rest }: GuideInput): Of<'guide'> => ({
   type: 'guide',
   tags: ['guia'],
-  details: { steps },
+  details: { order, steps },
   ...rest,
 });
 
