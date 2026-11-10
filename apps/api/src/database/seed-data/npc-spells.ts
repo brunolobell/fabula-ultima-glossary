@@ -31,7 +31,7 @@ export const npcSpellsRule: SeedEntry = {
 
 > **Exemplo:** você pode dar Sopro Amaldiçoado a uma criatura, escolher dano de gelo e a condição lento e renomeá-lo "Lança Congelada".
 
-Os poderes de função da [[montagem-rapida]] oferecem estes feitiços (e alguns feitiços de classe). Para montar uma criatura e escolher os feitiços, abra a [Montagem de Criaturas](/criaturas?montagem=rapida).
+Os poderes de função da [[montagem-rapida]] oferecem estes feitiços (e alguns feitiços de classe). Para montar uma criatura e escolher os feitiços, abra o [Laboratório Oroboros](/criaturas?montagem=rapida).
 
 ${table}
 

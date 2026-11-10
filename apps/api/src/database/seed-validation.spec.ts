@@ -720,6 +720,21 @@ describe('validateSeed', () => {
       );
     });
 
+    it('names the tool the Rules link to, the Laboratório Oroboros', () => {
+      const link = '[Laboratório Oroboros](/criaturas?montagem=rapida)';
+      for (const name of [
+        'Montagem Rápida',
+        'Montagem Rápida: Bruto',
+        'Feitiços de NPC',
+      ]) {
+        const entry = seedEntries.find((e) => e.name === name);
+        expect(entry?.body).toContain(link);
+      }
+      expect(JSON.stringify(seedEntries)).not.toContain(
+        'Montagem de Criaturas',
+      );
+    });
+
     describe('negative skills', () => {
       type Negative = {
         id: string;

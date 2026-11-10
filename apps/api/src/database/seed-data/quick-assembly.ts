@@ -141,7 +141,7 @@ const roleRule = (role: Role): SeedEntry => {
       ROLE_SUMMARY[role],
       `${ROLE_BODY[role]}
 
-Para montar uma criatura com esta função e copiar a ficha, abra a [Montagem de Criaturas](${ASSEMBLY}). Os passos e o resto da regra estão em [[montagem-rapida]].
+Para montar uma criatura com esta função e copiar a ficha, abra o [Laboratório Oroboros](${ASSEMBLY}). Os passos e o resto da regra estão em [[montagem-rapida]].
 
 ## Perfil e tabela de níveis
 
@@ -193,7 +193,7 @@ export const quickAssemblyRule: SeedEntry = {
     'Montagem Rápida',
     25,
     'Método do Bestiary Vol. I para montar um NPC depressa: escolha uma função, um nível (5 ou 10 a 60) e uma patente, copie o perfil da função e some poderes de função, de chefe, negativos e da espécie.',
-    `A **Montagem Rápida** é o método do Bestiary Vol. I (livro em inglês, sem edição brasileira: os termos em português desta página são tradução nossa e não oficiais) para criar NPCs de forma rápida. Em vez de decidir cada número, você escolhe uma **função** e copia o perfil dela, ajustado pelo nível e pela patente. Para criar uma criatura e copiar a ficha, abra a [Montagem de Criaturas](${ASSEMBLY}) (nada é salvo).
+    `A **Montagem Rápida** é o método do Bestiary Vol. I (livro em inglês, sem edição brasileira: os termos em português desta página são tradução nossa e não oficiais) para criar NPCs de forma rápida. Em vez de decidir cada número, você escolhe uma **função** e copia o perfil dela, ajustado pelo nível e pela patente. Para criar uma criatura e copiar a ficha, abra o [Laboratório Oroboros](${ASSEMBLY}) (nada é salvo).
 
 ## Os passos
 
