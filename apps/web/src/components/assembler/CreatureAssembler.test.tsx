@@ -389,3 +389,111 @@ describe('Creature Assembler: Skills and customization', () => {
     expect(next.getByText(/0 de 1/)).toBeInTheDocument();
   });
 });
+
+describe('Creature Assembler: spells', () => {
+  const asMage = async (level = '5') => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Função'), {
+      target: { value: 'mage' },
+    });
+    fireEvent.change(dialog.getByLabelText('Nível'), {
+      target: { value: level },
+    });
+    return dialog;
+  };
+  const preview = (dialog: ReturnType<typeof within>) =>
+    within(dialog.getByRole('region', { name: 'Ficha' }));
+
+  it('offers the base spells to a mage, and asks for the option first', async () => {
+    const dialog = await asMage();
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Escolha a opção de feitiços (Feitiços).');
+    const spells = within(dialog.getByRole('group', { name: 'Feitiços' }));
+    fireEvent.click(spells.getByRole('radio', { name: 'Dois feitiços' }));
+    fireEvent.click(spells.getByRole('button', { name: 'Fulgur' }));
+    fireEvent.click(spells.getByRole('button', { name: 'Sopro' }));
+    expect(spells.getByRole('button', { name: 'Fulgur' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).not.toHaveTextContent('feitiço');
+    const region = within(
+      preview(dialog).getByRole('region', { name: 'Feitiços' }),
+    );
+    expect(region.getByText('Fulgur')).toBeInTheDocument();
+    expect(region.getByText('Sopro')).toBeInTheDocument();
+  });
+
+  it('takes the +10 PM of "um feitiço e +10 PM" and lets only one spell be picked', async () => {
+    const dialog = await asMage();
+    const spells = within(dialog.getByRole('group', { name: 'Feitiços' }));
+    fireEvent.click(spells.getByRole('radio', { name: 'Um feitiço e +10 PM' }));
+    fireEvent.click(spells.getByRole('button', { name: 'Fulgur' }));
+    fireEvent.click(spells.getByRole('button', { name: 'Sopro' }));
+    // Mage level 5 has 55 PM; one spell and +10 PM is 65, and the second pick is refused.
+    expect(stat(preview(dialog), 'PM')).toBe('65');
+    expect(spells.getByRole('button', { name: 'Sopro' })).toHaveAttribute(
+      'aria-pressed',
+      'false',
+    );
+  });
+
+  it('asks for the damage type of an NPC spell and writes it into the text', async () => {
+    const dialog = await asMage();
+    const spells = within(dialog.getByRole('group', { name: 'Feitiços' }));
+    fireEvent.click(spells.getByRole('radio', { name: 'Um feitiço e +10 PM' }));
+    fireEvent.click(spells.getByRole('button', { name: 'Sopro' }));
+    fireEvent.change(spells.getByLabelText('Tipo de dano'), {
+      target: { value: 'ice' },
+    });
+    expect(
+      preview(dialog).getByText(/de dano do tipo gelo ao alvo/),
+    ).toBeInTheDocument();
+  });
+
+  it('marks the spells that need level 30', async () => {
+    const dialog = await asMage();
+    const spells = within(dialog.getByRole('group', { name: 'Feitiços' }));
+    expect(
+      spells.getByRole('button', { name: /Clarão.*nível 30/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('offers the Magic check once there is an offensive spell', async () => {
+    const dialog = await asMage();
+    expect(dialog.queryByLabelText('Teste de Magia')).toBeNull();
+    const spells = within(dialog.getByRole('group', { name: 'Feitiços' }));
+    fireEvent.click(spells.getByRole('radio', { name: 'Um feitiço e +10 PM' }));
+    fireEvent.click(spells.getByRole('button', { name: 'Fulgur' }));
+    fireEvent.change(dialog.getByLabelText('Teste de Magia'), {
+      target: { value: 'VIG + VON' },
+    });
+    expect(preview(dialog).getByText(/VIG \+ VON/)).toBeInTheDocument();
+  });
+
+  it('offers no base spells to a Role that has none (brute)', async () => {
+    const dialog = await openDialog();
+    expect(dialog.queryByRole('group', { name: 'Feitiços' })).toBeNull();
+  });
+
+  it('offers the spells of a Skill under the Skill once it is picked', async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Função'), {
+      target: { value: 'sentinel' },
+    });
+    fireEvent.change(dialog.getByLabelText('Nível'), {
+      target: { value: '20' },
+    });
+    const skills = within(
+      dialog.getByRole('group', { name: /Poderes de função/ }),
+    );
+    expect(skills.queryByRole('button', { name: 'Concha' })).toBeNull();
+    fireEvent.click(skills.getByRole('checkbox', { name: /^Feitiços/ }));
+    fireEvent.click(skills.getByRole('button', { name: 'Concha' }));
+    expect(preview(dialog).getByText('Concha')).toBeInTheDocument();
+    expect(stat(preview(dialog), 'PM')).toBe('70');
+  });
+});

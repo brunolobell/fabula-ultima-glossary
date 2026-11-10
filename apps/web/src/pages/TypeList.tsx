@@ -27,6 +27,7 @@ import {
   isAssemblerOpen,
 } from '../lib/assemblerParam';
 import {
+  NPC_SPELLS_SLUG,
   QUICK_ASSEMBLY_SLUG,
   ROLE_ORDER,
   ROLE_RULE_SLUG,
@@ -35,6 +36,7 @@ import { FORGE_PARAM, forgeTabFromParam, type ForgeTab } from '../lib/forgeTab';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import type {
   CustomWeaponRuleDetails,
+  NpcSpellsRuleDetails,
   QuickAssemblyRoleDetails,
   QuickAssemblyRuleDetails,
   RareWeaponRuleDetails,
@@ -183,6 +185,10 @@ export function TypeList() {
           <CreatureAssembler
             rules={assembler.rules}
             roles={assembler.roles}
+            npcSpells={
+              bySlug.get(NPC_SPELLS_SLUG)?.details as NpcSpellsRuleDetails | undefined
+            }
+            entries={bySlug}
             open={assemblerOpen}
             onClose={() => setAssemblerOpen(false, true)}
           />

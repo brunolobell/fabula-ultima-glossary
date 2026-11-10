@@ -3,7 +3,13 @@ import {
   quickAssemblyRoles,
   quickAssemblyRules,
 } from '../../../api/src/database/seed-data/quick-assembly-data';
-import { assembleCreature, type AssemblyInput } from './creatureAssembly';
+import { npcSpells } from '../../../api/src/database/seed-data/npc-spells-data';
+import type { EntrySummary } from '../api/types';
+import {
+  assembleCreature,
+  buildSpellCatalog,
+  type AssemblyInput,
+} from './creatureAssembly';
 
 const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   name: 'Criatura',
@@ -21,14 +27,89 @@ const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   immunities: [],
   attacks: {},
   choices: {},
+  baseSpells: {},
+  spellChoices: {},
+  magicFormula: 'AST + VON',
   ...over,
 });
+
+const classSpell = (
+  slug: string,
+  name: string,
+  mpCost: string,
+  target: string,
+  duration: string,
+  offensive: boolean,
+  summary: string,
+): EntrySummary => ({
+  id: slug,
+  slug,
+  name,
+  type: 'spell',
+  summary,
+  source: 'livro-basico',
+  page: 188,
+  tags: [],
+  details: { classSlug: 'x', mpCost, target, duration, offensive },
+});
+
+// The real summaries of three Class spells, as the seed writes them.
+const classSpells = new Map(
+  [
+    classSpell(
+      'fulgur',
+      'Fulgur',
+      '10 × A',
+      'Até três criaturas',
+      'Instantânea',
+      true,
+      'Uma onda de raios: causa (RA + 15) pontos de dano de raio a cada alvo atingido; na oportunidade, os alvos ficam atordoados.',
+    ),
+    classSpell(
+      'clarao',
+      'Clarão',
+      '20',
+      'Uma criatura',
+      'Instantânea',
+      true,
+      'Um raio de fogo tão quente que supera as defesas do alvo: causa (RA + 25) pontos de dano de fogo, ignorando Resistências.',
+    ),
+    classSpell(
+      'drenar-espirito',
+      'Drenar Espírito',
+      '5',
+      'Uma criatura',
+      'Instantânea',
+      true,
+      'Consome a psique do alvo: ele perde (RA + 20) PM e você recupera metade dos PM que ele de fato perdeu.',
+    ),
+    classSpell(
+      'curar',
+      'Curar',
+      '10 × A',
+      'Até três criaturas',
+      'Instantânea',
+      false,
+      'Revigora seus companheiros: cada alvo recupera 40 PV (50 a partir do 20º nível, 60 a partir do 40º).',
+    ),
+  ].map((e) => [e.slug, e] as const),
+);
+
+const catalog = buildSpellCatalog(
+  { forge: 'npc-spells', spells: npcSpells },
+  classSpells,
+);
 
 const assemble = (
   role: keyof typeof quickAssemblyRoles,
   over?: Partial<AssemblyInput>,
 ) =>
-  assembleCreature(quickAssemblyRules, quickAssemblyRoles[role], input(over));
+  assembleCreature(
+    quickAssemblyRules,
+    quickAssemblyRoles[role],
+    input(over),
+    catalog,
+  );
 
 describe('assembleCreature: the Juggernaut of the book (Bestiary Vol. I p. 28)', () => {
   // "a level 30 elite brute enemy, a bright red construct": Insight d8, Initiative
@@ -534,5 +615,151 @@ describe('assembleCreature: customization', () => {
           'Enquanto estiver em crise, o NPC causa 5 de dano adicional com o ataque normal.',
       },
     ]);
+  });
+});
+
+describe('assembleCreature: spells', () => {
+  const pickTwo = (spells: string[], over: Partial<AssemblyInput> = {}) =>
+    assemble('mage', {
+      baseSpells: { option: ['two'], spells },
+      vulnerabilities: ['fire'],
+      ...over,
+    });
+
+  it('builds a spell from the NPC list, filling in the damage type', () => {
+    const result = assemble('sentinel', {
+      level: 20,
+      skills: { 'learn-spells': { option: ['one'], spells: ['npc:breath'] } },
+      spellChoices: { 'npc:breath': { type: ['ice'] } },
+    });
+    // Sopro is RA + 10, plus 5 extra damage at level 20.
+    expect(result.details.spells).toEqual([
+      {
+        name: 'Sopro',
+        mpCost: '5',
+        target: 'Uma criatura',
+        duration: 'Instantânea',
+        offensive: true,
+        accuracy: 'AST + VON',
+        accuracyBonus: 2,
+        effect: 'Causa (RA + 15) de dano do tipo gelo ao alvo.',
+      },
+    ]);
+    expect(result.details.hasSpells).toBe(true);
+  });
+
+  it('adds the +10 PM of the option "one spell and +10 PM"', () => {
+    const plain = assemble('sentinel', { level: 20 });
+    const withSpell = assemble('sentinel', {
+      level: 20,
+      skills: { 'learn-spells': { option: ['one'], spells: ['npc:shell'] } },
+    });
+    expect(withSpell.details.mp - plain.details.mp).toBe(10);
+  });
+
+  it('lets the Reader pick the option of a grant that offers two', () => {
+    const two = pickTwo(['class:fulgur', 'npc:breath']);
+    expect(two.details.spells.map((s) => s.name)).toEqual(['Fulgur', 'Sopro']);
+    expect(two.details.mp).toBe(55);
+    const one = assemble('mage', {
+      baseSpells: { option: ['one'], spells: ['class:fulgur'] },
+      vulnerabilities: ['fire'],
+    });
+    expect(one.details.mp).toBe(65);
+  });
+
+  it("writes a Class spell from its entry, with the level's extra damage added", () => {
+    const { details } = pickTwo(['class:fulgur', 'npc:breath'], { level: 20 });
+    expect(details.spells[0]).toMatchObject({
+      name: 'Fulgur',
+      mpCost: '10 × A',
+      target: 'Até três criaturas',
+      offensive: true,
+      accuracy: 'AST + VON',
+    });
+    // RA + 15 at level 5, RA + 20 at level 20.
+    expect(details.spells[0].effect).toContain(
+      '(RA + 20) pontos de dano de raio',
+    );
+  });
+
+  it('leaves a spell that does no damage as written, with no Magic check (support)', () => {
+    const { details } = assemble('support', {
+      baseSpells: { option: ['one'], spells: ['class:curar'] },
+      vulnerabilities: ['fire'],
+    });
+    expect(details.spells[0]).not.toHaveProperty('accuracy');
+    expect(details.spells[0].effect).toContain('cada alvo recupera 40 PV');
+  });
+
+  it('reads the caster as "o NPC"', () => {
+    const { details } = assemble('saboteur', {
+      level: 20,
+      skills: {
+        'learn-spells': { option: ['one'], spells: ['class:drenar-espirito'] },
+      },
+    });
+    expect(details.spells[0].effect).toContain('o NPC recupera metade dos PM');
+    expect(details.spells[0].effect).not.toContain('você');
+  });
+
+  it('uses the Magic check the Reader picked', () => {
+    const { details } = pickTwo(['npc:breath', 'npc:cursed-breath'], {
+      magicFormula: 'VIG + VON',
+    });
+    expect(details.spells.map((s) => s.accuracy)).toEqual([
+      'VIG + VON',
+      'VIG + VON',
+    ]);
+  });
+
+  it("adds the level's extra damage to a spell with fixed damage (Devastação)", () => {
+    const { details } = assemble('mage', {
+      level: 30,
+      skills: {
+        'learn-spells': { option: ['one'], spells: ['npc:devastation'] },
+      },
+      spellChoices: { 'npc:devastation': { type: ['fire'] } },
+    });
+    expect(details.spells[0].effect).toContain('Causa 35 de dano do tipo fogo');
+  });
+
+  it('asks for the option, the count and the choices of a spell', () => {
+    expect(assemble('mage').warnings).toContain(
+      'Escolha a opção de feitiços (Feitiços).',
+    );
+    expect(pickTwo(['class:fulgur']).warnings).toContain(
+      'Escolha 2 feitiços em Feitiços (há 1).',
+    );
+    const open = assemble('sentinel', {
+      level: 20,
+      skills: { 'learn-spells': { option: ['one'], spells: ['npc:breath'] } },
+    });
+    expect(open.warnings).toContain('Escolha tipo de dano em Sopro.');
+  });
+
+  it('warns about a spell below its level, and about one the grant does not offer', () => {
+    expect(pickTwo(['class:clarao', 'npc:breath']).warnings).toContain(
+      'Clarão só a partir do nível 30.',
+    );
+    expect(pickTwo(['npc:shell', 'npc:breath']).warnings).toContain(
+      'Feitiço fora da lista: npc:shell.',
+    );
+  });
+
+  it("gives the brute's spell Skill its single option without asking", () => {
+    const result = assemble('brute', {
+      level: 20,
+      rank: 'elite',
+      skills: {
+        'learn-spells': { spells: ['npc:poison', 'npc:rage'] },
+        'steady-recovery': {},
+      },
+    });
+    expect(result.details.spells.map((s) => s.name)).toEqual([
+      'Envenenar',
+      'Fúria',
+    ]);
+    expect(result.warnings.join(' ')).not.toContain('opção de feitiços');
   });
 });

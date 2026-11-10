@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
 import type { Entry, EntryWithChildren, Role } from '../api/types';
+import { npcSpells } from '../../../api/src/database/seed-data/npc-spells-data';
 import {
   quickAssemblyRoles,
   quickAssemblyRules,
@@ -354,6 +355,37 @@ const quickAssemblyRoleRules: Entry[] = (Object.keys(ROLE_SLUG) as Role[]).map(
   }),
 );
 
+const npcSpellsRule: Entry = {
+  ...base,
+  id: '40',
+  slug: 'feiticos-de-npc',
+  name: 'Feitiços de NPC',
+  type: 'rule',
+  summary: 'Os feitiços que um NPC pode aprender.',
+  body: '',
+  page: 310,
+  details: { forge: 'npc-spells', spells: npcSpells },
+};
+
+const fulgur: Entry = {
+  ...base,
+  id: '41',
+  slug: 'fulgur',
+  name: 'Fulgur',
+  type: 'spell',
+  summary:
+    'Uma onda elétrica: causa (RA + 15) pontos de dano a cada alvo atingido.',
+  body: '',
+  page: 188,
+  details: {
+    classSlug: 'elementalista',
+    mpCost: '10 × A',
+    target: 'Até três criaturas',
+    duration: 'Instantânea',
+    offensive: true,
+  },
+};
+
 const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   [
     tracos,
@@ -372,6 +404,8 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     cactonto,
     quickAssembly,
     ...quickAssemblyRoleRules,
+    npcSpellsRule,
+    fulgur,
     criar,
   ].map(
     (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],

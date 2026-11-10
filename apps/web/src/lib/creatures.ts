@@ -91,6 +91,8 @@ export const damageTypeText = (damage: DamageType) =>
 
 /** The Rule that holds the shared Quick Assembly numbers, and one Rule per Role. */
 export const QUICK_ASSEMBLY_SLUG = 'montagem-rapida';
+/** The Rule with the Livro Básico list of NPC spells. */
+export const NPC_SPELLS_SLUG = 'feiticos-de-npc';
 export const ROLE_RULE_SLUG: Record<Role, string> = {
   brute: 'montagem-rapida-bruto',
   hunter: 'montagem-rapida-cacador',

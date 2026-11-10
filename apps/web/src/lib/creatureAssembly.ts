@@ -11,6 +11,12 @@ import type {
   RoleSkill,
   Species,
   VillainTier,
+  CreatureSpell,
+  EntrySummary,
+  NpcSpellsRuleDetails,
+  SpellGrant,
+  SpellRef,
+  SpellDetails,
 } from '../api/types';
 import { DAMAGE_LABEL, RANK_LABEL } from './creatures';
 
@@ -62,6 +68,59 @@ export interface AssemblyInput {
   choices: Choices;
   /** Role Skills picked (and the customization, under `c:<id>`), with their slot choices. */
   skills: Record<string, Choices>;
+  /** The mage's and the support's base spells: `option` and `spells` (keys, see `spellKey`). */
+  baseSpells: Choices;
+  /** The Reader's choices for the slots of each spell picked, by spell key. */
+  spellChoices: Record<string, Choices>;
+  /** The Magic check of offensive spells: "AST + VON" or "VIG + VON". */
+  magicFormula: string;
+}
+
+/** A spell the Reader can pick: from the NPC list, or a Class spell read from its Entry. */
+export interface CatalogSpell {
+  key: string;
+  name: string;
+  mpCost: string;
+  target: string;
+  duration: string;
+  offensive: boolean;
+  effect: string;
+  damage?: number;
+  flat?: boolean;
+  slots?: AssemblySlot[];
+  /** A Class spell's text: "(RA + N)" gets the level's extra damage. */
+  fromClass?: boolean;
+}
+
+export type SpellCatalog = Record<string, CatalogSpell>;
+
+export const spellKey = (ref: Pick<SpellRef, 'kind' | 'id'>) =>
+  `${ref.kind}:${ref.id}`;
+
+/** The NPC spells of the Rule, and every Class spell of the entry index. */
+export function buildSpellCatalog(
+  npc: NpcSpellsRuleDetails | undefined,
+  index: ReadonlyMap<string, EntrySummary>,
+): SpellCatalog {
+  const catalog: SpellCatalog = {};
+  for (const spell of npc?.spells ?? []) {
+    catalog[`npc:${spell.id}`] = { ...spell, key: `npc:${spell.id}` };
+  }
+  for (const entry of index.values()) {
+    if (entry.type !== 'spell') continue;
+    const d = entry.details as SpellDetails;
+    catalog[`class:${entry.slug}`] = {
+      key: `class:${entry.slug}`,
+      name: entry.name,
+      mpCost: d.mpCost,
+      target: d.target,
+      duration: d.duration,
+      offensive: d.offensive,
+      effect: entry.summary,
+      fromClass: true,
+    };
+  }
+  return catalog;
 }
 
 export interface AssemblyResult {
@@ -101,10 +160,12 @@ function fill(
   slots: AssemblySlot[],
   choices: Choices,
   amounts: Amounts,
+  damage?: string,
 ): string {
   return text.replace(/\{(\w+)\}/g, (_, id: string) => {
     if (id === 'minor' || id === 'heavy' || id === 'massive')
       return String(amounts[id]);
+    if (id === 'damage' && damage !== undefined) return damage;
     const slot = slots.find((s) => s.id === id);
     return list(slotLabels(slot, choices[id]));
   });
@@ -123,6 +184,7 @@ export function assembleCreature(
   rules: QuickAssemblyRuleDetails,
   role: QuickAssemblyRoleDetails,
   input: AssemblyInput,
+  catalog: SpellCatalog = {},
 ): AssemblyResult {
   const warnings: string[] = [];
   const { level, rank } = input;
@@ -160,7 +222,7 @@ export function assembleCreature(
     ((row?.hp ?? role.base.hp) +
       (picksExtra && role.extra === 'hp' ? rules.extraHp : 0)) *
     multiplier;
-  const mp =
+  const tableMp =
     (row?.mp ?? role.base.mp) * (champion ? rules.champion.mpMultiplier : 1);
   const initiative =
     Math.floor((attributes.DES + attributes.AST) / 2) +
@@ -280,6 +342,97 @@ export function assembleCreature(
     ...(effects.length > 0 && { effect: effects.join(' ') }),
   }));
 
+  // Spells: the base choice of the mage and the support, then each spell Skill picked.
+  const spells: CreatureSpell[] = [];
+  let spellMp = 0;
+  const grantsToUse: { where: string; grant: SpellGrant; choices: Choices }[] =
+    [];
+  if (role.baseSpells) {
+    grantsToUse.push({
+      where: 'Feitiços',
+      grant: role.baseSpells,
+      choices: input.baseSpells,
+    });
+  }
+  for (const [skill, key] of chosen) {
+    if (skill.spells) {
+      grantsToUse.push({
+        where: skill.name,
+        grant: skill.spells,
+        choices: input.skills[key] ?? {},
+      });
+    }
+  }
+  for (const { where, grant, choices } of grantsToUse) {
+    const option =
+      grant.options.length === 1
+        ? grant.options[0]
+        : grant.options.find((o) => o.id === choices.option?.[0]);
+    if (!option) {
+      warnings.push(`Escolha a opção de feitiços (${where}).`);
+      continue;
+    }
+    const picks = [...new Set(choices.spells ?? [])].slice(0, option.count);
+    if (picks.length < option.count) {
+      warnings.push(
+        `Escolha ${option.count} ${plural(option.count, 'feitiço', 'feitiços')} em ${where} (há ${picks.length}).`,
+      );
+    }
+    spellMp += option.mp;
+    for (const key of picks) {
+      const ref = grant.from.find((r) => spellKey(r) === key);
+      const spell = catalog[key];
+      if (!ref || !spell) {
+        warnings.push(`Feitiço fora da lista: ${key}.`);
+        continue;
+      }
+      if (ref.minLevel && level < ref.minLevel) {
+        warnings.push(`${spell.name} só a partir do nível ${ref.minLevel}.`);
+      }
+      const slotChoices = input.spellChoices[key] ?? {};
+      for (const slot of spell.slots ?? []) {
+        if ((slotChoices[slot.id] ?? []).length < (slot.min ?? slot.count)) {
+          warnings.push(
+            `Escolha ${slot.label.toLowerCase()} em ${spell.name}.`,
+          );
+        }
+      }
+      const damageText =
+        spell.damage === undefined
+          ? undefined
+          : spell.flat
+            ? String(spell.damage + extraDamage)
+            : `RA + ${spell.damage + extraDamage}`;
+      const effect = spell.fromClass
+        ? spell.effect
+            .replace(
+              /\(RA \+ (\d+)\)/g,
+              (_, n: string) => `(RA + ${Number(n) + extraDamage})`,
+            )
+            .replace(/(?<!\p{L})você(?!\p{L})/gu, 'o NPC')
+        : fill(
+            spell.effect,
+            spell.slots ?? [],
+            slotChoices,
+            amounts,
+            damageText,
+          );
+      spells.push({
+        name: spell.name,
+        mpCost: spell.mpCost,
+        target: spell.target,
+        duration: spell.duration,
+        offensive: spell.offensive,
+        ...(spell.offensive && {
+          accuracy: input.magicFormula,
+          accuracyBonus,
+        }),
+        effect,
+      });
+    }
+  }
+  const mp = tableMp + spellMp;
+
   // Special rules granted by the level come before those of the Skills.
   const granted = grants.flatMap((g) => {
     if (!g.rule) return [];
@@ -385,10 +538,10 @@ export function assembleCreature(
     initiative,
     defense: { value: role.base.defense + sum('defense'), fixed: false },
     magicDefense: role.base.magicDefense + sum('magicDefense'),
-    hasSpells: false,
+    hasSpells: spells.length > 0,
     affinities,
     attacks,
-    spells: [],
+    spells,
     otherActions,
     specialRules: [...granted, ...specialRules],
   };
@@ -440,6 +593,9 @@ export function defaultInput(
     ),
     choices: {},
     skills: {},
+    baseSpells: {},
+    spellChoices: {},
+    magicFormula: 'AST + VON',
     ...over,
   };
 }

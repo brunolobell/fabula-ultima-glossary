@@ -31,7 +31,7 @@ describe('Home', () => {
     expect(guide).toHaveAttribute('href', '/guias/criar-um-personagem');
 
     const grid = screen.getByRole('region', { name: 'Navegar por tipo' });
-    expect(await within(grid).findByRole('link', { name: /regras.*9 entradas/i }))
+    expect(await within(grid).findByRole('link', { name: /regras.*10 entradas/i }))
       .toHaveAttribute('href', '/regras');
     expect(within(grid).getByRole('link', { name: /classes.*1 entrada\b/i })).toBeInTheDocument();
   });
@@ -250,7 +250,7 @@ describe('Sidebar groups', () => {
     ).getAllByRole('link');
     expect(links.map((l) => l.textContent)).toEqual([
       'Classes1',
-      'Feitiços1',
+      'Feitiços2',
       'Poderes1',
       'Poderes Heroicos2',
     ]);

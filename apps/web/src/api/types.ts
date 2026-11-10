@@ -365,6 +365,40 @@ export interface LevelGrant {
   slots?: AssemblySlot[];
 }
 
+/** One spell of the Livro Básico list of NPC spells (p. 310-311). */
+export interface NpcSpell {
+  id: string;
+  name: string;
+  mpCost: string;
+  target: string;
+  duration: string;
+  offensive: boolean;
+  damage?: number;
+  flat?: boolean;
+  /** `{id}` is a slot choice, `{damage}` the damage with the level's extra. */
+  effect: string;
+  slots?: AssemblySlot[];
+}
+
+export interface NpcSpellsRuleDetails {
+  forge: 'npc-spells';
+  spells: NpcSpell[];
+}
+
+/** A spell a Skill offers: from the NPC list or a Class spell (by its slug). */
+export interface SpellRef {
+  kind: 'npc' | 'class';
+  id: string;
+  name: string;
+  minLevel?: number;
+}
+
+/** "Learns two spells, or one spell and +10 PM": what a Skill gives and where it picks from. */
+export interface SpellGrant {
+  from: SpellRef[];
+  options: { id: string; label: string; count: number; mp: number }[];
+}
+
 /** Where one effect of a Role Skill lands on the stat block. */
 export interface SkillEffect {
   to: 'rule' | 'action' | 'normal' | 'strong';
@@ -386,6 +420,7 @@ export interface RoleSkill {
   immunities?: number;
   notPhysical?: boolean;
   extraVulnerabilities?: number;
+  spells?: SpellGrant;
 }
 
 /** The profile of one Role (Bestiary Vol. I p. 30-53). */
@@ -415,6 +450,8 @@ export interface QuickAssemblyRoleDetails {
   customizations: RoleSkill[];
   /** What the customization slot gives instead of a customization. */
   extra: 'hp' | 'immunity' | 'skill';
+  /** The mage and the support start with a choice of spells. */
+  baseSpells?: SpellGrant;
 }
 
 export type RuleDetails =
@@ -422,7 +459,8 @@ export type RuleDetails =
   | CustomWeaponRuleDetails
   | RareWeaponRuleDetails
   | QuickAssemblyRuleDetails
-  | QuickAssemblyRoleDetails;
+  | QuickAssemblyRoleDetails
+  | NpcSpellsRuleDetails;
 
 export interface DetailsByType {
   rule: RuleDetails;

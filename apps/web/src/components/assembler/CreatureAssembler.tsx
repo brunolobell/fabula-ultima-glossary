@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import type {
+  EntrySummary,
+  NpcSpellsRuleDetails,
+  SpellGrant,
   AssemblySlot,
   DamageType,
   QuickAssemblyRoleDetails,
@@ -19,7 +22,9 @@ import {
   EXTRA_CUSTOMIZATION,
   type AssemblyInput,
   type AttackChoice,
+  buildSpellCatalog,
   type Choices,
+  type SpellCatalog,
 } from '../../lib/creatureAssembly';
 import { creatureToMarkdown } from '../../lib/creatureMarkdown';
 import {
@@ -34,6 +39,7 @@ import {
   VILLAIN_TIER_LABEL,
 } from '../../lib/creatures';
 import { Modal } from '../Modal';
+import { SpellPicker } from './SpellPicker';
 import { StatBlock } from '../StatBlock';
 import {
   CheckField,
@@ -46,6 +52,9 @@ import {
 interface Props {
   rules: QuickAssemblyRuleDetails;
   roles: Record<Role, QuickAssemblyRoleDetails>;
+  /** The Rule "Feitiços de NPC" and every entry (for the Class spells). */
+  npcSpells?: NpcSpellsRuleDetails;
+  entries: ReadonlyMap<string, EntrySummary>;
   open: boolean;
   onClose: () => void;
 }
@@ -57,29 +66,51 @@ const options = <T extends string>(
 
 /** The first effect of a Skill with its choices left as "…", to read before picking it. */
 const skillPreview = (skill: RoleSkill) =>
-  (skill.effects[0]?.text ?? '').replace(/\{(\w+)\}/g, '…');
+  skill.spells
+    ? `Escolha ${skill.spells.options.map((o) => o.label.toLowerCase()).join(' ou ')}.`
+    : (skill.effects[0]?.text ?? '').replace(/\{(\w+)\}/g, '…');
 
-/** What picking `skill` asks the Reader besides ticking it: its choices, then its own attack. */
+/** What picking `skill` asks the Reader besides ticking it: its choices and its spells. */
 function SkillChoices({
   skill,
   value,
   onChange,
+  catalog,
+  spellChoices,
+  onSpellChoices,
 }: {
   skill: RoleSkill;
   value: Choices;
   onChange: (value: Choices) => void;
+  catalog: SpellCatalog;
+  spellChoices: Record<string, Choices>;
+  onSpellChoices: (key: string, choices: Choices) => void;
 }) {
-  if (!skill.slots?.length) return null;
+  if (!skill.slots?.length && !skill.spells) return null;
   return (
-    <div className="mb-2 ml-7 grid gap-3 sm:grid-cols-2">
-      {skill.slots.map((slot) => (
-        <SlotField
-          key={slot.id}
-          slot={slot}
-          value={value[slot.id] ?? []}
-          onChange={(picked) => onChange({ ...value, [slot.id]: picked })}
+    <div className="mb-2 ml-7">
+      {skill.slots && (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {skill.slots.map((slot) => (
+            <SlotField
+              key={slot.id}
+              slot={slot}
+              value={value[slot.id] ?? []}
+              onChange={(picked) => onChange({ ...value, [slot.id]: picked })}
+            />
+          ))}
+        </div>
+      )}
+      {skill.spells && (
+        <SpellPicker
+          grant={skill.spells as SpellGrant}
+          catalog={catalog}
+          value={value}
+          spellChoices={spellChoices}
+          onChange={onChange}
+          onSpellChoices={onSpellChoices}
         />
-      ))}
+      )}
     </div>
   );
 }
@@ -198,7 +229,14 @@ function AttackEditor({
  * Assembly. The draft lives in this component's state only; the stat block can be
  * copied as text, and nothing is saved.
  */
-export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
+export function CreatureAssembler({
+  rules,
+  roles,
+  npcSpells,
+  entries,
+  open,
+  onClose,
+}: Props) {
   const [role, setRole] = useState<Role>('brute');
   const [input, setInput] = useState<AssemblyInput>(() =>
     defaultInput(roles.brute),
@@ -207,9 +245,13 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
   const [copied, setCopied] = useState<string | null>(null);
 
   const profile = roles[role];
+  const catalog = useMemo(
+    () => buildSpellCatalog(npcSpells, entries),
+    [npcSpells, entries],
+  );
   const result = useMemo(
-    () => assembleCreature(rules, profile, input),
-    [rules, profile, input],
+    () => assembleCreature(rules, profile, input, catalog),
+    [rules, profile, input, catalog],
   );
   const set = (patch: Partial<AssemblyInput>) =>
     setInput((prev) => ({ ...prev, ...patch }));
@@ -224,6 +266,8 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
       choices: {},
       skills: {},
       customization: null,
+      baseSpells: {},
+      spellChoices: {},
     }));
   };
 
@@ -258,6 +302,11 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
       else delete skills[skill.id];
       return { ...prev, skills };
     });
+  const setSpellChoices = (key: string, choices: Choices) =>
+    setInput((prev) => ({
+      ...prev,
+      spellChoices: { ...prev.spellChoices, [key]: choices },
+    }));
   const setSkillChoices = (key: string, choices: Choices) =>
     setInput((prev) => ({
       ...prev,
@@ -383,6 +432,9 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
                         onChange={(choices) =>
                           setSkillChoices(customKey(customization.id), choices)
                         }
+                        catalog={catalog}
+                        spellChoices={input.spellChoices}
+                        onSpellChoices={setSpellChoices}
                       />
                     </div>
                   </>
@@ -429,6 +481,33 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
               />
             )}
 
+            {profile.baseSpells && (
+              <fieldset className="mt-4">
+                <legend className="h-tertiary">Feitiços</legend>
+                <SpellPicker
+                  grant={profile.baseSpells}
+                  catalog={catalog}
+                  value={input.baseSpells}
+                  spellChoices={input.spellChoices}
+                  onChange={(baseSpells) => set({ baseSpells })}
+                  onSpellChoices={setSpellChoices}
+                />
+              </fieldset>
+            )}
+            {result.details.spells.some((spell) => spell.offensive) && (
+              <div className="mt-3 sm:w-1/2">
+                <SelectField
+                  label="Teste de Magia"
+                  value={input.magicFormula}
+                  onChange={(magicFormula) => set({ magicFormula })}
+                  options={[
+                    { value: 'AST + VON', label: '(AST + VON)' },
+                    { value: 'VIG + VON', label: '(VIG + VON)' },
+                  ]}
+                />
+              </div>
+            )}
+
             <fieldset className="mt-4">
               <legend className="h-tertiary">
                 Poderes de função ({pickedSkills.length} de {result.roleSkills})
@@ -471,6 +550,9 @@ export function CreatureAssembler({ rules, roles, open, onClose }: Props) {
                           onChange={(choices) =>
                             setSkillChoices(skill.id, choices)
                           }
+                          catalog={catalog}
+                          spellChoices={input.spellChoices}
+                          onSpellChoices={setSpellChoices}
                         />
                       )}
                     </li>
