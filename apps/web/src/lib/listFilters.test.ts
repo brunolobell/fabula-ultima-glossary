@@ -252,3 +252,88 @@ describe('services and transports', () => {
     expect(slugs(air)).toEqual(['viagem-aerea']);
   });
 });
+
+describe('creatures', () => {
+  const creature = (
+    slug: string,
+    d: Record<string, unknown>,
+    source?: EntrySummary['source'],
+  ) =>
+    entry(
+      slug,
+      'creature',
+      {
+        level: 5,
+        species: 'beast',
+        rank: 'soldier',
+        villain: false,
+        hasSpells: false,
+        affinities: {},
+        ...d,
+      },
+      source,
+    );
+
+  const list = [
+    creature('cactonto', {
+      level: 15,
+      species: 'plant',
+      hasSpells: true,
+      affinities: { ice: 'vulnerable', fire: 'resistant' },
+    }),
+    creature('rato-gigante', { level: 5, species: 'beast' }),
+    creature('golem-de-bronze', {
+      level: 15,
+      species: 'construct',
+      affinities: { ice: 'vulnerable', poison: 'immune' },
+    }),
+    creature(
+      'kraken',
+      { level: 20, species: 'monster', rank: 'champion', villain: true, role: 'mage' },
+      'bestiary-vol-1',
+    ),
+  ];
+  const pick = (query: string) =>
+    slugs(
+      applyFilters('creature', list, readSelection('creature', new URLSearchParams(query))),
+    );
+
+  it('filters by Species, level, Rank, Villain and whether it casts spells', () => {
+    expect(pick('especie=plant,construct')).toEqual(['cactonto', 'golem-de-bronze']);
+    expect(pick('nivel=15')).toEqual(['cactonto', 'golem-de-bronze']);
+    expect(pick('patente=champion')).toEqual(['kraken']);
+    expect(pick('vilao=sim')).toEqual(['kraken']);
+    expect(pick('feiticos=sim')).toEqual(['cactonto']);
+  });
+
+  it('filters by Role and by Source, and ANDs the rows', () => {
+    expect(pick('funcao=mage')).toEqual(['kraken']);
+    expect(pick('livro=bestiary-vol-1')).toEqual(['kraken']);
+    expect(pick('nivel=15&especie=plant')).toEqual(['cactonto']);
+  });
+
+  it('filters by Affinity: a damage type and how the Creature fares against it', () => {
+    expect(pick('afinidade=ice:vulnerable')).toEqual(['cactonto', 'golem-de-bronze']);
+    expect(pick('afinidade=poison:immune,fire:resistant')).toEqual([
+      'cactonto',
+      'golem-de-bronze',
+    ]);
+    expect(pick('afinidade=fire:vulnerable')).toEqual([]);
+  });
+
+  it('names the options in Portuguese, as the Livro Básico does', () => {
+    const rows = buildRows('creature', list, new Map());
+    const labels = (param: string) =>
+      rows.find((r) => r.param === param)?.options.map((o) => o.label);
+    expect(labels('especie')).toEqual(['Construto', 'Fera', 'Monstro', 'Planta']);
+    expect(labels('nivel')).toEqual(['Nível 5', 'Nível 15', 'Nível 20']);
+    expect(labels('patente')).toEqual(['Soldado', 'Campeão']);
+    expect(labels('afinidade')).toEqual(
+      expect.arrayContaining(['Vulnerável a gelo', 'Resistente a fogo', 'Imune a veneno']),
+    );
+    expect(rows.find((r) => r.param === 'livro')?.options.map((o) => o.label)).toEqual([
+      'Livro Básico',
+      'Bestiary Vol. I (inglês)',
+    ]);
+  });
+});

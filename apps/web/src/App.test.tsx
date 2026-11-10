@@ -232,6 +232,7 @@ describe('Sidebar groups', () => {
     const nav = within(menu());
     const headers = await nav.findAllByRole('button', { expanded: false });
     expect(headers.map((h) => h.textContent)).toEqual([
+      'Bestiário',
       'Criação de Personagem',
       'Equipamento',
     ]);
@@ -591,5 +592,109 @@ describe('Services and transports', () => {
       'href',
       '/transportes',
     );
+  });
+});
+
+describe('Creatures', () => {
+  it('shows the stat block of a Creature with its numbers and Affinities', async () => {
+    mockApi();
+    renderAt('/criaturas/cactonto');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByRole('heading', { level: 1, name: 'Cactonto' })).toBeInTheDocument();
+    expect(main.getByText('ver Livro Básico, página', { exact: false })).toHaveTextContent('352');
+
+    // The stat bar: level, Species, Rank.
+    const bar = (label: string) => main.getByText(label, { selector: 'dt' }).nextElementSibling;
+    expect(bar('Nível')).toHaveTextContent('15');
+    expect(bar('Espécie')).toHaveTextContent('Planta');
+    expect(bar('Patente')).toHaveTextContent('Soldado');
+    expect(main.getByText(/assustador, enorme, sensível à água, territorial/)).toBeInTheDocument();
+
+    // Attributes, resources and defenses as the book prints them.
+    const numbers = within(main.getByRole('group', { name: 'Atributos e defesas' }));
+    const cell = (label: string) =>
+      numbers.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
+    expect(cell('DES')).toBe('d8');
+    expect(cell('AST')).toBe('d6');
+    expect(cell('VIG')).toBe('d12');
+    expect(cell('VON')).toBe('d6');
+    expect(cell('PV')).toBe('90');
+    expect(cell('Crise')).toBe('45');
+    expect(cell('PM')).toBe('55');
+    expect(cell('Inic.')).toBe('7');
+    expect(cell('Defesa')).toBe('+0');
+    expect(cell('Def. Mágica')).toBe('+0');
+
+    const affinities = within(main.getByRole('list', { name: 'Afinidades a dano' }));
+    expect(affinities.getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+      'Resistente a ar',
+      'Resistente a terra',
+      'Resistente a fogo',
+      'Vulnerável a gelo',
+      'Resistente a luz',
+    ]);
+  });
+
+  it('lists the attacks, spells, other actions and special rules', async () => {
+    mockApi();
+    renderAt('/criaturas/cactonto');
+    const main = within(screen.getByRole('main'));
+    await main.findByRole('heading', { level: 1, name: 'Cactonto' });
+
+    const attacks = within(main.getByRole('region', { name: 'Ataques básicos' }));
+    expect(attacks.getByText('Abraço Perfurador')).toBeInTheDocument();
+    expect(attacks.getByText(/corpo a corpo/)).toBeInTheDocument();
+    expect(attacks.getByText(/à distância/)).toBeInTheDocument();
+    expect(attacks.getAllByText(/RA \+ 10/)[0]).toBeInTheDocument();
+    expect(attacks.getAllByText(/de dano físico/)).toHaveLength(2);
+
+    const spells = within(main.getByRole('region', { name: 'Feitiços' }));
+    expect(spells.getByText('Drenar Umidade')).toBeInTheDocument();
+    expect(spells.getByText('PM 10')).toBeInTheDocument();
+    expect(spells.getByText('Ofensivo')).toBeInTheDocument();
+
+    expect(within(main.getByRole('region', { name: 'Outras ações' })).getByText('Seiva de Cactonto')).toBeInTheDocument();
+    expect(within(main.getByRole('region', { name: 'Regras especiais' })).getByText('Planta')).toBeInTheDocument();
+  });
+
+  it('lists Creatures in a Bestiário menu group, with a count', async () => {
+    mockApi();
+    renderAt('/');
+    const nav = within(menu());
+    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
+    const link = within(
+      nav.getByRole('button', { name: 'Bestiário' }).nextElementSibling as HTMLElement,
+    ).getByRole('link');
+    expect(link).toHaveAttribute('href', '/criaturas');
+    await waitFor(() => expect(link).toHaveTextContent('Criaturas1'));
+  });
+
+  it('marks the Creatures link on the list and on a Creature page', async () => {
+    mockApi();
+    renderAt('/criaturas/cactonto');
+    const nav = within(menu());
+    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
+    expect(nav.getByRole('link', { name: /^Criaturas/ })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('shows what identifies a Creature on its list row', async () => {
+    mockApi();
+    renderAt('/criaturas');
+    expect(screen.getByRole('heading', { level: 1, name: 'Criaturas' })).toBeInTheDocument();
+    const row = (await screen.findByRole('link', { name: /cactonto/i })).closest('a')!;
+    expect(row).toHaveAttribute('href', '/criaturas/cactonto');
+    expect(row).toHaveTextContent('Nível 15 · Planta · Soldado · PV 90 · ver Livro Básico, página 352');
+  });
+});
+
+describe('Creature legend', () => {
+  it('names the abbreviations of the stat block in the book\'s terms', async () => {
+    mockApi();
+    renderAt('/criaturas/cactonto');
+    const summary = await screen.findByText('Siglas nesta página');
+    const legend = within(summary.closest('details')!);
+    expect(legend.getByText('Pontos de Vida')).toBeInTheDocument();
+    expect(legend.getByText('Pontos de Mana')).toBeInTheDocument();
+    expect(legend.getByText('rolagem alta')).toBeInTheDocument();
   });
 });

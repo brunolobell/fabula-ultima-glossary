@@ -9,6 +9,7 @@ import {
   GiCharacter,
   GiCheckedShield,
   GiCrown,
+  GiDragonHead,
   GiHelmet,
   GiHouse,
   GiMagicSwirl,
@@ -85,6 +86,19 @@ interface MenuGroup {
 
 // Alphabetical (PT-BR), as in the Archives of Nethys; "all" always leads.
 const GROUPS: MenuGroup[] = [
+  {
+    id: 'bestiario',
+    title: 'Bestiário',
+    icon: GiDragonHead,
+    items: [
+      {
+        label: 'Criaturas',
+        icon: GiDragonHead,
+        to: typePath('creature'),
+        types: ['creature'],
+      },
+    ],
+  },
   {
     id: 'criacao',
     title: 'Criação de Personagem',

@@ -8,6 +8,7 @@ export type EntryType =
   | 'heroic-skill'
   | 'spell'
   | 'equipment'
+  | 'creature'
   | 'service'
   | 'transport'
   | 'guide';
@@ -16,7 +17,8 @@ export type EntrySource =
   | 'livro-basico'
   | 'high-fantasy'
   | 'natural-fantasy'
-  | 'techno-fantasy';
+  | 'techno-fantasy'
+  | 'bestiary-vol-1';
 
 export type EquipmentKind =
   | 'weapon'
@@ -116,6 +118,98 @@ export interface TransportDetails {
   /** The book says "cerca de N" instead of an exact limit. */
   approximate?: boolean;
   distance: TransportDistance;
+}
+
+export type Species =
+  | 'construct'
+  | 'demon'
+  | 'elemental'
+  | 'beast'
+  | 'humanoid'
+  | 'monster'
+  | 'undead'
+  | 'plant';
+
+export type DamageType =
+  | 'physical'
+  | 'air'
+  | 'bolt'
+  | 'dark'
+  | 'earth'
+  | 'fire'
+  | 'ice'
+  | 'light'
+  | 'poison';
+
+export type Affinity = 'vulnerable' | 'resistant' | 'immune' | 'absorbs';
+export type Rank = 'soldier' | 'elite' | 'champion';
+export type Role =
+  | 'brute'
+  | 'hunter'
+  | 'mage'
+  | 'saboteur'
+  | 'sentinel'
+  | 'support';
+export type Die = 6 | 8 | 10 | 12;
+
+export interface CreatureAttack {
+  name: string;
+  range: 'melee' | 'ranged';
+  /** "DES + VIG" style. */
+  accuracy: string;
+  accuracyBonus: number;
+  /** Added to the high roll (RA); null when the attack does no damage. */
+  damage: number | null;
+  damageType: DamageType;
+  effect?: string;
+}
+
+export interface CreatureSpell {
+  name: string;
+  mpCost: string;
+  target: string;
+  duration: string;
+  offensive: boolean;
+  accuracy?: string;
+  accuracyBonus?: number;
+  effect: string;
+}
+
+export interface CreatureAbility {
+  name: string;
+  effect: string;
+}
+
+/** What the list endpoint sends for a Creature: the scalar stats, no abilities. */
+export interface CreatureSummaryDetails {
+  level: number;
+  species: Species;
+  rank: Rank;
+  role?: Role;
+  villain: boolean;
+  /** English name of a Bestiary Vol. I Creature. */
+  originalName?: string;
+  traits: string[];
+  attributes: { DES: Die; AST: Die; VIG: Die; VON: Die };
+  hp: number;
+  /** Half of `hp`, rounded down. */
+  crisis: number;
+  mp: number;
+  initiative: number;
+  /** A fixed number (martial armor) or a bonus to the current Destreza die. */
+  defense: { value: number; fixed: boolean };
+  /** A bonus to the current Astúcia die. */
+  magicDefense: number;
+  hasSpells: boolean;
+  affinities: Partial<Record<DamageType, Affinity>>;
+}
+
+/** The whole stat block, as the entry endpoint sends it. */
+export interface CreatureDetails extends CreatureSummaryDetails {
+  attacks: CreatureAttack[];
+  spells: CreatureSpell[];
+  otherActions: CreatureAbility[];
+  specialRules: CreatureAbility[];
 }
 
 export interface GuideStep {
@@ -225,6 +319,7 @@ export interface DetailsByType {
   'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
+  creature: CreatureDetails;
   service: ServiceDetails;
   transport: TransportDetails;
   guide: GuideDetails;

@@ -5,12 +5,14 @@ import { decorateChecks } from '../lib/check';
 import { entryPath } from '../lib/entryTypes';
 import { requirementText } from '../lib/requirements';
 import type {
+  CreatureSummaryDetails,
   HeroicSkillDetails,
   ServiceDetails,
   SkillDetails,
   SpellDetails,
   TransportDetails,
 } from '../api/types';
+import { RANK_LABEL, SPECIES_LABEL } from '../lib/creatures';
 import {
   MEDIUM_LABEL,
   SERVICE_GROUP_LABEL,
@@ -76,6 +78,18 @@ function TransportFacts({ entry }: { entry: EntrySummary }) {
   );
 }
 
+/** "Nível 15 · Planta · Soldado · PV 90 · ": what a Creature is, at a glance. */
+function CreatureFacts({ entry }: { entry: EntrySummary }) {
+  const d = entry.details as CreatureSummaryDetails;
+  return (
+    <>
+      Nível {d.level} · {SPECIES_LABEL[d.species]} · {RANK_LABEL[d.rank]} · PV{' '}
+      <strong className="text-ink">{d.hp}</strong>
+      {' · '}
+    </>
+  );
+}
+
 /** The facts a Reader scans for, then where it is in the book. */
 function RowMeta({ entry }: { entry: EntrySummary }) {
   return (
@@ -92,6 +106,7 @@ function RowMeta({ entry }: { entry: EntrySummary }) {
           </span>
         </>
       )}
+      {entry.type === 'creature' && <CreatureFacts entry={entry} />}
       {entry.type === 'service' && <ServiceFacts entry={entry} />}
       {entry.type === 'transport' && <TransportFacts entry={entry} />}
       <PageRef page={entry.page} source={entry.source} />

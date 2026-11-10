@@ -3,6 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import type {
   ClassDetails,
+  CreatureDetails,
   Entry,
   EntrySummary,
   EntryWithChildren,
@@ -17,6 +18,7 @@ import {
   PageSkeleton,
 } from '../components/States';
 import { StatBar } from '../components/StatBar';
+import { StatBlock } from '../components/StatBlock';
 import { TypeBadge } from '../components/TypeBadge';
 import { useEntry } from '../hooks/useEntry';
 import { useEntryIndex } from '../hooks/useEntryIndex';
@@ -29,6 +31,7 @@ import {
 } from '../lib/entryTypes';
 import { extractLinkedSlugs } from '../lib/links';
 import { rememberEntry } from '../lib/recent';
+import { statBlockTexts } from '../lib/statBlock';
 import { statCells } from '../lib/statCells';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 
@@ -288,6 +291,9 @@ export function EntryPage() {
           entry.summary,
           entry.body,
           ...(classDetails?.freeBenefits ?? []),
+          ...(entry.type === 'creature'
+            ? statBlockTexts(entry.details as CreatureDetails)
+            : []),
           ...statCells(entry, bySlug).map((c) => c.label),
           ...entry.children.flatMap((c) => [
             c.summary,
@@ -300,7 +306,12 @@ export function EntryPage() {
       {isClass ? (
         <ClassContent entry={entry} index={bySlug} />
       ) : (
-        <EntryBody body={entry.body} index={bySlug} />
+        <>
+          {entry.type === 'creature' && (
+            <StatBlock details={entry.details as CreatureDetails} />
+          )}
+          <EntryBody body={entry.body} index={bySlug} />
+        </>
       )}
 
       <SeeAlso entry={entry} index={bySlug} />

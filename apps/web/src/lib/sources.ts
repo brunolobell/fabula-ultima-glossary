@@ -6,4 +6,5 @@ export const SOURCE_LABEL: Record<EntrySource, string> = {
   'high-fantasy': 'Atlas High Fantasy',
   'natural-fantasy': 'Atlas Natural Fantasy',
   'techno-fantasy': 'Atlas Techno Fantasy',
+  'bestiary-vol-1': 'Bestiary Vol. I (inglês)',
 };

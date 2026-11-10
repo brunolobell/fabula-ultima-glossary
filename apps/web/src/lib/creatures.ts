@@ -1,0 +1,86 @@
+import type { Affinity, DamageType, Rank, Role, Species } from '../api/types';
+
+/** The Livro Básico's names (p. 303-305). */
+export const SPECIES_LABEL: Record<Species, string> = {
+  construct: 'Construto',
+  demon: 'Demônio',
+  elemental: 'Elemental',
+  beast: 'Fera',
+  humanoid: 'Humanoide',
+  monster: 'Monstro',
+  undead: 'Morto-vivo',
+  plant: 'Planta',
+};
+
+/** The Livro Básico's patentes (p. 293-295). */
+export const RANK_LABEL: Record<Rank, string> = {
+  soldier: 'Soldado',
+  elite: 'Elite',
+  champion: 'Campeão',
+};
+export const RANK_ORDER: readonly Rank[] = ['soldier', 'elite', 'champion'];
+
+/**
+ * Quick Assembly Roles ("função"). The Bestiary Vol. I has no Brazilian edition,
+ * so these names are our own translation and unofficial (ADR 0004).
+ */
+export const ROLE_LABEL: Record<Role, string> = {
+  brute: 'Bruto',
+  hunter: 'Caçador',
+  mage: 'Mago',
+  saboteur: 'Sabotador',
+  sentinel: 'Sentinela',
+  support: 'Apoio',
+};
+export const ROLE_ORDER: readonly Role[] = [
+  'brute',
+  'hunter',
+  'mage',
+  'saboteur',
+  'sentinel',
+  'support',
+];
+
+/** The nine damage types in the order the bestiary prints them (p. 321). */
+export const DAMAGE_ORDER: readonly DamageType[] = [
+  'physical',
+  'air',
+  'bolt',
+  'dark',
+  'earth',
+  'fire',
+  'ice',
+  'light',
+  'poison',
+];
+
+export const DAMAGE_LABEL: Record<DamageType, string> = {
+  physical: 'físico',
+  air: 'ar',
+  bolt: 'raio',
+  dark: 'trevas',
+  earth: 'terra',
+  fire: 'fogo',
+  ice: 'gelo',
+  light: 'luz',
+  poison: 'veneno',
+};
+
+export const AFFINITY_LABEL: Record<Affinity, string> = {
+  vulnerable: 'Vulnerável',
+  resistant: 'Resistente',
+  immune: 'Imune',
+  absorbs: 'Absorve',
+};
+export const AFFINITY_ORDER: readonly Affinity[] = [
+  'vulnerable',
+  'resistant',
+  'immune',
+  'absorbs',
+];
+
+/** "Vulnerável a gelo", "Absorve fogo". */
+export const affinityLabel = (damage: DamageType, affinity: Affinity) =>
+  affinity === 'absorbs'
+    ? `Absorve ${DAMAGE_LABEL[damage]}`
+    : `${AFFINITY_LABEL[affinity]} a ${DAMAGE_LABEL[damage]}`;

@@ -245,6 +245,74 @@ const descansoVila: Entry = {
   details: { group: 'settlement', cost: 10 },
 };
 
+const cactonto: Entry = {
+  ...base,
+  id: '20',
+  slug: 'cactonto',
+  name: 'Cactonto',
+  type: 'creature',
+  summary: 'Cacto imponente do deserto que drena a água das vítimas.',
+  body: '',
+  tags: ['criatura'],
+  page: 352,
+  details: {
+    level: 15,
+    species: 'plant',
+    rank: 'soldier',
+    villain: false,
+    traits: ['assustador', 'enorme', 'sensível à água', 'territorial'],
+    attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+    hp: 90,
+    crisis: 45,
+    mp: 55,
+    initiative: 7,
+    defense: { value: 0, fixed: false },
+    magicDefense: 0,
+    hasSpells: true,
+    affinities: {
+      air: 'resistant',
+      earth: 'resistant',
+      fire: 'resistant',
+      ice: 'vulnerable',
+      light: 'resistant',
+    },
+    attacks: [
+      {
+        name: 'Abraço Perfurador',
+        range: 'melee',
+        accuracy: 'VIG + VIG',
+        accuracyBonus: 1,
+        damage: 10,
+        damageType: 'physical',
+      },
+      {
+        name: 'Barragem de Espinhos',
+        range: 'ranged',
+        accuracy: 'DES + VIG',
+        accuracyBonus: 1,
+        damage: 5,
+        damageType: 'physical',
+      },
+    ],
+    spells: [
+      {
+        name: 'Drenar Umidade',
+        mpCost: '10',
+        target: 'Uma criatura',
+        duration: 'Instantânea',
+        offensive: true,
+        accuracy: 'VIG + VON',
+        accuracyBonus: 1,
+        effect: 'Causa (RA + 15) de dano de veneno e recupera metade dos PV perdidos pelo alvo.',
+      },
+    ],
+    otherActions: [
+      { name: 'Seiva de Cactonto', effect: 'Se recupera de fraco e lento e ataca com Barragem de Espinhos.' },
+    ],
+    specialRules: [{ name: 'Planta', effect: 'É imune a abalado, atordoado e enfurecido.' }],
+  },
+};
+
 const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   [
     tracos,
@@ -260,6 +328,7 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     veiculoPlanetario,
     viagemAerea,
     descansoVila,
+    cactonto,
     criar,
   ].map(
     (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],

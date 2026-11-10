@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type {
+  CreatureDetails,
   EquipmentDetails,
   HeroicSkillDetails,
   Entry,
@@ -13,6 +14,7 @@ import type {
 import { BoltIcon } from '../components/Icons';
 import { Requirements } from '../components/Requirements';
 import { decorateChecks } from './check';
+import { RANK_LABEL, ROLE_LABEL, SPECIES_LABEL } from './creatures';
 import { entryPath } from './entryTypes';
 import {
   MEDIUM_LABEL,
@@ -135,6 +137,19 @@ export function statCells(
         value: d.cost === null ? '—' : `${d.cost.toLocaleString('pt-BR')}z`,
       });
       if (d.martial) cells.push({ label: 'Marcial', value: 'Sim' });
+      return cells;
+    }
+    case 'creature': {
+      const d = entry.details as CreatureDetails;
+      const cells: Cell[] = [
+        { label: 'Nível', value: d.level },
+        { label: 'Espécie', value: SPECIES_LABEL[d.species] },
+        { label: 'Patente', value: RANK_LABEL[d.rank] },
+      ];
+      if (d.role) cells.push({ label: 'Função', value: ROLE_LABEL[d.role] });
+      if (d.villain) cells.push({ label: 'Vilão', value: 'Sim' });
+      if (d.originalName)
+        cells.push({ label: 'Nome original', value: d.originalName });
       return cells;
     }
     case 'service': {
