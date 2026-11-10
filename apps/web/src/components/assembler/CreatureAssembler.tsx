@@ -41,6 +41,7 @@ import {
   VILLAIN_TIER_LABEL,
 } from '../../lib/creatures';
 import { Modal } from '../Modal';
+import { SpeciesPanel } from './SpeciesPanel';
 import { SpellPicker } from './SpellPicker';
 import { StatBlock } from '../StatBlock';
 import {
@@ -339,6 +340,7 @@ export function CreatureAssembler({
     immunity: 'Imunidade a um tipo de dano',
     skill: 'Mais um poder de função',
   }[profile.extra];
+  const speciesRule = rules.species.find((r) => r.species === input.species);
   const negativeSkill = rules.negativeSkills.find(
     (n) => n.id === input.negative,
   );
@@ -397,18 +399,31 @@ export function CreatureAssembler({
               )}
               <SelectField
                 label="Espécie"
-                value={input.species}
-                onChange={(species) => set({ species: species as Species })}
+                value={input.species ?? 'monster'}
+                onChange={(species) =>
+                  set({
+                    species: species as Species,
+                    speciesPicks: [],
+                    speciesVulnerability: null,
+                    speciesExtra: null,
+                    speciesChoices: {},
+                  })
+                }
                 options={options(
                   Object.keys(SPECIES_LABEL) as Species[],
                   SPECIES_LABEL,
                 )}
               />
             </div>
-            <p className="mt-1 text-[15px] text-muted">
-              A Espécie entra só na ficha: as regras dela ainda não são
-              aplicadas aqui.
-            </p>
+            {speciesRule && (
+              <SpeciesPanel
+                rule={speciesRule}
+                input={input}
+                set={set}
+                catalog={catalog}
+                onSpellChoices={setSpellChoices}
+              />
+            )}
 
             <div className="mt-3">
               <TextField

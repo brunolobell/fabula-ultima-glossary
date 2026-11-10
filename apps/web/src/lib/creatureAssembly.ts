@@ -9,6 +9,7 @@ import type {
   Rank,
   Role,
   RoleAttackTemplate,
+  SpeciesOption,
   RoleSkill,
   Species,
   VillainTier,
@@ -19,7 +20,12 @@ import type {
   SpellRef,
   SpellDetails,
 } from '../api/types';
-import { DAMAGE_LABEL, RANK_LABEL, ROLE_ORDER } from './creatures';
+import {
+  DAMAGE_LABEL,
+  RANK_LABEL,
+  ROLE_ORDER,
+  SPECIES_LABEL,
+} from './creatures';
 
 /**
  * Quick Assembly (Bestiary Vol. I p. 25-53) as a pure function. The numbers come
@@ -62,7 +68,8 @@ export interface AssemblyInput {
   championX: number;
   /** Soldier or elite: `extra` (more Hit Points, an Immunity or a Role Skill), or `c:<id>`. */
   customization: string | null;
-  species: Species;
+  /** Null: no Species chosen, so none of its rules apply. */
+  species: Species | null;
   traits: string[];
   villain: boolean;
   tier: VillainTier;
@@ -85,6 +92,14 @@ export interface AssemblyInput {
   negative: string | null;
   /** The ids of the Boss Skills picked; their choices are under `b:<id>`. */
   bosses: string[];
+  /** The ids of the Species options picked (an option that may be taken twice appears twice). */
+  speciesPicks: string[];
+  /** The Vulnerability the Species asks for (humanoid, plant). */
+  speciesVulnerability: DamageType | null;
+  /** The optional extra Vulnerability that buys more options; null when not taken. */
+  speciesExtra: DamageType | null;
+  /** The choices of the Species options, by option id (`spells`, `type`, slots). */
+  speciesChoices: Record<string, Choices>;
 }
 
 /** A spell the Reader can pick: from the NPC list, or a Class spell read from its Entry. */
@@ -184,6 +199,16 @@ function fill(
 
 const plural = (n: number, one: string, many: string) => (n === 1 ? one : many);
 
+/** The conditions a Species rule names, as the Livro Básico calls them. */
+const STATUS_NAME: Record<string, string> = {
+  dazed: 'atordoado',
+  enraged: 'enfurecido',
+  poisoned: 'envenenado',
+  shaken: 'abalado',
+  slow: 'lento',
+  weak: 'fraco',
+};
+
 /** What a built attack carries while Skills are still adding to it. */
 interface Built {
   id: RoleAttackTemplate['id'];
@@ -229,9 +254,24 @@ export function assembleCreature(
     warnings.push('Campeões não escolhem personalização.');
   }
 
+  // The Species rule (it replaces the Livro Básico's under Quick Assembly) and its picks.
+  const speciesRule = input.species
+    ? rules.species.find((r) => r.species === input.species)
+    : undefined;
+  const speciesOptions: SpeciesOption[] = speciesRule
+    ? input.speciesPicks.flatMap((id) => {
+        const option = speciesRule.options.find((o) => o.id === id);
+        return option ? [option] : [];
+      })
+    : [];
+  const speciesHp = speciesOptions
+    .filter((o) => o.kind === 'hp')
+    .reduce((total, o) => total + (o.amount ?? 0), 0);
+
   const hp =
     ((row?.hp ?? role.base.hp) +
-      (picksExtra && role.extra === 'hp' ? rules.extraHp : 0)) *
+      (picksExtra && role.extra === 'hp' ? rules.extraHp : 0) +
+      speciesHp) *
     multiplier;
   const tableMp =
     (row?.mp ?? role.base.mp) * (champion ? rules.champion.mpMultiplier : 1);
@@ -387,6 +427,15 @@ export function assembleCreature(
       });
     }
   }
+  for (const option of speciesOptions) {
+    if (option.kind === 'spell' && option.spells) {
+      grantsToUse.push({
+        where: 'Espécie',
+        grant: option.spells,
+        choices: input.speciesChoices[option.id] ?? {},
+      });
+    }
+  }
   for (const { where, grant, choices } of grantsToUse) {
     const option =
       grant.options.length === 1
@@ -479,15 +528,54 @@ export function assembleCreature(
   const required = {
     vulnerabilities: role.base.vulnerabilities + extraVulnerabilities,
     resistances:
-      grants.reduce((n, g) => n + (g.resistances ?? 0), 0) + need.resistances,
+      grants.reduce((n, g) => n + (g.resistances ?? 0), 0) +
+      need.resistances +
+      (speciesRule?.resistances ?? 0) +
+      speciesOptions.filter((o) => o.kind === 'resistances').length * 2,
     immunities:
       grants.reduce((n, g) => n + (g.immunities ?? 0), 0) +
       need.immunities +
-      (picksExtra && role.extra === 'immunity' ? 1 : 0),
+      (picksExtra && role.extra === 'immunity' ? 1 : 0) +
+      (speciesRule?.immunities ?? 0),
   };
   const affinities: CreatureDetails['affinities'] = {};
   const seen = new Set<DamageType>();
   const conflicted = new Set<DamageType>();
+  // What the Species fixes comes first; a Role pick on the same type is the conflict.
+  if (speciesRule) {
+    for (const [type, affinity] of Object.entries(speciesRule.affinities)) {
+      affinities[type as DamageType] = affinity;
+      seen.add(type as DamageType);
+    }
+    const label = (type: DamageType) =>
+      `${DAMAGE_LABEL[type][0].toUpperCase()}${DAMAGE_LABEL[type].slice(1)}`;
+    if (speciesRule.vulnerability) {
+      const type = input.speciesVulnerability;
+      if (!type) {
+        warnings.push('Escolha a Vulnerabilidade da Espécie.');
+      } else {
+        if (!speciesRule.vulnerability.includes(type)) {
+          warnings.push(
+            `${label(type)} não está entre as Vulnerabilidades que a Espécie permite.`,
+          );
+        }
+        if (seen.has(type)) conflicted.add(type);
+        else affinities[type] = 'vulnerable';
+        seen.add(type);
+      }
+    }
+    if (speciesRule.extra && input.speciesExtra) {
+      const type = input.speciesExtra;
+      if (!speciesRule.extra.vulnerability.includes(type)) {
+        warnings.push(
+          `${label(type)} não está entre as Vulnerabilidades que a Espécie permite.`,
+        );
+      }
+      if (seen.has(type)) conflicted.add(type);
+      else affinities[type] = 'vulnerable';
+      seen.add(type);
+    }
+  }
   for (const [affinity, types] of [
     ['vulnerable', input.vulnerabilities],
     ['resistant', input.resistances],
@@ -536,8 +624,81 @@ export function assembleCreature(
         ? rules.elite.roleSkills
         : 0) +
     (picksExtra && role.extra === 'skill' ? 1 : 0) +
+    speciesOptions.filter((o) => o.kind === 'role-skill').length +
     // A Negative Skill buys one more Role Skill (or a Boss Skill).
     (negative ? 1 : 0);
+  // The Species: its rule, the options picked and what they ask.
+  const speciesOut: CreatureDetails['specialRules'] = [];
+  if (speciesRule && input.species) {
+    const immune = speciesRule.statusImmunities.map(
+      (code) => STATUS_NAME[code] ?? code,
+    );
+    if (immune.length > 0 || speciesRule.note) {
+      speciesOut.push({
+        name: SPECIES_LABEL[input.species],
+        effect: [
+          immune.length > 0
+            ? `Imune ${immune.length > 1 ? 'às condições' : 'à condição'} ${list(immune)}.`
+            : '',
+          speciesRule.note ?? '',
+        ]
+          .filter(Boolean)
+          .join(' '),
+      });
+    }
+    for (const option of new Set(speciesOptions)) {
+      const choices = input.speciesChoices[option.id] ?? {};
+      for (const slot of option.slots ?? []) {
+        if ((choices[slot.id] ?? []).length < (slot.min ?? slot.count)) {
+          warnings.push(
+            `Escolha ${slot.label.toLowerCase()} em ${option.label}.`,
+          );
+        }
+      }
+      if (option.kind === 'rule' && option.rule) {
+        speciesOut.push({
+          name: option.rule.name,
+          effect: fill(option.rule.text, option.slots ?? [], choices, amounts),
+        });
+      }
+      if (option.kind === 'absorb') {
+        const type =
+          option.swapType ?? (choices.type?.[0] as DamageType | undefined);
+        const from = option.swaps === 'resistant' ? 'resistant' : 'immune';
+        if (type) {
+          if (affinities[type] === from) {
+            affinities[type] = 'absorbs';
+          } else {
+            warnings.push(
+              `Absorção em ${DAMAGE_LABEL[type]} exige ${from === 'resistant' ? 'uma Resistência' : 'uma Imunidade'} nesse tipo.`,
+            );
+          }
+        }
+      }
+      const times = speciesOptions.filter((o) => o === option).length;
+      const allowed = option.max ?? 1;
+      if (times > allowed) {
+        warnings.push(
+          `${option.label} só pode ser escolhida ${allowed} ${allowed === 1 ? 'vez' : 'vezes'}.`,
+        );
+      }
+    }
+    const wanted =
+      speciesRule.picks +
+      (input.speciesExtra && speciesRule.extra ? speciesRule.extra.picks : 0);
+    const have = speciesOptions.length;
+    if (have < wanted) {
+      const missing = wanted - have;
+      warnings.push(
+        `Escolha ${missing} ${plural(missing, 'opção', 'opções')} da Espécie (há ${have}).`,
+      );
+    } else if (have > wanted) {
+      warnings.push(
+        `Há ${have} ${plural(have, 'opção', 'opções')} da Espécie, mas a Espécie dá ${wanted}.`,
+      );
+    }
+  }
+
   // Boss Skills: a champion has its own; any beyond take the place of a Role Skill.
   const bossBudget = champion ? rules.champion.bossSkills : 0;
   const bossTaken = pickedBosses.length;
@@ -578,7 +739,7 @@ export function assembleCreature(
 
   const details: CreatureDetails = {
     level,
-    species: input.species,
+    species: input.species ?? 'monster',
     rank,
     role: role.role,
     villain: input.villain,
@@ -595,7 +756,7 @@ export function assembleCreature(
     attacks,
     spells,
     otherActions,
-    specialRules: [...granted, ...specialRules],
+    specialRules: [...granted, ...specialRules, ...speciesOut],
   };
 
   return {
@@ -650,6 +811,10 @@ export function defaultInput(
     magicFormula: 'AST + VON',
     negative: null,
     bosses: [],
+    speciesPicks: [],
+    speciesVulnerability: null,
+    speciesExtra: null,
+    speciesChoices: {},
     ...over,
   };
 }
@@ -672,6 +837,7 @@ export function assemblyRulesComplete(
       rules.negativeSkills,
       rules.bossSkills,
       rules.bossGroups,
+      rules.species,
     ].every(Array.isArray) ||
     !rules.elite ||
     !rules.champion ||

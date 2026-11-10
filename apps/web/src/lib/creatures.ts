@@ -1,4 +1,11 @@
-import type { Affinity, DamageType, Rank, Role, Species } from '../api/types';
+import type {
+  Affinity,
+  DamageType,
+  Rank,
+  Role,
+  Species,
+  SpeciesRule,
+} from '../api/types';
 
 /** The Livro Básico's names (p. 303-305). */
 export const SPECIES_LABEL: Record<Species, string> = {
@@ -110,3 +117,45 @@ export const VILLAIN_TIER_LABEL = {
 
 export const capitalize = (text: string) =>
   `${text[0].toUpperCase()}${text.slice(1)}`;
+
+const STATUS_PT: Record<string, string> = {
+  dazed: 'atordoado',
+  enraged: 'enfurecido',
+  poisoned: 'envenenado',
+  shaken: 'abalado',
+  slow: 'lento',
+  weak: 'fraco',
+};
+
+const joinE = (items: string[]) =>
+  items.length <= 1
+    ? (items[0] ?? '')
+    : `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`;
+
+/** What a Species always has, in a line: "Resistência a dano de terra; Imunidade a dano de veneno". */
+export function speciesAlways(rule: SpeciesRule): string {
+  const noun = {
+    resistant: 'Resistência',
+    immune: 'Imunidade',
+    vulnerable: 'Vulnerabilidade',
+    absorbs: 'Absorção',
+  } as const;
+  const type = (t: DamageType) =>
+    t === 'physical' ? 'físico' : `de ${DAMAGE_LABEL[t]}`;
+  return [
+    ...Object.entries(rule.affinities).map(
+      ([t, affinity]) => `${noun[affinity]} a dano ${type(t as DamageType)}`,
+    ),
+    ...(rule.statusImmunities.length > 0
+      ? [
+          `imunidade ${rule.statusImmunities.length > 1 ? 'às condições' : 'à condição'} ${joinE(rule.statusImmunities.map((c) => STATUS_PT[c] ?? c))}`,
+        ]
+      : []),
+    ...(rule.resistances
+      ? [`Resistência a ${rule.resistances} tipos de dano à sua escolha`]
+      : []),
+    ...(rule.immunities
+      ? [`Imunidade a mais ${rule.immunities} tipo de dano à sua escolha`]
+      : []),
+  ].join('; ');
+}

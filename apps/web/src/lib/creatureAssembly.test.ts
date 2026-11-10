@@ -19,7 +19,7 @@ const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   championX: 2,
   customization: null,
   skills: {},
-  species: 'monster',
+  species: null,
   traits: [],
   villain: false,
   tier: 'minor',
@@ -33,6 +33,10 @@ const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   magicFormula: 'AST + VON',
   negative: null,
   bosses: [],
+  speciesPicks: [],
+  speciesVulnerability: null,
+  speciesExtra: null,
+  speciesChoices: {},
   ...over,
 });
 
@@ -194,6 +198,9 @@ describe('assembleCreature: the Juggernaut of the book (Bestiary Vol. I p. 28)',
       dark: 'resistant',
       physical: 'resistant',
       air: 'immune',
+      // "Since we already know constructs are Resistant to earth and Immune to poison."
+      earth: 'resistant',
+      poison: 'immune',
     });
   });
 
@@ -868,7 +875,7 @@ describe('assemblyRulesComplete', () => {
   it('rejects Rules that miss a part a later step added (an older seed)', () => {
     const noNegatives = rules() as Partial<typeof quickAssemblyRules>;
     delete noNegatives.negativeSkills;
-    for (const part of ['bossSkills', 'bossGroups'] as const) {
+    for (const part of ['bossSkills', 'bossGroups', 'species'] as const) {
       const older = rules() as Partial<typeof quickAssemblyRules>;
       delete older[part];
       expect(
@@ -981,5 +988,167 @@ describe('assembleCreature: Boss Skills', () => {
     const result = champion({ bosses: ['nonsense'] });
     expect(result.details.specialRules).toEqual([]);
     expect(result.warnings).toContain('Escolha 1 poder de chefe (há 0).');
+  });
+});
+
+describe('assembleCreature: Species', () => {
+  const as = (
+    species: AssemblyInput['species'],
+    over: Partial<AssemblyInput> = {},
+  ) => assemble('brute', { species, ...over });
+  const rule = (result: ReturnType<typeof as>, name: string) =>
+    result.details.specialRules.find((r) => r.name === name)?.effect;
+
+  it('gives a Construct what it always has, and says so in a rule', () => {
+    const result = as('construct');
+    expect(result.details.affinities).toMatchObject({
+      earth: 'resistant',
+      poison: 'immune',
+    });
+    expect(rule(result, 'Construto')).toBe('Imune à condição envenenado.');
+    expect(result.warnings.join(' ')).not.toContain('Espécie');
+  });
+
+  it('asks a Plant for its Vulnerability, from the types the book allows', () => {
+    expect(as('plant').warnings).toContain(
+      'Escolha a Vulnerabilidade da Espécie.',
+    );
+    const fine = as('plant', {
+      speciesVulnerability: 'fire',
+      speciesPicks: ['thorns'],
+    });
+    expect(fine.details.affinities.fire).toBe('vulnerable');
+    expect(rule(fine, 'Planta')).toBe(
+      'Imune às condições atordoado, enfurecido e abalado.',
+    );
+    expect(rule(fine, 'Espinhos')).toContain('5 de dano físico');
+    const wrong = as('plant', {
+      speciesVulnerability: 'earth',
+      speciesPicks: ['thorns'],
+    });
+    expect(wrong.warnings).toContain(
+      'Terra não está entre as Vulnerabilidades que a Espécie permite.',
+    );
+  });
+
+  it("adds a humanoid's options: a bonus, flying and one more Role Skill", () => {
+    const plain = as('humanoid', { speciesVulnerability: 'dark' });
+    const built = as('humanoid', {
+      speciesVulnerability: 'dark',
+      speciesPicks: ['opposed', 'flying', 'role-skill'],
+    });
+    expect(rule(built, 'Bônus em testes opostos')).toContain(
+      'passado ou ao treinamento',
+    );
+    expect(rule(built, 'Voo')).toBe(
+      'Segue o poder de NPC Voo (Livro Básico, p. 309).',
+    );
+    expect(built.roleSkills).toBe(plain.roleSkills + 1);
+    expect(built.warnings.join(' ')).not.toContain('opções da Espécie');
+  });
+
+  it('adds +10 Hit Points before the Rank multiplier', () => {
+    // An elite brute at level 5 has 70 PV: (70 + 10) x 2.
+    const result = as('beast', {
+      rank: 'elite',
+      speciesPicks: ['hp', 'flying'],
+    });
+    expect(result.details.hp).toBe(160);
+  });
+
+  it('asks for the Resistances a Species or an option gives', () => {
+    expect(as('demon').required.resistances).toBe(2);
+    expect(
+      as('monster', { speciesPicks: ['resistances', 'hp'] }).required
+        .resistances,
+    ).toBe(2);
+    expect(as('elemental').required.immunities).toBe(1);
+  });
+
+  it('swaps a Resistance for an Absorption, and warns when there is none to swap', () => {
+    const built = (type: string) =>
+      as('demon', {
+        resistances: ['fire', 'ice'],
+        speciesPicks: ['absorb'],
+        speciesChoices: { absorb: { type: [type] } },
+      });
+    expect(built('fire').details.affinities.fire).toBe('absorbs');
+    expect(built('fire').details.affinities.ice).toBe('resistant');
+    expect(built('dark').warnings).toContain(
+      'Absorção em trevas exige uma Resistência nesse tipo.',
+    );
+    expect(as('demon', { speciesPicks: ['absorb'] }).warnings).toContain(
+      'Escolha tipo de dano em Troca uma Resistência por uma Absorção.',
+    );
+  });
+
+  it('lets an Elemental take an extra Vulnerability to buy an option', () => {
+    const without = as('elemental', { immunities: ['air'] });
+    expect(without.warnings.join(' ')).not.toContain('opções da Espécie');
+    const plain = as('elemental', {
+      immunities: ['air'],
+      speciesExtra: 'fire',
+    });
+    expect(plain.details.affinities.fire).toBe('vulnerable');
+    expect(plain.warnings).toContain('Escolha 1 opção da Espécie (há 0).');
+    const done = as('elemental', {
+      immunities: ['air'],
+      speciesExtra: 'fire',
+      speciesPicks: ['flying'],
+    });
+    expect(done.warnings.join(' ')).not.toContain('opção da Espécie');
+  });
+
+  it('gives an Undead its fixed Affinities and the reminder about healing', () => {
+    const result = as('undead', {
+      speciesExtra: 'fire',
+      speciesPicks: ['absorb'],
+    });
+    // Immunity to dark becomes an Absorption of dark, as the option says.
+    expect(result.details.affinities).toMatchObject({
+      light: 'vulnerable',
+      poison: 'immune',
+      dark: 'absorbs',
+      fire: 'vulnerable',
+    });
+    expect(rule(result, 'Morto-vivo')).toContain(
+      'Efeitos que recuperam PV podem ferir',
+    );
+  });
+
+  it('teaches a spell with +10 PM through a Species option', () => {
+    const plain = as('beast', { speciesPicks: ['hp', 'flying'] });
+    const result = as('beast', {
+      speciesPicks: ['spell', 'hp'],
+      speciesChoices: { spell: { spells: ['npc:shell'] } },
+    });
+    expect(result.details.spells.map((sp) => sp.name)).toEqual(['Concha']);
+    expect(result.details.mp - plain.details.mp).toBe(10);
+  });
+
+  it('asks for the number of options, and for no more than an option allows', () => {
+    expect(as('beast').warnings).toContain(
+      'Escolha 2 opções da Espécie (há 0).',
+    );
+    expect(
+      as('beast', { speciesPicks: ['hp', 'flying', 'opposed'] }).warnings,
+    ).toContain('Há 3 opções da Espécie, mas a Espécie dá 2.');
+    const thrice = as('beast', {
+      speciesPicks: ['role-skill', 'role-skill', 'role-skill'],
+    });
+    expect(thrice.warnings).toContain(
+      'Um poder de função a mais só pode ser escolhida 2 vezes.',
+    );
+    expect(
+      as('beast', { speciesPicks: ['role-skill', 'role-skill'] }).warnings.join(
+        ' ',
+      ),
+    ).not.toContain('só pode ser escolhida');
+  });
+
+  it('warns when the Role gives an Affinity the Species already fixed', () => {
+    const result = as('construct', { vulnerabilities: ['earth'] });
+    expect(result.warnings).toContain('Terra tem mais de uma Afinidade.');
+    expect(result.details.affinities.earth).toBe('resistant');
   });
 });

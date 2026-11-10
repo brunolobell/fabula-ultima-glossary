@@ -321,6 +321,35 @@ export interface AssemblySlot {
 
 export type VillainTier = 'minor' | 'major' | 'supreme';
 
+/** One option a Species offers under Quick Assembly (Bestiary Vol. I p. 70-73). */
+export interface SpeciesOption {
+  id: string;
+  label: string;
+  kind: 'hp' | 'spell' | 'rule' | 'role-skill' | 'resistances' | 'absorb';
+  max?: number;
+  /** `hp`: how many Hit Points it adds. */
+  amount?: number;
+  rule?: { name: string; text: string };
+  spells?: SpellGrant;
+  swaps?: 'resistant' | 'immune';
+  swapType?: DamageType;
+  slots?: AssemblySlot[];
+}
+
+/** The rule of one Species under Quick Assembly; it replaces the Livro Básico's (p. 304-305). */
+export interface SpeciesRule {
+  species: Species;
+  affinities: Partial<Record<DamageType, Affinity>>;
+  statusImmunities: string[];
+  resistances?: number;
+  immunities?: number;
+  vulnerability?: DamageType[];
+  picks: number;
+  extra?: { vulnerability: DamageType[]; picks: number };
+  note?: string;
+  options: SpeciesOption[];
+}
+
 /** The Quick Assembly rules every Role shares (Bestiary Vol. I p. 25-29). */
 export interface QuickAssemblyRuleDetails {
   forge: 'quick-assembly';
@@ -335,6 +364,8 @@ export interface QuickAssemblyRuleDetails {
   /** The Boss Skills (p. 54-67) a champion takes, and the groups the book sorts them in. */
   bossSkills: RoleSkill[];
   bossGroups: { id: string; name: string; summary: string }[];
+  /** The eight Species rules (p. 70-73). */
+  species: SpeciesRule[];
 }
 
 export interface AttackOption {

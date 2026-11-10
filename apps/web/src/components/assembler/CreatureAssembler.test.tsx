@@ -705,3 +705,161 @@ describe('Creature Assembler: Boss Skills', () => {
     ).toBeInTheDocument();
   });
 });
+
+describe('Creature Assembler: Species', () => {
+  const preview = (dialog: ReturnType<typeof within>) =>
+    within(dialog.getByRole('region', { name: 'Ficha' }));
+  const panel = (dialog: ReturnType<typeof within>) =>
+    within(dialog.getByRole('group', { name: /Opções da Espécie/ }));
+  const species = (dialog: ReturnType<typeof within>, value: string) =>
+    fireEvent.change(dialog.getByLabelText('Espécie'), { target: { value } });
+
+  it('asks a Monster for two options, and writes them into the stat block', async () => {
+    const dialog = await openDialog();
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Escolha 2 opções da Espécie (há 0).');
+    const options = panel(dialog);
+    fireEvent.click(options.getByRole('checkbox', { name: /\+10 PV máximos/ }));
+    fireEvent.click(options.getByRole('checkbox', { name: /Poder Voo/ }));
+    // A level 5 brute has 70 PV.
+    expect(stat(preview(dialog), 'PV')).toBe('80');
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).not.toHaveTextContent('opções da Espécie');
+    const rules = within(
+      preview(dialog).getByRole('region', { name: 'Regras especiais' }),
+    );
+    expect(rules.getByText('Voo')).toBeInTheDocument();
+  });
+
+  it('shows what a Construct always has, and puts it in the Afinidades', async () => {
+    const dialog = await openDialog();
+    species(dialog, 'construct');
+    expect(
+      panel(dialog).getByText(/Resistência a dano de terra/),
+    ).toBeInTheDocument();
+    const list = within(
+      preview(dialog).getByRole('list', { name: 'Afinidades a dano' }),
+    );
+    expect(list.getAllByRole('listitem').map((li) => li.textContent)).toEqual([
+      'Resistente a terra',
+      'Imune a veneno',
+    ]);
+    expect(
+      preview(dialog).getByText(/Imune à condição envenenado\./),
+    ).toBeInTheDocument();
+  });
+
+  it('asks a Plant for its Vulnerability and offers its thorns', async () => {
+    const dialog = await openDialog();
+    species(dialog, 'plant');
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Escolha a Vulnerabilidade da Espécie.');
+    const options = panel(dialog);
+    const vulnerability = options.getByLabelText(
+      'Vulnerabilidade da Espécie',
+    ) as HTMLSelectElement;
+    expect([...vulnerability.options].map((o) => o.textContent)).toEqual([
+      'Escolha…',
+      'Ar',
+      'Raio',
+      'Fogo',
+      'Gelo',
+    ]);
+    fireEvent.change(vulnerability, { target: { value: 'fire' } });
+    fireEvent.click(options.getByRole('checkbox', { name: /Espinhos/ }));
+    const list = within(
+      preview(dialog).getByRole('list', { name: 'Afinidades a dano' }),
+    );
+    expect(list.getByText('Vulnerável a fogo')).toBeInTheDocument();
+    expect(preview(dialog).getByText('Espinhos')).toBeInTheDocument();
+  });
+
+  it('lets an Elemental take an extra Vulnerability to buy an option', async () => {
+    const dialog = await openDialog();
+    species(dialog, 'elemental');
+    const options = panel(dialog);
+    expect(
+      options.queryByRole('checkbox', { name: /Poder Voo/ }),
+    ).not.toBeNull();
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).not.toHaveTextContent('opção da Espécie');
+    fireEvent.click(options.getByLabelText(/Vulnerabilidade adicional/));
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Escolha 1 opção da Espécie (há 0).');
+    fireEvent.change(
+      options.getByLabelText('Tipo da Vulnerabilidade adicional'),
+      {
+        target: { value: 'fire' },
+      },
+    );
+    expect(
+      within(
+        preview(dialog).getByRole('list', { name: 'Afinidades a dano' }),
+      ).getByText('Vulnerável a fogo'),
+    ).toBeInTheDocument();
+  });
+
+  it('takes a quantity for an option that may be taken twice', async () => {
+    const dialog = await openDialog();
+    species(dialog, 'beast');
+    const options = panel(dialog);
+    const quantity = options.getByLabelText(
+      /Um poder de função a mais — quantidade/,
+    );
+    fireEvent.change(quantity, { target: { value: '2' } });
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).not.toHaveTextContent('opções da Espécie');
+    expect(
+      within(
+        dialog.getByRole('group', { name: /Poderes de função/ }),
+      ).getByText(/0 de 2/),
+    ).toBeInTheDocument();
+  });
+
+  it('offers the spell of a Species option, with +10 PM', async () => {
+    const dialog = await openDialog();
+    species(dialog, 'beast');
+    const options = panel(dialog);
+    fireEvent.click(
+      options.getByRole('checkbox', { name: /Aprende um feitiço/ }),
+    );
+    fireEvent.click(options.getByRole('button', { name: 'Concha' }));
+    expect(preview(dialog).getByText('Concha')).toBeInTheDocument();
+    expect(stat(preview(dialog), 'PM')).toBe('55');
+  });
+
+  it('asks which Resistance becomes an Absorption (demon)', async () => {
+    const dialog = await openDialog();
+    species(dialog, 'demon');
+    const options = panel(dialog);
+    fireEvent.click(
+      options.getByRole('checkbox', { name: /Troca uma Resistência/ }),
+    );
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent(
+      'Escolha tipo de dano em Troca uma Resistência por uma Absorção.',
+    );
+    fireEvent.change(options.getByLabelText('Tipo de dano'), {
+      target: { value: 'fire' },
+    });
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Absorção em fogo exige uma Resistência nesse tipo.');
+  });
+
+  it('starts the picks over when the Species changes', async () => {
+    const dialog = await openDialog();
+    fireEvent.click(panel(dialog).getByRole('checkbox', { name: /Poder Voo/ }));
+    species(dialog, 'beast');
+    expect(
+      panel(dialog).getByRole('checkbox', { name: /Poder Voo/ }),
+    ).not.toBeChecked();
+  });
+});
