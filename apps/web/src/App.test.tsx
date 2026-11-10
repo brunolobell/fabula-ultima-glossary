@@ -256,24 +256,25 @@ describe('Sidebar groups', () => {
     expect(links[3]).toHaveAttribute('href', '/poderes-heroicos');
   });
 
-  it('opens the group of the current page by itself and marks the item', async () => {
+  it('keeps every group closed on load, even on a page inside one', async () => {
     mockApi();
     renderAt('/classes/elementalista');
     const nav = within(menu());
     const header = await nav.findByRole('button', { name: 'Criação de Personagem' });
-    await waitFor(() => expect(header).toHaveAttribute('aria-expanded', 'true'));
-    expect(nav.getByRole('link', { name: /^Classes/ })).toHaveAttribute('aria-current', 'page');
+    expect(header).toHaveAttribute('aria-expanded', 'false');
     expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
       'aria-expanded',
       'false',
     );
+    expect(nav.queryByRole('link', { name: /^Classes/ })).toBeNull();
   });
 
   it('keeps several groups open at once', async () => {
     mockApi();
     renderAt('/classes/elementalista');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    fireEvent.click(await nav.findByRole('button', { name: 'Criação de Personagem' }));
+    fireEvent.click(nav.getByRole('button', { name: 'Equipamento' }));
     expect(nav.getByRole('button', { name: 'Criação de Personagem' })).toHaveAttribute(
       'aria-expanded',
       'true',
@@ -288,12 +289,7 @@ describe('Sidebar groups', () => {
     mockApi();
     renderAt('/equipamento?item=armas');
     const nav = within(menu());
-    await waitFor(() =>
-      expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
-        'aria-expanded',
-        'true',
-      ),
-    );
+    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
     expect(nav.getByRole('link', { name: /^Armas/ })).toHaveAttribute('href', '/equipamento?item=armas');
     expect(nav.getByRole('link', { name: /^Armas/ })).toHaveAttribute('aria-current', 'page');
     expect(nav.getByRole('link', { name: /^Todo o equipamento/ })).not.toHaveAttribute('aria-current');
@@ -304,7 +300,8 @@ describe('Sidebar groups', () => {
     mockApi();
     renderAt('/equipamento');
     const nav = within(menu());
-    const all = await nav.findByRole('link', { name: /^Todo o equipamento/ });
+    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    const all = nav.getByRole('link', { name: /^Todo o equipamento/ });
     expect(all).toHaveAttribute('aria-current', 'page');
   });
 
@@ -312,8 +309,9 @@ describe('Sidebar groups', () => {
     mockApi();
     renderAt('/equipamento/katana');
     const nav = within(menu());
-    const armas = await nav.findByRole('link', { name: /^Armas/ });
-    await waitFor(() => expect(armas).toHaveAttribute('aria-current', 'page'));
+    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    const armas = nav.getByRole('link', { name: /^Armas/ });
+    expect(armas).toHaveAttribute('aria-current', 'page');
     expect(nav.getByRole('link', { name: /^Todo o equipamento/ })).not.toHaveAttribute('aria-current');
   });
 });
@@ -499,7 +497,8 @@ describe('Services and transports', () => {
     mockApi();
     renderAt('/equipamento');
     const nav = within(menu());
-    const link = await nav.findByRole('link', { name: /^Serviços e transporte/ });
+    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    const link = nav.getByRole('link', { name: /^Serviços e transporte/ });
     expect(link).toHaveAttribute('href', '/servicos');
     await waitFor(() => expect(link).toHaveTextContent('4'));
     expect(link).not.toHaveAttribute('aria-current');
@@ -509,12 +508,9 @@ describe('Services and transports', () => {
     mockApi();
     renderAt('/transportes/montaria-terrestre');
     const nav = within(menu());
-    const link = await nav.findByRole('link', { name: /^Serviços e transporte/ });
-    await waitFor(() => expect(link).toHaveAttribute('aria-current', 'page'));
-    expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
-      'aria-expanded',
-      'true',
-    );
+    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    const link = nav.getByRole('link', { name: /^Serviços e transporte/ });
+    expect(link).toHaveAttribute('aria-current', 'page');
   });
 
   it('lists Services with a switch to Transports at the top of both lists', async () => {

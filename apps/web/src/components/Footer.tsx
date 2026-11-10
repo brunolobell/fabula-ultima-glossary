@@ -8,9 +8,6 @@ export function Footer() {
           Editora. Fabula Ultima © Need Games e Rooster Games; edição brasileira
           © Jambô Editora.
         </p>
-        <p className="mt-2">
-          Títulos em Credit Valley, de Ray Larabie (Larabie Fonts).
-        </p>
       </div>
     </footer>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { IconType } from 'react-icons';
 import {
   GiBackpack,
@@ -47,12 +47,6 @@ const linkClass = ({ isActive }: { isActive: boolean }) => itemClass(isActive);
 // is a page (Início, the guides, Regras) is a plain link.
 const headingClass =
   'font-heading text-[17px] uppercase tracking-wide';
-
-/** From `lg` the menu is a fixed column with room to spare, so groups start open. */
-const startsOpen = () =>
-  typeof window !== 'undefined' &&
-  typeof window.matchMedia === 'function' &&
-  window.matchMedia('(min-width: 1024px)').matches;
 
 /** Icon beside a menu label; decorative, the label carries the meaning. */
 function MenuLabel({ icon: Icon, children }: { icon: IconType; children: ReactNode }) {
@@ -167,19 +161,11 @@ export function Sidebar({ open, onClose }: Props) {
     return item.kind === currentKind;
   };
 
-  const activeGroup = GROUPS.find((g) => g.items.some(isActive))?.id;
+  // Every group starts closed, on any screen size and on any page: the Reader
+  // clicks to open one.
   const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(
-    () => new Set(startsOpen() ? GROUPS.map((g) => g.id) : []),
+    () => new Set(),
   );
-
-  // The group holding the current page opens itself; the others stay as the
-  // Reader left them.
-  useEffect(() => {
-    if (!activeGroup) return;
-    setOpenGroups((prev) =>
-      prev.has(activeGroup) ? prev : new Set(prev).add(activeGroup),
-    );
-  }, [activeGroup]);
 
   const toggle = (id: string) =>
     setOpenGroups((prev) => {
