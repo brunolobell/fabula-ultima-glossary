@@ -84,3 +84,27 @@ export const affinityLabel = (damage: DamageType, affinity: Affinity) =>
   affinity === 'absorbs'
     ? `Absorve ${DAMAGE_LABEL[damage]}`
     : `${AFFINITY_LABEL[affinity]} a ${DAMAGE_LABEL[damage]}`;
+
+/** "físico", "de fogo": how the bestiary names the type after "de dano". */
+export const damageTypeText = (damage: DamageType) =>
+  damage === 'physical' ? 'físico' : `de ${DAMAGE_LABEL[damage]}`;
+
+/** The Rule that holds the shared Quick Assembly numbers, and one Rule per Role. */
+export const QUICK_ASSEMBLY_SLUG = 'montagem-rapida';
+export const ROLE_RULE_SLUG: Record<Role, string> = {
+  brute: 'montagem-rapida-bruto',
+  hunter: 'montagem-rapida-cacador',
+  mage: 'montagem-rapida-mago',
+  saboteur: 'montagem-rapida-sabotador',
+  sentinel: 'montagem-rapida-sentinela',
+  support: 'montagem-rapida-apoio',
+};
+
+export const VILLAIN_TIER_LABEL = {
+  minor: 'Menor',
+  major: 'Maior',
+  supreme: 'Supremo',
+} as const;
+
+export const capitalize = (text: string) =>
+  `${text[0].toUpperCase()}${text.slice(1)}`;

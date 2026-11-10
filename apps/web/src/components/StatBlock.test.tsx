@@ -71,4 +71,21 @@ describe('StatBlock', () => {
     show({});
     expect(screen.getByText('Nenhuma Afinidade a dano.')).toBeInTheDocument();
   });
+
+  it('writes the damage type as the book does: "de dano de fogo", "de dano físico"', () => {
+    const attack = (name: string, damageType: 'fire' | 'physical') => ({
+      name,
+      range: 'melee' as const,
+      accuracy: 'DES + VIG',
+      accuracyBonus: 0,
+      damage: 5,
+      damageType,
+    });
+    show({ attacks: [attack('Brasa', 'fire'), attack('Soco', 'physical')] });
+    const region = within(
+      screen.getByRole('region', { name: 'Ataques básicos' }),
+    );
+    expect(region.getByText(/de dano de fogo/)).toBeInTheDocument();
+    expect(region.getByText(/de dano físico/)).toBeInTheDocument();
+  });
 });

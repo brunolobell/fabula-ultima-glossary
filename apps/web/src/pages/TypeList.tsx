@@ -1,4 +1,5 @@
 import { useParams, useSearchParams } from 'react-router-dom';
+import { CreatureAssembler } from '../components/assembler/CreatureAssembler';
 import { WeaponForge } from '../components/forge/WeaponForge';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
@@ -20,9 +21,25 @@ import {
   readSelection,
   toggleValue,
 } from '../lib/listFilters';
+import {
+  ASSEMBLER_METHOD,
+  ASSEMBLER_PARAM,
+  isAssemblerOpen,
+} from '../lib/assemblerParam';
+import {
+  QUICK_ASSEMBLY_SLUG,
+  ROLE_ORDER,
+  ROLE_RULE_SLUG,
+} from '../lib/creatures';
 import { FORGE_PARAM, forgeTabFromParam, type ForgeTab } from '../lib/forgeTab';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
-import type { CustomWeaponRuleDetails, RareWeaponRuleDetails } from '../api/types';
+import type {
+  CustomWeaponRuleDetails,
+  QuickAssemblyRoleDetails,
+  QuickAssemblyRuleDetails,
+  RareWeaponRuleDetails,
+  Role,
+} from '../api/types';
 
 /** Slugs of the two Rules whose `details` feed the Weapon Forge. */
 const CUSTOM_WEAPON_RULE = 'armas-personalizadas';
@@ -79,6 +96,45 @@ export function TypeList() {
       { replace },
     );
 
+  // The Creature Assembler is offered on the Creatures list once the Quick Assembly
+  // Rules are loaded. Its open state is in the URL (so the Rules can link to it);
+  // what the Reader builds is not.
+  const assemblyRules = bySlug.get(QUICK_ASSEMBLY_SLUG)?.details as
+    | QuickAssemblyRuleDetails
+    | undefined;
+  const roleRules = ROLE_ORDER.map(
+    (role) =>
+      [role, bySlug.get(ROLE_RULE_SLUG[role])?.details] as [
+        Role,
+        QuickAssemblyRoleDetails | undefined,
+      ],
+  );
+  const assembler =
+    type === 'creature' &&
+    assemblyRules?.forge === 'quick-assembly' &&
+    roleRules.every(([, d]) => d?.forge === 'quick-assembly-role')
+      ? {
+          rules: assemblyRules,
+          roles: Object.fromEntries(roleRules) as Record<
+            Role,
+            QuickAssemblyRoleDetails
+          >,
+        }
+      : null;
+  const assemblerOpen = assembler
+    ? isAssemblerOpen(params.get(ASSEMBLER_PARAM))
+    : false;
+  const setAssemblerOpen = (next: boolean, replace: boolean) =>
+    setParams(
+      (prev) => {
+        const copy = new URLSearchParams(prev);
+        if (next) copy.set(ASSEMBLER_PARAM, ASSEMBLER_METHOD);
+        else copy.delete(ASSEMBLER_PARAM);
+        return copy;
+      },
+      { replace },
+    );
+
   return (
     <div>
       <h1 className="h-main">{title}</h1>
@@ -106,6 +162,29 @@ export function TypeList() {
             tab={forgeTab}
             onTab={(next) => setForgeTab(next, true)}
             onClose={() => setForgeTab(null, true)}
+          />
+        </>
+      )}
+
+      {assembler && (
+        <>
+          <p className="mt-4">
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setAssemblerOpen(true, false)}
+            >
+              Montar criatura
+            </button>{' '}
+            <span className="text-[15px] text-muted">
+              Monte uma criatura pela Montagem Rápida. Nada é salvo.
+            </span>
+          </p>
+          <CreatureAssembler
+            rules={assembler.rules}
+            roles={assembler.roles}
+            open={assemblerOpen}
+            onClose={() => setAssemblerOpen(false, true)}
           />
         </>
       )}

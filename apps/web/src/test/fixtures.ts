@@ -1,5 +1,9 @@
 import { vi } from 'vitest';
-import type { Entry, EntryWithChildren } from '../api/types';
+import type { Entry, EntryWithChildren, Role } from '../api/types';
+import {
+  quickAssemblyRoles,
+  quickAssemblyRules,
+} from '../../../api/src/database/seed-data/quick-assembly-data';
 
 const base = {
   createdAt: '',
@@ -313,6 +317,43 @@ const cactonto: Entry = {
   },
 };
 
+const ROLE_SLUG: Record<Role, [string, string]> = {
+  brute: ['montagem-rapida-bruto', 'Montagem Rápida: Bruto'],
+  hunter: ['montagem-rapida-cacador', 'Montagem Rápida: Caçador'],
+  mage: ['montagem-rapida-mago', 'Montagem Rápida: Mago'],
+  saboteur: ['montagem-rapida-sabotador', 'Montagem Rápida: Sabotador'],
+  sentinel: ['montagem-rapida-sentinela', 'Montagem Rápida: Sentinela'],
+  support: ['montagem-rapida-apoio', 'Montagem Rápida: Apoio'],
+};
+
+const quickAssembly: Entry = {
+  ...base,
+  id: '30',
+  slug: 'montagem-rapida',
+  name: 'Montagem Rápida',
+  type: 'rule',
+  source: 'bestiary-vol-1',
+  summary: 'Método para montar um NPC depressa.',
+  body: 'Escolha uma função e copie o perfil.',
+  page: 25,
+  details: quickAssemblyRules,
+};
+
+const quickAssemblyRoleRules: Entry[] = (Object.keys(ROLE_SLUG) as Role[]).map(
+  (role, i) => ({
+    ...base,
+    id: String(31 + i),
+    slug: ROLE_SLUG[role][0],
+    name: ROLE_SLUG[role][1],
+    type: 'rule' as const,
+    source: 'bestiary-vol-1' as const,
+    summary: `Perfil da função ${role}.`,
+    body: '',
+    page: 30 + i * 4,
+    details: quickAssemblyRoles[role],
+  }),
+);
+
 const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   [
     tracos,
@@ -329,6 +370,8 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     viagemAerea,
     descansoVila,
     cactonto,
+    quickAssembly,
+    ...quickAssemblyRoleRules,
     criar,
   ].map(
     (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],

@@ -308,10 +308,92 @@ export interface RareWeaponRuleDetails {
   notes: string[];
 }
 
+/** A choice the Reader makes while assembling a Creature (a damage type, a status effect…). */
+export interface AssemblySlot {
+  id: string;
+  label: string;
+  /** How many options to pick. */
+  count: number;
+  options: { value: string; label: string }[];
+}
+
+export type VillainTier = 'minor' | 'major' | 'supreme';
+
+/** The Quick Assembly rules every Role shares (Bestiary Vol. I p. 25-29). */
+export interface QuickAssemblyRuleDetails {
+  forge: 'quick-assembly';
+  levels: number[];
+  amounts: { fromLevel: number; minor: number; heavy: number; massive: number }[];
+  elite: { hpMultiplier: number; initiative: number; roleSkills: number };
+  champion: { mpMultiplier: number; bossSkills: number };
+  extraHp: number;
+  villainTiers: Record<VillainTier, number>;
+}
+
+export interface AttackOption {
+  id: string;
+  label: string;
+  /** `{id}` is a slot choice and `{minor}` the minor amount of the level. */
+  effect: string;
+  slots?: AssemblySlot[];
+  extraVulnerability?: { slot: string; values: string[] };
+}
+
+export interface RoleAttackTemplate {
+  id: 'normal' | 'strong';
+  name: string;
+  ranges: ('melee' | 'ranged')[];
+  accuracies: string[];
+  damage: number;
+  effect?: string;
+  slots?: AssemblySlot[];
+  options?: AttackOption[];
+}
+
+export interface LevelGrant {
+  level: number;
+  roleSkills?: number;
+  defense?: number;
+  magicDefense?: number;
+  accuracy?: number;
+  resistances?: number;
+  immunities?: number;
+  notPhysical?: boolean;
+  rule?: string;
+  slots?: AssemblySlot[];
+}
+
+/** The profile of one Role (Bestiary Vol. I p. 30-53). */
+export interface QuickAssemblyRoleDetails {
+  forge: 'quick-assembly-role';
+  role: Role;
+  base: {
+    attributes: { DES: Die; AST: Die; VIG: Die; VON: Die };
+    hp: number;
+    mp: number;
+    initiative: number;
+    defense: number;
+    magicDefense: number;
+    vulnerabilities: number;
+  };
+  progression: {
+    level: number;
+    attributes: Partial<{ DES: Die; AST: Die; VIG: Die; VON: Die }>;
+    hp: number;
+    mp: number;
+    accuracy: number;
+    extraDamage: number;
+  }[];
+  grants: LevelGrant[];
+  attacks: RoleAttackTemplate[];
+}
+
 export type RuleDetails =
   | PlainRuleDetails
   | CustomWeaponRuleDetails
-  | RareWeaponRuleDetails;
+  | RareWeaponRuleDetails
+  | QuickAssemblyRuleDetails
+  | QuickAssemblyRoleDetails;
 
 export interface DetailsByType {
   rule: RuleDetails;

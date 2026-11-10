@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { CreatureDetails } from '../api/types';
 import { decorateChecks } from '../lib/check';
-import { DAMAGE_LABEL, DAMAGE_ORDER, affinityLabel } from '../lib/creatures';
+import { DAMAGE_ORDER, affinityLabel, damageTypeText } from '../lib/creatures';
 import { numberCells, signed } from '../lib/statBlock';
 import { BoltIcon } from './Icons';
 import { StatBar } from './StatBar';
@@ -80,7 +80,7 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
                       {' · '}
                       {decorateChecks(`(RA + ${attack.damage})`)} de dano
                       {attack.damageType &&
-                        ` ${DAMAGE_LABEL[attack.damageType]}`}
+                        ` ${damageTypeText(attack.damageType)}`}
                     </>
                   )}
                 </p>

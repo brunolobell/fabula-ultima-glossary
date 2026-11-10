@@ -31,7 +31,7 @@ describe('Home', () => {
     expect(guide).toHaveAttribute('href', '/guias/criar-um-personagem');
 
     const grid = screen.getByRole('region', { name: 'Navegar por tipo' });
-    expect(await within(grid).findByRole('link', { name: /regras.*2 entradas/i }))
+    expect(await within(grid).findByRole('link', { name: /regras.*9 entradas/i }))
       .toHaveAttribute('href', '/regras');
     expect(within(grid).getByRole('link', { name: /classes.*1 entrada\b/i })).toBeInTheDocument();
   });
@@ -664,9 +664,20 @@ describe('Creatures', () => {
     fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
     const link = within(
       nav.getByRole('button', { name: 'Bestiário' }).nextElementSibling as HTMLElement,
-    ).getByRole('link');
+    ).getByRole('link', { name: /^Criaturas/ });
     expect(link).toHaveAttribute('href', '/criaturas');
     await waitFor(() => expect(link).toHaveTextContent('Criaturas1'));
+  });
+
+  it('adds a "Montar criatura" shortcut that opens the Assembler and is never the current page', async () => {
+    mockApi();
+    renderAt('/criaturas');
+    const nav = within(menu());
+    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
+    const shortcut = nav.getByRole('link', { name: 'Montar criatura' });
+    expect(shortcut).toHaveAttribute('href', '/criaturas?montagem=rapida');
+    expect(shortcut).not.toHaveAttribute('aria-current');
+    expect(nav.getByRole('link', { name: /^Criaturas/ })).toHaveAttribute('aria-current', 'page');
   });
 
   it('marks the Creatures link on the list and on a Creature page', async () => {
