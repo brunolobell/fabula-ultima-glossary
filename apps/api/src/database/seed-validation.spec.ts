@@ -1,3 +1,4 @@
+import { CreatureDetails } from '../entries/entry-types';
 import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
@@ -358,6 +359,142 @@ describe('validateSeed', () => {
       ]);
     });
   });
+  describe('creatures', () => {
+    // A small Livro Básico soldier, in the shape of a bestiary stat block (p. 320).
+    const creature = (
+      details: Partial<CreatureDetails> = {},
+      entry: Partial<SeedEntry> = {},
+    ): SeedEntry =>
+      ({
+        type: 'creature',
+        name: 'Cactonto',
+        page: 319,
+        summary: 'Cacto imponente que vaga pelas dunas.',
+        details: {
+          level: 15,
+          species: 'plant',
+          rank: 'soldier',
+          villain: false,
+          traits: ['assustador', 'territorial'],
+          attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+          hp: 90,
+          crisis: 45,
+          mp: 55,
+          initiative: 7,
+          defense: { value: 0, fixed: false },
+          magicDefense: 0,
+          affinities: { fire: 'resistant', ice: 'vulnerable' },
+          attacks: [],
+          spells: [],
+          otherActions: [],
+          specialRules: [],
+          ...details,
+        },
+        ...entry,
+      }) as SeedEntry;
+
+    it('seeds the Cactonto with the numbers printed on p. 352', () => {
+      const cactonto = seedEntries.find((e) => e.name === 'Cactonto');
+      expect(cactonto).toMatchObject({ type: 'creature', page: 352 });
+      expect(cactonto?.details).toMatchObject({
+        level: 15,
+        species: 'plant',
+        rank: 'soldier',
+        attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+        hp: 90,
+        crisis: 45,
+        mp: 55,
+        initiative: 7,
+        defense: { value: 0, fixed: false },
+        magicDefense: 0,
+        affinities: {
+          air: 'resistant',
+          earth: 'resistant',
+          fire: 'resistant',
+          ice: 'vulnerable',
+          light: 'resistant',
+        },
+      });
+      const { attacks, spells } = cactonto?.details as CreatureDetails;
+      expect(attacks.map((a) => [a.name, a.accuracy, a.damage])).toEqual([
+        ['Abraço Perfurador', 'VIG + VIG', 10],
+        ['Barragem de Espinhos', 'DES + VIG', 5],
+      ]);
+      expect(spells).toMatchObject([
+        { name: 'Drenar Umidade', mpCost: '10', offensive: true },
+      ]);
+    });
+
+    it('accepts a valid Livro Básico Creature', () => {
+      expect(validateSeed([creature()])).toEqual([]);
+    });
+
+    it('gives a Livro Básico Creature no Role and never a champion Rank', () => {
+      expect(validateSeed([creature({ role: 'brute' })])).toEqual([
+        expect.stringContaining('only the Bestiary Vol. I has a role'),
+      ]);
+      expect(validateSeed([creature({ rank: 'champion' })])).toEqual([
+        expect.stringContaining('only the Bestiary Vol. I has champions'),
+      ]);
+    });
+
+    it('requires the English name of a Bestiary Vol. I Creature', () => {
+      const volumeOne = (details: Partial<CreatureDetails> = {}) =>
+        creature(
+          { role: 'brute', rank: 'champion', ...details },
+          { source: 'bestiary-vol-1', page: 120 },
+        );
+      expect(validateSeed([volumeOne()])).toEqual([
+        expect.stringContaining('originalName'),
+      ]);
+      expect(
+        validateSeed([volumeOne({ originalName: 'Cactus Brute' })]),
+      ).toEqual([]);
+    });
+
+    it('rejects an unknown Species, Rank, damage type or Affinity', () => {
+      expect(validateSeed([creature({ species: 'dragon' as never })])).toEqual([
+        expect.stringContaining('details.species'),
+      ]);
+      expect(validateSeed([creature({ rank: 'boss' as never })])).toEqual([
+        expect.stringContaining('details.rank'),
+      ]);
+      expect(
+        validateSeed([creature({ affinities: { sound: 'immune' } as never })]),
+      ).toEqual([expect.stringContaining('damage type "sound"')]);
+      expect(
+        validateSeed([creature({ affinities: { fire: 'weak' } as never })]),
+      ).toEqual([expect.stringContaining('affinity "weak"')]);
+    });
+
+    it('rejects an Attribute die outside d6 to d12', () => {
+      for (const VIG of [4, 7, 14]) {
+        const attributes = { DES: 8, AST: 6, VIG, VON: 6 } as never;
+        expect(validateSeed([creature({ attributes })])).toEqual([
+          expect.stringContaining('details.attributes.VIG'),
+        ]);
+      }
+    });
+
+    it('rejects a level that is not a multiple of 5 between 5 and 60', () => {
+      for (const level of [0, 7, 15.5, 65]) {
+        expect(validateSeed([creature({ level })])).toEqual([
+          expect.stringContaining('details.level'),
+        ]);
+      }
+      for (const level of [5, 10, 15, 60]) {
+        expect(validateSeed([creature({ level })])).toEqual([]);
+      }
+    });
+
+    it('rejects a Crisis that is not half the PV, rounded down', () => {
+      expect(validateSeed([creature({ hp: 90, crisis: 40 })])).toEqual([
+        expect.stringContaining('crisis'),
+      ]);
+      expect(validateSeed([creature({ hp: 91, crisis: 45 })])).toEqual([]);
+    });
+  });
+
   describe('services and transport', () => {
     const named = (type: 'service' | 'transport', name: string) =>
       seedEntries.find((e) => e.type === type && e.name === name);

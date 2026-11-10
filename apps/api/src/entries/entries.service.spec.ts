@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EntriesService } from './entries.service';
+import { CreatureStats } from './entities/creature-stats.entity';
 import { Entry } from './entities/entry.entity';
 
 function queryBuilder(result: unknown[] = []) {
@@ -20,9 +21,48 @@ function queryBuilder(result: unknown[] = []) {
   return qb;
 }
 
+/** A `creature_stats` row as the database holds it. */
+const cactontoRow = {
+  entryId: 'e1',
+  level: 15,
+  species: 'plant',
+  rank: 'soldier',
+  role: null,
+  villain: false,
+  originalName: null,
+  traits: ['assustador', 'territorial'],
+  des: 8,
+  ast: 6,
+  vig: 12,
+  von: 6,
+  hp: 90,
+  crisis: 45,
+  mp: 55,
+  initiative: 7,
+  defense: 0,
+  defenseFixed: false,
+  magicDefense: 0,
+  hasSpells: true,
+  affinities: { fire: 'resistant', ice: 'vulnerable' },
+  attacks: [
+    {
+      name: 'Abraço Perfurador',
+      range: 'melee',
+      accuracy: 'VIG + VIG',
+      accuracyBonus: 1,
+      damage: 10,
+      damageType: 'physical',
+    },
+  ],
+  spells: [{ name: 'Drenar Umidade' }],
+  otherActions: [{ name: 'Seiva de Cactonto', effect: 'Se recupera.' }],
+  specialRules: [{ name: 'Planta', effect: 'Imune a abalado.' }],
+};
+
 describe('EntriesService', () => {
   let service: EntriesService;
   const repo = { findOne: jest.fn(), createQueryBuilder: jest.fn() };
+  const stats = { findOne: jest.fn(), find: jest.fn() };
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -30,9 +70,77 @@ describe('EntriesService', () => {
       providers: [
         EntriesService,
         { provide: getRepositoryToken(Entry), useValue: repo },
+        { provide: getRepositoryToken(CreatureStats), useValue: stats },
       ],
     }).compile();
     service = moduleRef.get(EntriesService);
+  });
+
+  it('serves the stat block of a Creature as its details', async () => {
+    repo.findOne.mockResolvedValue({
+      id: 'e1',
+      slug: 'cactonto',
+      type: 'creature',
+      details: {},
+    });
+    stats.findOne.mockResolvedValue(cactontoRow);
+
+    const { details } = await service.findOne('cactonto');
+
+    expect(stats.findOne).toHaveBeenCalledWith({ where: { entryId: 'e1' } });
+    expect(details).toEqual({
+      level: 15,
+      species: 'plant',
+      rank: 'soldier',
+      villain: false,
+      traits: ['assustador', 'territorial'],
+      attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+      hp: 90,
+      crisis: 45,
+      mp: 55,
+      initiative: 7,
+      defense: { value: 0, fixed: false },
+      magicDefense: 0,
+      hasSpells: true,
+      affinities: { fire: 'resistant', ice: 'vulnerable' },
+      attacks: cactontoRow.attacks,
+      spells: cactontoRow.spells,
+      otherActions: cactontoRow.otherActions,
+      specialRules: cactontoRow.specialRules,
+    });
+  });
+
+  it('lists a Creature with its scalar stats and no abilities', async () => {
+    const qb = queryBuilder([
+      { id: 'e1', slug: 'cactonto', type: 'creature', details: {} },
+      { id: 'e2', slug: 'crise', type: 'rule', details: {} },
+    ]);
+    repo.createQueryBuilder.mockReturnValue(qb);
+    stats.find.mockResolvedValue([cactontoRow]);
+
+    const list = await service.findAll(undefined, 'creature');
+
+    expect(list).toHaveLength(2);
+    expect(list[0].details).toMatchObject({
+      level: 15,
+      species: 'plant',
+      hp: 90,
+      hasSpells: true,
+      attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+    });
+    expect(list[0].details).not.toHaveProperty('attacks');
+    expect(list[0].details).not.toHaveProperty('spells');
+    expect(list[1].details).toEqual({});
+  });
+
+  it('does not touch the stats table when the list has no Creature', async () => {
+    repo.createQueryBuilder.mockReturnValue(
+      queryBuilder([{ id: 'e2', slug: 'crise', type: 'rule', details: {} }]),
+    );
+
+    await service.findAll();
+
+    expect(stats.find).not.toHaveBeenCalled();
   });
 
   it('throws NotFoundException for a missing entry', async () => {

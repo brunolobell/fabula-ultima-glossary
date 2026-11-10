@@ -5,6 +5,7 @@ export const ENTRY_TYPES = [
   'heroic-skill',
   'spell',
   'equipment',
+  'creature',
   'service',
   'transport',
   'guide',
@@ -17,6 +18,7 @@ export const ENTRY_SOURCES = [
   'high-fantasy',
   'natural-fantasy',
   'techno-fantasy',
+  'bestiary-vol-1',
 ] as const;
 export type EntrySource = (typeof ENTRY_SOURCES)[number];
 
@@ -161,6 +163,131 @@ export interface TransportDetails {
   distance: TransportDistance;
 }
 
+/** The eight Species of a Creature (Livro Básico p. 304-305). */
+export const SPECIES = [
+  'construct',
+  'demon',
+  'elemental',
+  'beast',
+  'humanoid',
+  'monster',
+  'undead',
+  'plant',
+] as const;
+export type Species = (typeof SPECIES)[number];
+
+/** The nine damage types, in the order the bestiary prints them (p. 321). */
+export const DAMAGE_TYPES = [
+  'physical',
+  'air',
+  'bolt',
+  'dark',
+  'earth',
+  'fire',
+  'ice',
+  'light',
+  'poison',
+] as const;
+export type DamageType = (typeof DAMAGE_TYPES)[number];
+
+/** How a Creature fares against a damage type; absent means no Affinity. */
+export const AFFINITIES = [
+  'vulnerable',
+  'resistant',
+  'immune',
+  'absorbs',
+] as const;
+export type Affinity = (typeof AFFINITIES)[number];
+
+export const RANKS = ['soldier', 'elite', 'champion'] as const;
+export type Rank = (typeof RANKS)[number];
+
+/** The six Quick Assembly Roles (Bestiary Vol. I); Livro Básico Creatures have none. */
+export const ROLES = [
+  'brute',
+  'hunter',
+  'mage',
+  'saboteur',
+  'sentinel',
+  'support',
+] as const;
+export type Role = (typeof ROLES)[number];
+
+/** An Attribute die as its number of sides, d6 to d12. */
+export type Die = 6 | 8 | 10 | 12;
+export const DICE: readonly Die[] = [6, 8, 10, 12];
+
+export interface CreatureAttack {
+  name: string;
+  range: 'melee' | 'ranged';
+  /** Precisão check, "DES + VIG" style. */
+  accuracy: string;
+  accuracyBonus: number;
+  /** Added to the high roll (RA): damage is "RA + damage". Null when the attack does none. */
+  damage: number | null;
+  damageType: DamageType;
+  /** The attack's extra effects, in our own words. */
+  effect?: string;
+}
+
+export interface CreatureSpell {
+  name: string;
+  /** PM cost as printed. */
+  mpCost: string;
+  target: string;
+  duration: string;
+  offensive: boolean;
+  /** Magic check, "VIG + VON" style; only offensive spells have one. */
+  accuracy?: string;
+  accuracyBonus?: number;
+  effect: string;
+}
+
+/** An "outra ação" or a "regra especial": a name and what it does, in our own words. */
+export interface CreatureAbility {
+  name: string;
+  effect: string;
+}
+
+/** The stat block of a Creature; the API serves the `creature_stats` row as these `details`. */
+export interface CreatureDetails {
+  level: number;
+  species: Species;
+  rank: Rank;
+  /** Quick Assembly Role; Bestiary Vol. I only. */
+  role?: Role;
+  /** Marked as a Villain; the Villain Tier is the Game Master's choice and is never stored. */
+  villain: boolean;
+  /** The English name, kept (and searchable) for Entries from the Bestiary Vol. I. */
+  originalName?: string;
+  /** "Traços típicos". */
+  traits: string[];
+  attributes: Record<AttributeCode, Die>;
+  hp: number;
+  /** Half of `hp`, rounded down. */
+  crisis: number;
+  mp: number;
+  initiative: number;
+  /** A fixed number (martial armor) or a bonus to the current Destreza die. */
+  defense: { value: number; fixed: boolean };
+  /** Always a bonus to the current Astúcia die. */
+  magicDefense: number;
+  affinities: Partial<Record<DamageType, Affinity>>;
+  attacks: CreatureAttack[];
+  spells: CreatureSpell[];
+  otherActions: CreatureAbility[];
+  specialRules: CreatureAbility[];
+}
+
+/** The stat block without its abilities, plus `hasSpells`: what the list endpoint sends. */
+export type ServedCreatureSummary = Omit<
+  CreatureDetails,
+  'attacks' | 'spells' | 'otherActions' | 'specialRules'
+> & { hasSpells: boolean };
+
+/** The stat block as the entry endpoint sends it. */
+export type ServedCreature = CreatureDetails & { hasSpells: boolean };
+
 /** A Rule with no structured data (almost all of them). */
 export interface PlainRuleDetails {
   forge?: undefined;
@@ -298,6 +425,7 @@ export interface DetailsByType {
   'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
+  creature: CreatureDetails;
   service: ServiceDetails;
   transport: TransportDetails;
   guide: GuideDetails;

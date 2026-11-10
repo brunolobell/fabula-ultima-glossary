@@ -1,8 +1,14 @@
 import { slugify } from '../entries/slug';
 import {
+  AFFINITIES,
   ATTRIBUTES,
   CustomWeaponRuleDetails,
+  DAMAGE_TYPES,
+  DICE,
+  DamageType,
+  RANKS,
   RareWeaponRuleDetails,
+  SPECIES,
   ENTRY_SOURCES,
   ENTRY_TYPES,
   EQUIPMENT_KINDS,
@@ -249,6 +255,37 @@ export function validateSeed(entries: SeedEntry[]): string[] {
             fail('weapon details.range must be melee or ranged');
           }
         }
+        break;
+      }
+      case 'creature': {
+        const { level, hp, crisis, attributes, species, rank, affinities } =
+          entry.details;
+        if (!SPECIES.includes(species))
+          fail(`unknown details.species "${species}"`);
+        if (!RANKS.includes(rank)) fail(`unknown details.rank "${rank}"`);
+        if (entry.source === 'bestiary-vol-1' && !entry.details.originalName)
+          fail('a Bestiary Vol. I Creature needs details.originalName');
+        if ((entry.source ?? 'livro-basico') === 'livro-basico') {
+          if (entry.details.role) fail('only the Bestiary Vol. I has a role');
+          if (rank === 'champion')
+            fail('only the Bestiary Vol. I has champions');
+        }
+        for (const [type, affinity] of Object.entries(affinities)) {
+          if (!DAMAGE_TYPES.includes(type as DamageType))
+            fail(`unknown damage type "${type}" in details.affinities`);
+          if (!AFFINITIES.includes(affinity))
+            fail(`unknown affinity "${affinity}" for ${type}`);
+        }
+        for (const code of ATTRIBUTES) {
+          if (!DICE.includes(attributes[code]))
+            fail(`details.attributes.${code} must be a die from d6 to d12`);
+        }
+        if (!Number.isInteger(level) || level < 5 || level > 60 || level % 5)
+          fail(`details.level (${level}) must be a multiple of 5 from 5 to 60`);
+        if (crisis !== Math.floor(hp / 2))
+          fail(
+            `details.crisis (${crisis}) must be half of hp (${hp}), rounded down`,
+          );
         break;
       }
       case 'service': {

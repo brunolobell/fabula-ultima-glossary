@@ -1,6 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import {
+  creatureDetailsFromStats,
+  creatureSummaryFromStats,
+} from './creature-stats.mapper';
+import { CreatureStats } from './entities/creature-stats.entity';
 import { Entry } from './entities/entry.entity';
 import { EntryType } from './entry-types';
 import { normalizeText } from './slug';
@@ -35,6 +40,31 @@ const SUMMARY_COLUMNS = [
   'details',
 ];
 
+/** Every `creature_stats` column except the abilities, which the list leaves out. */
+const CREATURE_SUMMARY_COLUMNS: (keyof CreatureStats)[] = [
+  'entryId',
+  'level',
+  'species',
+  'rank',
+  'role',
+  'villain',
+  'originalName',
+  'traits',
+  'des',
+  'ast',
+  'vig',
+  'von',
+  'hp',
+  'crisis',
+  'mp',
+  'initiative',
+  'defense',
+  'defenseFixed',
+  'magicDefense',
+  'hasSpells',
+  'affinities',
+];
+
 const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 
 @Injectable()
@@ -42,6 +72,8 @@ export class EntriesService {
   constructor(
     @InjectRepository(Entry)
     private readonly entries: Repository<Entry>,
+    @InjectRepository(CreatureStats)
+    private readonly creatureStats: Repository<CreatureStats>,
   ) {}
 
   /**
@@ -49,7 +81,7 @@ export class EntriesService {
    * drive the menu and the requirement lines). A search matches name, summary, body
    * and tags ignoring case and accents, with name matches ranked first.
    */
-  findAll(search?: string, type?: EntryType): Promise<EntrySummary[]> {
+  async findAll(search?: string, type?: EntryType): Promise<EntrySummary[]> {
     const qb = this.entries
       .createQueryBuilder('entry')
       .select(SUMMARY_COLUMNS.map((column) => `entry.${column}`));
@@ -68,7 +100,30 @@ export class EntriesService {
       qb.orderBy('entry.name');
     }
 
-    return qb.getMany();
+    return this.withCreatureSummaries(await qb.getMany());
+  }
+
+  /** Replaces the details of each listed Creature with its scalar stats (no abilities). */
+  private async withCreatureSummaries(
+    entries: EntrySummary[],
+  ): Promise<EntrySummary[]> {
+    const ids = entries.filter((e) => e.type === 'creature').map((e) => e.id);
+    if (ids.length === 0) return entries;
+
+    const rows = await this.creatureStats.find({
+      where: { entryId: In(ids) },
+      select: CREATURE_SUMMARY_COLUMNS,
+    });
+    const byEntry = new Map(rows.map((row) => [row.entryId, row]));
+    for (const entry of entries) {
+      const row = byEntry.get(entry.id);
+      // The summary is a subset of the stat block; the web types it separately.
+      if (row)
+        entry.details = creatureSummaryFromStats(
+          row,
+        ) as unknown as EntrySummary['details'];
+    }
+    return entries;
   }
 
   async findOne(slug: string): Promise<EntryWithChildren> {
@@ -78,6 +133,12 @@ export class EntriesService {
     }
     const children =
       entry.type === 'class' ? await this.findClassChildren(entry.slug) : [];
+    if (entry.type === 'creature') {
+      const row = await this.creatureStats.findOne({
+        where: { entryId: entry.id },
+      });
+      if (row) entry.details = creatureDetailsFromStats(row);
+    }
     return Object.assign(entry, { children });
   }
 
