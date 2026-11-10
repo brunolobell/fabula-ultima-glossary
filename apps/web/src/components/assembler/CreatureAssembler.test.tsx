@@ -497,3 +497,80 @@ describe('Creature Assembler: spells', () => {
     expect(stat(preview(dialog), 'PM')).toBe('70');
   });
 });
+
+describe('Creature Assembler: Negative Skill', () => {
+  const preview = (dialog: ReturnType<typeof within>) =>
+    within(dialog.getByRole('region', { name: 'Ficha' }));
+
+  it('offers the eight Negative Skills, with none as the starting point', async () => {
+    const dialog = await openDialog();
+    const select = dialog.getByLabelText('Poder negativo') as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toEqual([
+      'Nenhum',
+      'Atraso Final',
+      'Detonação Final',
+      'Restauração Final',
+      'Condição Final',
+      'Enfraquecimento Final',
+      'Pouso Forçado',
+      'Erro Doloroso',
+      'Amarras de Condição',
+    ]);
+    expect(select.value).toBe('');
+  });
+
+  it('shows what the book says the Skill is for and asks for its choices', async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Poder negativo'), {
+      target: { value: 'final-detonation' },
+    });
+    expect(
+      dialog.getByText(/explodem e ferem os aliados ao serem derrotados/),
+    ).toBeInTheDocument();
+    const negative = within(
+      dialog.getByRole('group', { name: 'Escolhas do poder negativo' }),
+    );
+    fireEvent.change(negative.getByLabelText('Tipo de dano'), {
+      target: { value: 'fire' },
+    });
+    const rules = within(
+      preview(dialog).getByRole('region', { name: 'Regras especiais' }),
+    );
+    expect(rules.getByText('Detonação Final')).toBeInTheDocument();
+    expect(rules.getByText(/dano do tipo fogo/)).toBeInTheDocument();
+  });
+
+  it('buys one more Role Skill', async () => {
+    const dialog = await openDialog();
+    const skills = () =>
+      within(dialog.getByRole('group', { name: /Poderes de função/ }));
+    expect(skills().getByText(/0 de 0/)).toBeInTheDocument();
+    fireEvent.change(dialog.getByLabelText('Poder negativo'), {
+      target: { value: 'final-delay' },
+    });
+    expect(skills().getByText(/0 de 1/)).toBeInTheDocument();
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Escolha 1 poder de função (há 0).');
+  });
+
+  it('keeps the Negative Skill and its choices when the Role changes', async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Poder negativo'), {
+      target: { value: 'final-detonation' },
+    });
+    const negative = within(
+      dialog.getByRole('group', { name: 'Escolhas do poder negativo' }),
+    );
+    fireEvent.change(negative.getByLabelText('Tipo de dano'), {
+      target: { value: 'fire' },
+    });
+    fireEvent.change(dialog.getByLabelText('Função'), {
+      target: { value: 'mage' },
+    });
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).not.toHaveTextContent('tipo de dano em Detonação Final');
+    expect(preview(dialog).getByText('Detonação Final')).toBeInTheDocument();
+  });
+});

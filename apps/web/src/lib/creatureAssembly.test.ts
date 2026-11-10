@@ -30,6 +30,7 @@ const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   baseSpells: {},
   spellChoices: {},
   magicFormula: 'AST + VON',
+  negative: null,
   ...over,
 });
 
@@ -761,5 +762,95 @@ describe('assembleCreature: spells', () => {
       'Fúria',
     ]);
     expect(result.warnings.join(' ')).not.toContain('opção de feitiços');
+  });
+});
+
+describe('assembleCreature: Negative Skills', () => {
+  const brute = (over: Partial<AssemblyInput> = {}) =>
+    assemble('brute', { level: 20, ...over });
+
+  it('puts the drawback in the stat block and buys one more Role Skill', () => {
+    const plain = brute();
+    const withDrawback = brute({ negative: 'final-delay' });
+    expect(withDrawback.details.specialRules.map((r) => r.name)).toContain(
+      'Atraso Final',
+    );
+    expect(withDrawback.roleSkills).toBe(plain.roleSkills + 1);
+    expect(withDrawback.warnings).toContain(
+      'Escolha 2 poderes de função (há 0).',
+    );
+  });
+
+  it("fills in the amounts of the level and the Reader's choices", () => {
+    const rule = (
+      id: string,
+      name: string,
+      choices: Record<string, string[]>,
+      level = 20,
+    ) =>
+      assemble('brute', {
+        level,
+        negative: id,
+        skills: { [`n:${id}`]: choices },
+      }).details.specialRules.find((r) => r.name === name)?.effect;
+
+    // The heavy amount is 40 from level 20 (30 below).
+    expect(
+      rule('final-detonation', 'Detonação Final', { type: ['fire'] }),
+    ).toContain('uma quantidade grande (40) de dano do tipo fogo');
+    expect(
+      rule('final-detonation', 'Detonação Final', { type: ['fire'] }, 10),
+    ).toContain('quantidade grande (30)');
+    expect(
+      rule('painful-miss', 'Erro Doloroso', {
+        attack: ['normal'],
+        victim: ['ally'],
+      }),
+    ).toBe(
+      'Depois de errar todos os alvos com o ataque normal, o NPC faz um aliado escolhido ao acaso perder uma quantidade pequena (20) de PV (depois de resolvido o ataque).',
+    );
+  });
+
+  it('ties each action to its own condition (Amarras de Condição)', () => {
+    const { details } = brute({
+      negative: 'status-bind',
+      skills: {
+        'n:status-bind': {
+          normal: ['dazed'],
+          strong: ['shaken'],
+          skill: ['slow'],
+          spell: ['weak'],
+        },
+      },
+    });
+    const rule = details.specialRules.find(
+      (r) => r.name === 'Amarras de Condição',
+    );
+    expect(rule?.effect).toContain(
+      'ataque normal (atordoado), ataque forte (abalado), ação Poder (lento) e ação Feitiço (fraco)',
+    );
+  });
+
+  it('asks for the choices of the Negative Skill', () => {
+    const result = brute({ negative: 'final-detonation' });
+    expect(result.warnings).toContain(
+      'Escolha tipo de dano em Detonação Final.',
+    );
+  });
+
+  it('ignores a Negative Skill the rules do not have', () => {
+    const result = brute({ negative: 'nonsense' });
+    expect(result.details.specialRules).toEqual([]);
+    expect(result.roleSkills).toBe(brute().roleSkills);
+  });
+
+  it('gives a champion the same one more Skill', () => {
+    const plain = brute({ rank: 'champion', championX: 2 });
+    const bought = brute({
+      rank: 'champion',
+      championX: 2,
+      negative: 'final-delay',
+    });
+    expect(bought.roleSkills).toBe(plain.roleSkills + 1);
   });
 });

@@ -330,6 +330,8 @@ export interface QuickAssemblyRuleDetails {
   champion: { mpMultiplier: number; bossSkills: number };
   extraHp: number;
   villainTiers: Record<VillainTier, number>;
+  /** The Negative Skills (p. 68-69): a drawback that buys one more Role Skill or Boss Skill. */
+  negativeSkills: RoleSkill[];
 }
 
 export interface AttackOption {
@@ -421,6 +423,8 @@ export interface RoleSkill {
   notPhysical?: boolean;
   extraVulnerabilities?: number;
   spells?: SpellGrant;
+  /** What a Negative Skill is meant for, as the book says. */
+  advice?: string;
 }
 
 /** The profile of one Role (Bestiary Vol. I p. 30-53). */

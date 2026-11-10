@@ -44,6 +44,9 @@ export interface AttackChoice {
 /** The key of a customization among `AssemblyInput.skills`. */
 export const customKey = (id: string) => `c:${id}`;
 
+/** The key of the Negative Skill among `AssemblyInput.skills`. */
+export const negativeKey = (id: string) => `n:${id}`;
+
 /** The value of `AssemblyInput.customization` that takes what the Role gives in place of one. */
 export const EXTRA_CUSTOMIZATION = 'extra';
 
@@ -74,6 +77,8 @@ export interface AssemblyInput {
   spellChoices: Record<string, Choices>;
   /** The Magic check of offensive spells: "AST + VON" or "VIG + VON". */
   magicFormula: string;
+  /** The id of the Negative Skill, if the Creature takes one; its choices are under `n:<id>`. */
+  negative: string | null;
 }
 
 /** A spell the Reader can pick: from the NPC list, or a Class spell read from its Entry. */
@@ -287,10 +292,16 @@ export function assembleCreature(
   const customization = input.customization?.startsWith('c:')
     ? role.customizations.find((c) => customKey(c.id) === input.customization)
     : undefined;
+  const negative = input.negative
+    ? rules.negativeSkills.find((n) => n.id === input.negative)
+    : undefined;
   const chosen: [RoleSkill, string][] = [
     ...pickedSkills.map((skill): [RoleSkill, string] => [skill, skill.id]),
     ...(customization
       ? [[customization, customKey(customization.id)] as [RoleSkill, string]]
+      : []),
+    ...(negative
+      ? [[negative, negativeKey(negative.id)] as [RoleSkill, string]]
       : []),
   ];
 
@@ -511,7 +522,9 @@ export function assembleCreature(
       : rank === 'elite'
         ? rules.elite.roleSkills
         : 0) +
-    (picksExtra && role.extra === 'skill' ? 1 : 0);
+    (picksExtra && role.extra === 'skill' ? 1 : 0) +
+    // A Negative Skill buys one more Role Skill (or a Boss Skill).
+    (negative ? 1 : 0);
   const taken = pickedSkills.length;
   if (taken < roleSkills) {
     const missing = roleSkills - taken;
@@ -596,6 +609,7 @@ export function defaultInput(
     baseSpells: {},
     spellChoices: {},
     magicFormula: 'AST + VON',
+    negative: null,
     ...over,
   };
 }

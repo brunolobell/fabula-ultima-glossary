@@ -17,6 +17,7 @@ import type {
 import {
   assembleCreature,
   customKey,
+  negativeKey,
   defaultAttackChoice,
   defaultInput,
   EXTRA_CUSTOMIZATION,
@@ -264,7 +265,10 @@ export function CreatureAssembler({
       ...prev,
       attacks: fresh.attacks,
       choices: {},
-      skills: {},
+      // The Negative Skill belongs to the Creature, not to the Role: keep it.
+      skills: Object.fromEntries(
+        Object.entries(prev.skills).filter(([key]) => key.startsWith('n:')),
+      ),
       customization: null,
       baseSpells: {},
       spellChoices: {},
@@ -320,6 +324,9 @@ export function CreatureAssembler({
     immunity: 'Imunidade a um tipo de dano',
     skill: 'Mais um poder de função',
   }[profile.extra];
+  const negativeSkill = rules.negativeSkills.find(
+    (n) => n.id === input.negative,
+  );
   const customization = profile.customizations.find(
     (c) => customKey(c.id) === input.customization,
   );
@@ -441,6 +448,44 @@ export function CreatureAssembler({
                 )}
               </div>
             )}
+            <div
+              role="group"
+              aria-label="Escolhas do poder negativo"
+              className="mt-3"
+            >
+              <SelectField
+                label="Poder negativo"
+                value={input.negative ?? ''}
+                onChange={(value) => set({ negative: value || null })}
+                options={[
+                  { value: '', label: 'Nenhum' },
+                  ...rules.negativeSkills.map((n) => ({
+                    value: n.id,
+                    label: n.name,
+                  })),
+                ]}
+              />
+              {negativeSkill && (
+                <>
+                  <p className="mt-1 text-[15px] text-muted">
+                    Pensado {negativeSkill.advice}. Dá um poder de função (ou de
+                    chefe) a mais.
+                  </p>
+                  <div className="mt-2">
+                    <SkillChoices
+                      skill={negativeSkill}
+                      value={input.skills[negativeKey(negativeSkill.id)] ?? {}}
+                      onChange={(choices) =>
+                        setSkillChoices(negativeKey(negativeSkill.id), choices)
+                      }
+                      catalog={catalog}
+                      spellChoices={input.spellChoices}
+                      onSpellChoices={setSpellChoices}
+                    />
+                  </div>
+                </>
+              )}
+            </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <CheckField
                 label="Vilão"
