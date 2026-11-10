@@ -720,6 +720,95 @@ describe('validateSeed', () => {
       );
     });
 
+    describe('negative skills', () => {
+      type Negative = {
+        id: string;
+        name: string;
+        advice?: string;
+        effects: { to: string; text: string }[];
+        slots?: { id: string; count: number; options: unknown[] }[];
+      };
+      const process = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Montagem Rápida',
+      );
+      const negatives = () =>
+        (process?.details as unknown as { negativeSkills: Negative[] })
+          .negativeSkills;
+
+      it('lists the 8 Negative Skills of the book (p. 68-69)', () => {
+        expect(negatives().map((n) => n.name)).toEqual([
+          'Atraso Final',
+          'Detonação Final',
+          'Restauração Final',
+          'Condição Final',
+          'Enfraquecimento Final',
+          'Pouso Forçado',
+          'Erro Doloroso',
+          'Amarras de Condição',
+        ]);
+        // Each says what it is meant for, as the book does.
+        for (const negative of negatives()) {
+          expect(negative.advice).toBeTruthy();
+        }
+      });
+
+      it('keeps the choices of the Skills that have them', () => {
+        const by = (name: string) => negatives().find((n) => n.name === name);
+        expect(
+          by('Detonação Final')?.slots?.map((s) => [s.id, s.options.length]),
+        ).toEqual([['type', 9]]);
+        expect(by('Restauração Final')?.slots?.[0].options).toHaveLength(2);
+        expect(by('Condição Final')?.slots?.[0].options).toHaveLength(4);
+        expect(by('Erro Doloroso')?.slots?.map((s) => s.id)).toEqual([
+          'attack',
+          'victim',
+        ]);
+        // Each of the four actions is tied to a different condition.
+        expect(by('Amarras de Condição')?.slots?.map((s) => s.id)).toEqual([
+          'normal',
+          'strong',
+          'skill',
+          'spell',
+        ]);
+        expect(by('Pouso Forçado')?.slots).toBeUndefined();
+      });
+
+      it('lists them in the page of the process Rule', () => {
+        expect(process?.body).toContain('## Poderes negativos');
+        expect(process?.body).toContain('**Detonação Final**');
+        expect(process?.body).toContain('quantidade grande (30/40/50)');
+        expect(process?.body).not.toMatch(/\{\w+\}/);
+      });
+
+      const withNegative = (change: (n: Negative) => void) => {
+        const rule = structuredClone(process) as SeedEntry & {
+          details: { negativeSkills: Negative[] };
+        };
+        rule.body = '';
+        change(rule.details.negativeSkills[0]);
+        return validateSeed([rule]);
+      };
+
+      it('rejects a Negative Skill text that names a choice it does not offer', () => {
+        const errors = withNegative((n) => {
+          n.effects[0].text = 'Sofre {nada}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{nada}')]);
+      });
+
+      it('rejects two Negative Skills with the same id', () => {
+        const errors = (() => {
+          const rule = structuredClone(process) as SeedEntry & {
+            details: { negativeSkills: Negative[] };
+          };
+          rule.body = '';
+          rule.details.negativeSkills[1].id = rule.details.negativeSkills[0].id;
+          return validateSeed([rule]);
+        })();
+        expect(errors).toEqual([expect.stringContaining('repeated')]);
+      });
+    });
+
     describe('spells', () => {
       type Ref = { kind: string; id: string; name: string; minLevel?: number };
       type Grant = {

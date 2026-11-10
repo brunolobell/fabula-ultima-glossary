@@ -102,6 +102,9 @@ const skillLine = (skill: RoleSkill) => {
   return `- **${skill.name}**${only}: ${[...effects, ...affinity].join(' ')}`;
 };
 
+const negativeLine = (skill: RoleSkill) =>
+  `- **${skill.name}** (${skill.advice}): ${skill.effects.map((e) => readable(e.text, skill)).join(' ')}`;
+
 const roleTable = (role: Role) => {
   const d = quickAssemblyRoles[role];
   const dice = (a: Partial<Record<AttributeCode, number>>) =>
@@ -224,6 +227,12 @@ Se a criatura tiver feitiços ofensivos, o teste de Magia dela pode ser (AST + V
 Várias habilidades falam em uma quantidade "pequena", "grande" ou "enorme" de PV, PM ou dano. O número depende do nível do NPC:
 
 ${amountsTable}
+
+## Poderes negativos
+
+Um poder negativo dá ao NPC uma desvantagem própria e, em troca, **um poder de função ou de chefe a mais**. A maioria foi pensada para NPCs com uma função específica no conflito, e o conselho do livro vem junto do nome.
+
+${quickAssemblyRules.negativeSkills.map(negativeLine).join('\n')}
 
 ## Patentes
 

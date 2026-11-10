@@ -10,6 +10,7 @@ import {
   QuickAssemblyRoleDetails,
   QuickAssemblyRuleDetails,
   RANKS,
+  RoleSkill,
   ROLES,
   RareWeaponRuleDetails,
   SPECIES,
@@ -176,7 +177,58 @@ function checkGrant(
   }
 }
 
-function validateQuickAssembly(d: QuickAssemblyRuleDetails, fail: Fail) {
+/** The checks every Role Skill, customization and Negative Skill shares. */
+function checkSkill(
+  skill: RoleSkill,
+  kind: string,
+  ids: Set<string>,
+  fail: Fail,
+  expectSpell: (slug: string) => void,
+  npcIds: Set<string>,
+) {
+  const where = `${kind} "${skill.id}"`;
+  if (ids.has(skill.id)) fail(`${where} is repeated`);
+  ids.add(skill.id);
+  if (!skill.name.trim()) fail(`${where} needs a name`);
+  const hasEffect =
+    skill.effects.length > 0 ||
+    skill.addsAttack ||
+    skill.resistances ||
+    skill.immunities ||
+    skill.extraVulnerabilities ||
+    skill.spells;
+  if (!hasEffect) fail(`${where} does nothing`);
+  for (const slot of skill.slots ?? []) {
+    if (slot.options.length < slot.count)
+      fail(`${where} slot "${slot.id}" has fewer options than choices`);
+    if (slot.min !== undefined && (slot.min < 1 || slot.min > slot.count))
+      fail(`${where} slot "${slot.id}" has a bad minimum`);
+  }
+  for (const effect of skill.effects) {
+    if (!['rule', 'action', 'normal', 'strong'].includes(effect.to))
+      fail(`${where} has an effect that goes to "${effect.to}"`);
+    checkTokens(effect.text, skill.slots, where, fail);
+  }
+  for (const rank of skill.ranks ?? []) {
+    if (!RANKS.includes(rank)) fail(`${where} has unknown rank "${rank}"`);
+  }
+  if (skill.spells) checkGrant(skill.spells, where, fail, expectSpell, npcIds);
+  const added = skill.addsAttack;
+  if (added) {
+    for (const accuracy of added.accuracies) {
+      if (!ACCURACY.test(accuracy))
+        fail(`${where} has bad accuracy "${accuracy}"`);
+    }
+    checkTokens(added.effect, added.slots, where, fail);
+  }
+}
+
+function validateQuickAssembly(
+  d: QuickAssemblyRuleDetails,
+  fail: Fail,
+  expectSpell: (slug: string) => void,
+  npcIds: Set<string>,
+) {
   if (d.levels.join() !== '5,10,20,30,40,50,60')
     fail('quick assembly levels must be 5, 10, 20, 30, 40, 50, 60');
   let previous = 0;
@@ -189,6 +241,17 @@ function validateQuickAssembly(d: QuickAssemblyRuleDetails, fail: Fail) {
       );
   }
   if (d.amounts[0]?.fromLevel !== 5) fail('amounts must start at level 5');
+  const negativeIds = new Set<string>();
+  for (const negative of d.negativeSkills) {
+    checkSkill(
+      negative,
+      'negative skill',
+      negativeIds,
+      fail,
+      expectSpell,
+      npcIds,
+    );
+  }
   for (const [name, value] of [
     ['elite.hpMultiplier', d.elite.hpMultiplier],
     ['champion.mpMultiplier', d.champion.mpMultiplier],
@@ -268,42 +331,7 @@ function validateQuickAssemblyRole(
     ['customization', d.customizations],
   ] as const) {
     for (const skill of list) {
-      const where = `${kind} "${skill.id}"`;
-      if (ids.has(skill.id)) fail(`${where} is repeated`);
-      ids.add(skill.id);
-      if (!skill.name.trim()) fail(`${where} needs a name`);
-      const hasEffect =
-        skill.effects.length > 0 ||
-        skill.addsAttack ||
-        skill.resistances ||
-        skill.immunities ||
-        skill.extraVulnerabilities ||
-        skill.spells;
-      if (!hasEffect) fail(`${where} does nothing`);
-      for (const slot of skill.slots ?? []) {
-        if (slot.options.length < slot.count)
-          fail(`${where} slot "${slot.id}" has fewer options than choices`);
-        if (slot.min !== undefined && (slot.min < 1 || slot.min > slot.count))
-          fail(`${where} slot "${slot.id}" has a bad minimum`);
-      }
-      for (const effect of skill.effects) {
-        if (!['rule', 'action', 'normal', 'strong'].includes(effect.to))
-          fail(`${where} has an effect that goes to "${effect.to}"`);
-        checkTokens(effect.text, skill.slots, where, fail);
-      }
-      for (const rank of skill.ranks ?? []) {
-        if (!RANKS.includes(rank)) fail(`${where} has unknown rank "${rank}"`);
-      }
-      if (skill.spells)
-        checkGrant(skill.spells, where, fail, expectSpell, npcIds);
-      const added = skill.addsAttack;
-      if (added) {
-        for (const accuracy of added.accuracies) {
-          if (!ACCURACY.test(accuracy))
-            fail(`${where} has bad accuracy "${accuracy}"`);
-        }
-        checkTokens(added.effect, added.slots, where, fail);
-      }
+      checkSkill(skill, kind, ids, fail, expectSpell, npcIds);
     }
   }
 
@@ -397,7 +425,12 @@ export function validateSeed(entries: SeedEntry[]): string[] {
             expectType(slug, target, 'equipment'),
           );
         } else if (details.forge === 'quick-assembly') {
-          validateQuickAssembly(details, fail);
+          validateQuickAssembly(
+            details,
+            fail,
+            (target) => expectType(slug, target, 'spell'),
+            npcIds,
+          );
         } else if (details.forge === 'quick-assembly-role') {
           validateQuickAssemblyRole(
             details,

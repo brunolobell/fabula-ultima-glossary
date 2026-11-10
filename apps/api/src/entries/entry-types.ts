@@ -447,6 +447,8 @@ export interface QuickAssemblyRuleDetails {
   extraHp: number;
   /** Ultima Points by Villain Tier (Livro Básico p. 101). */
   villainTiers: Record<'minor' | 'major' | 'supreme', number>;
+  /** The Negative Skills (p. 68-69): a drawback that buys one more Role Skill or Boss Skill. */
+  negativeSkills: RoleSkill[];
 }
 
 /** One "choose one option" of a Role's basic attack. */
@@ -564,6 +566,8 @@ export interface RoleSkill {
   extraVulnerabilities?: number;
   /** Spells the Skill teaches. */
   spells?: SpellGrant;
+  /** What a Negative Skill is meant for, as the book says. */
+  advice?: string;
 }
 
 /** The profile of one Role (Bestiary Vol. I p. 30-53). */
