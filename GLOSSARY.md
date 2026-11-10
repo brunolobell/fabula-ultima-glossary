@@ -139,7 +139,7 @@ The state of having current Hit Points at or below half of the maximum, rounded 
 _Avoid_: Bloodied, wounded
 
 **Species**:
-What kind of being a Creature is, one of eight: Construct, Demon, Elemental, Beast, Humanoid, Monster, Undead or Plant ("Construto", "Demônio", "Elemental", "Fera", "Humanoide", "Monstro", "Morto-vivo", "Planta"). It sets a few special rules (immunities, Vulnerabilities) and how many powers a built Creature starts with.
+What kind of being a Creature is, one of eight: Construct, Demon, Elemental, Beast, Humanoid, Monster, Undead or Plant ("Construto", "Demônio", "Elemental", "Fera", "Humanoide", "Monstro", "Morto-vivo", "Planta"). It sets a few special rules (immunities, Vulnerabilities) and how many powers a built Creature starts with. Quick Assembly has its own Species rules (Bestiary Vol. I), which replace the Core Rulebook's for a Creature built with it.
 _Avoid_: Race, kind, creature type
 
 **Inventory Points**:
