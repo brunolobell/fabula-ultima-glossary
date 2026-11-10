@@ -130,7 +130,93 @@ export interface GuideDetails {
   steps: GuideStep[];
 }
 
-export type RuleDetails = Record<string, never>;
+/** A Rule with no structured data (almost all of them). */
+export interface PlainRuleDetails {
+  forge?: undefined;
+}
+
+/** One option of the Custom Weapon list ("personalização"). */
+export interface WeaponCustomization {
+  id: string;
+  name: string;
+  summary: string;
+  /** Choosing it makes the weapon martial. */
+  martial: boolean;
+  /** How many customization slots it takes. */
+  slots: number;
+  /** Zênites it adds to the cost. */
+  cost: number;
+  damage?: number;
+  /** Extra damage instead of `damage` on a heavy weapon. */
+  heavyDamage?: number;
+  accuracy?: number;
+  defense?: number;
+  magicDefense?: number;
+  chooseDamageType?: boolean;
+  secondForm?: boolean;
+  doubleAttack?: boolean;
+  blockedCategories?: string[];
+  /** Ids it cannot be combined with, in either direction. */
+  blockedWith?: string[];
+  note?: string;
+}
+
+/** Atlas "Armas Personalizadas" (High Fantasy p. 106-108). */
+export interface CustomWeaponRuleDetails {
+  forge: 'custom-weapon';
+  base: {
+    cost: number;
+    damage: number;
+    slots: number;
+    /** "DES + AST" style. */
+    accuracies: string[];
+  };
+  categories: string[];
+  damageTypes: string[];
+  customizations: WeaponCustomization[];
+  notes: string[];
+}
+
+export interface RareAlteration {
+  id: 'one-handed' | 'two-handed' | 'accuracy' | 'damage' | 'attributes';
+  name: string;
+  summary: string;
+  cost: number;
+  damage?: number;
+  accuracy?: number;
+}
+
+export interface WeaponFeature {
+  id: string;
+  name: string;
+  group: 'defensive' | 'offensive';
+  cost: number;
+  summary: string;
+  defense?: number;
+  magicDefense?: number;
+}
+
+/** Livro Básico "Como criar armas raras" (p. 266-269). */
+export interface RareWeaponRuleDetails {
+  forge: 'rare-weapon';
+  damageTypes: string[];
+  damageTypeCost: number;
+  maxAlterations: number;
+  /** A damage modifier at or above this makes the weapon martial. */
+  martialDamage: number;
+  /** Categories that cannot become two-handed. */
+  oneHandedOnlyCategories: string[];
+  /** Slugs of the basic weapons that cannot be a base. */
+  excludedBases: string[];
+  alterations: RareAlteration[];
+  features: WeaponFeature[];
+  notes: string[];
+}
+
+export type RuleDetails =
+  | PlainRuleDetails
+  | CustomWeaponRuleDetails
+  | RareWeaponRuleDetails;
 
 export interface DetailsByType {
   rule: RuleDetails;

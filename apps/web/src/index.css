@@ -353,6 +353,7 @@
     background: var(--tint-key);
   }
   .chip[aria-pressed='true'],
+  .chip[aria-selected='true'],
   .chip[data-active='true'] {
     background: var(--tint-key);
     color: var(--primary);
@@ -368,6 +369,7 @@
     position: relative;
   }
   .chip[aria-pressed='true']::before,
+  .chip[aria-selected='true']::before,
   .chip[data-active='true']::before,
   .nav-item[aria-current='page']::before,
   .suggest-option[aria-selected='true']::before {
@@ -381,6 +383,7 @@
     clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
   }
   .chip[aria-pressed='true']::before,
+  .chip[aria-selected='true']::before,
   .chip[data-active='true']::before {
     left: 5px;
   }
@@ -391,6 +394,55 @@
   .suggest-option[aria-selected='true']::before {
     left: 5px;
   }
+  /* Select, number and text fields in forms (§6.8). */
+  .field {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: var(--bg);
+    color: var(--ink);
+    font: inherit;
+  }
+  textarea.field {
+    padding: 10px 12px;
+  }
+
+  /* Primary button (§6.8). */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 4px;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: var(--on-primary);
+    font-family: 'Antonio', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .btn-primary:hover {
+    background: var(--primary-deep);
+    border-color: var(--primary-deep);
+    color: var(--on-bar);
+  }
+
+  /* Modal dialog (Weapon Forge): the native backdrop uses the scrim token. */
+  dialog.modal {
+    padding: 0;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line);
+  }
+  dialog.modal::backdrop {
+    background: var(--scrim);
+  }
+
   .search-input {
     width: 100%;
     min-height: 48px;

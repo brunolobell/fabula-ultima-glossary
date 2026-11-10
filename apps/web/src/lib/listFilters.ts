@@ -23,11 +23,11 @@ import {
 type Index = ReadonlyMap<string, EntrySummary>;
 
 /** One row of chips on a type list page. The `param` is its query-string key. */
-interface RowSpec {
+export interface RowSpec<T = EntrySummary> {
   param: string;
   label: string;
-  /** The values an entry has in this row (a Heroic Skill can require several Classes). */
-  values: (entry: EntrySummary) => string[];
+  /** The values an item has in this row (a Heroic Skill can require several Classes). */
+  values: (item: T) => string[];
   labelOf: (value: string, index: Index) => string;
   /** Fixed option order; alphabetical by label when absent. */
   order?: readonly string[];
@@ -180,34 +180,33 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
 const specsOf = (type: EntryType) => ROWS[type] ?? [];
 
 /**
- * The rows to show for a list: only values that some entry has, in a stable
- * order, and only rows with a real choice (a single option filters nothing).
- * Counts follow the current `selection` (see FilterOption).
+ * The rows to show for a list of `items`: only values that some item has, in a
+ * stable order, and only rows with a real choice (a single option filters
+ * nothing). Counts follow the current `selection` (see FilterOption).
  */
-export function buildRows(
-  type: EntryType,
-  ofType: readonly EntrySummary[],
+export function buildRowsFor<T>(
+  specs: readonly RowSpec<T>[],
+  items: readonly T[],
   index: Index,
   selection: Selection = {},
 ): FilterRow[] {
-  const specs = specsOf(type);
   return specs
     .map((spec) => {
       // Options come from the whole list, so a chip never vanishes...
       const counts = new Map<string, number>();
-      for (const entry of ofType) {
-        for (const value of spec.values(entry)) counts.set(value, 0);
+      for (const item of items) {
+        for (const value of spec.values(item)) counts.set(value, 0);
       }
       // ...and its number comes from what the other rows already allow.
       const others = specs.filter(
         (other) => other !== spec && (selection[other.param] ?? []).length > 0,
       );
-      for (const entry of ofType) {
+      for (const item of items) {
         const allowed = others.every((other) =>
-          other.values(entry).some((v) => selection[other.param].includes(v)),
+          other.values(item).some((v) => selection[other.param].includes(v)),
         );
         if (!allowed) continue;
-        for (const value of new Set(spec.values(entry))) {
+        for (const value of new Set(spec.values(item))) {
           counts.set(value, (counts.get(value) ?? 0) + 1);
         }
       }
@@ -227,6 +226,16 @@ export function buildRows(
     .filter((row) => row.options.length > 1);
 }
 
+/** The rows of a type list page (see buildRowsFor). */
+export function buildRows(
+  type: EntryType,
+  ofType: readonly EntrySummary[],
+  index: Index,
+  selection: Selection = {},
+): FilterRow[] {
+  return buildRowsFor(specsOf(type), ofType, index, selection);
+}
+
 /** Reads the chosen values of this type's rows from the query string (`a,b`). */
 export function readSelection(type: EntryType, params: URLSearchParams): Selection {
   return Object.fromEntries(
@@ -244,21 +253,25 @@ export const hasActiveFilters = (selection: Selection) =>
   Object.values(selection).some((values) => values.length > 0);
 
 /** OR inside a row, AND between rows. */
-export function applyFilters(
-  type: EntryType,
-  entries: readonly EntrySummary[],
+export function applyRowSpecs<T>(
+  specs: readonly RowSpec<T>[],
+  items: readonly T[],
   selection: Selection,
-): EntrySummary[] {
-  const active = specsOf(type).filter(
-    (spec) => (selection[spec.param] ?? []).length > 0,
-  );
-  return entries.filter((entry) =>
+): T[] {
+  const active = specs.filter((spec) => (selection[spec.param] ?? []).length > 0);
+  return items.filter((item) =>
     active.every((spec) => {
       const chosen = selection[spec.param];
-      return spec.values(entry).some((value) => chosen.includes(value));
+      return spec.values(item).some((value) => chosen.includes(value));
     }),
   );
 }
+
+export const applyFilters = (
+  type: EntryType,
+  entries: readonly EntrySummary[],
+  selection: Selection,
+): EntrySummary[] => applyRowSpecs(specsOf(type), entries, selection);
 
 /** A copy of `params` with `value` added to or removed from the row. */
 export function toggleValue(

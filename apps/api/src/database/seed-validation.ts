@@ -1,6 +1,8 @@
 import { slugify } from '../entries/slug';
 import {
   ATTRIBUTES,
+  CustomWeaponRuleDetails,
+  RareWeaponRuleDetails,
   ENTRY_SOURCES,
   ENTRY_TYPES,
   EQUIPMENT_KINDS,
@@ -19,6 +21,83 @@ const MAX_PAGE = 360;
 const ACCURACY = new RegExp(
   `^(${ATTRIBUTES.join('|')}) \\+ (${ATTRIBUTES.join('|')})$`,
 );
+
+type Fail = (message: string) => void;
+
+const isMoney = (n: unknown) => Number.isInteger(n) && (n as number) >= 0;
+
+const duplicates = (ids: string[]) =>
+  ids.filter((id, i) => ids.indexOf(id) !== i);
+
+function validateCustomWeapon(d: CustomWeaponRuleDetails, fail: Fail) {
+  const { base, categories, damageTypes, customizations } = d;
+  if (!isMoney(base.cost))
+    fail('forge base.cost must be a non-negative integer');
+  if (!Number.isInteger(base.damage))
+    fail('forge base.damage must be an integer');
+  if (!Number.isInteger(base.slots) || base.slots < 1)
+    fail('forge base.slots must be a positive integer');
+  if (base.accuracies.length === 0) fail('forge needs base.accuracies');
+  for (const accuracy of base.accuracies) {
+    if (!ACCURACY.test(accuracy)) fail(`forge bad accuracy "${accuracy}"`);
+  }
+  if (damageTypes.length === 0) fail('forge needs damageTypes');
+  if (categories.length === 0) fail('forge needs categories');
+  for (const dup of duplicates(customizations.map((c) => c.id)))
+    fail(`forge customization "${dup}" is repeated`);
+
+  const ids = customizations.map((c) => c.id);
+  for (const c of customizations) {
+    if (!c.name || !c.summary)
+      fail(`forge customization "${c.id}" needs a name and summary`);
+    if (!Number.isInteger(c.slots) || c.slots < 1 || c.slots > base.slots)
+      fail(`forge customization "${c.id}" has bad slots`);
+    if (!isMoney(c.cost)) fail(`forge customization "${c.id}" has a bad cost`);
+    for (const category of c.blockedCategories ?? []) {
+      if (!categories.includes(category))
+        fail(
+          `forge customization "${c.id}" blocks unknown category "${category}"`,
+        );
+    }
+    for (const other of c.blockedWith ?? []) {
+      if (!ids.includes(other))
+        fail(
+          `forge customization "${c.id}" is blocked with unknown "${other}"`,
+        );
+    }
+  }
+  if (customizations.filter((c) => c.secondForm).length !== 1)
+    fail('forge needs exactly one customization that adds a second form');
+}
+
+function validateRareWeapon(
+  d: RareWeaponRuleDetails,
+  fail: Fail,
+  expectEquipment: (slug: string) => void,
+) {
+  if (!isMoney(d.damageTypeCost))
+    fail('forge damageTypeCost must be a non-negative integer');
+  if (!Number.isInteger(d.maxAlterations) || d.maxAlterations < 1)
+    fail('forge maxAlterations must be a positive integer');
+  if (!Number.isInteger(d.martialDamage))
+    fail('forge martialDamage must be an integer');
+  if (d.damageTypes.length === 0) fail('forge needs damageTypes');
+  for (const dup of duplicates(d.alterations.map((a) => a.id)))
+    fail(`forge alteration "${dup}" is repeated`);
+  for (const a of d.alterations) {
+    if (!isMoney(a.cost)) fail(`forge alteration "${a.id}" has a bad cost`);
+  }
+  for (const dup of duplicates(d.features.map((f) => f.id)))
+    fail(`forge feature "${dup}" is repeated`);
+  for (const f of d.features) {
+    if (!f.name || !f.summary)
+      fail(`forge feature "${f.id}" needs a name and summary`);
+    if (!isMoney(f.cost)) fail(`forge feature "${f.id}" has a bad cost`);
+    if (f.group !== 'defensive' && f.group !== 'offensive')
+      fail(`forge feature "${f.id}" has an unknown group`);
+  }
+  for (const slug of d.excludedBases) expectEquipment(slug);
+}
 
 /** Returns every problem found in the seed data; empty means it is valid. */
 export function validateSeed(entries: SeedEntry[]): string[] {
@@ -71,8 +150,19 @@ export function validateSeed(entries: SeedEntry[]): string[] {
     }
 
     switch (entry.type) {
-      case 'rule':
+      case 'rule': {
+        const details = entry.details;
+        if (details.forge === 'custom-weapon') {
+          validateCustomWeapon(details, fail);
+        } else if (details.forge === 'rare-weapon') {
+          validateRareWeapon(details, fail, (target) =>
+            expectType(slug, target, 'equipment'),
+          );
+        } else if (details.forge !== undefined) {
+          fail('unknown details.forge');
+        }
         break;
+      }
       case 'class': {
         const { otherNames, freeBenefits } = entry.details;
         if (!Array.isArray(otherNames))

@@ -40,6 +40,7 @@ import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
 import { poderesHeroicosTechnoFantasy } from './heroic-skills/techno-fantasy';
 import { inBook } from './helpers';
 import { rules } from './rules';
+import { weaponForgeRules } from './weapon-forge';
 import { SeedEntry } from './types';
 
 export const seedEntries: SeedEntry[] = [
@@ -63,6 +64,7 @@ export const seedEntries: SeedEntry[] = [
   ...orador,
   ...quimerista,
   ...armasBasicas,
+  ...weaponForgeRules,
   ...servicesAndTransport,
   ...poderesHeroicosLivroBasico,
   // Atlas High Fantasy

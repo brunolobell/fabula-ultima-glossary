@@ -161,7 +161,135 @@ export interface TransportDetails {
   distance: TransportDistance;
 }
 
-export type RuleDetails = Record<string, never>;
+/** A Rule with no structured data (almost all of them). */
+export interface PlainRuleDetails {
+  forge?: undefined;
+}
+
+/** The weapon categories of the Atlas "Armas Personalizadas" rule, as the app names them. */
+export const WEAPON_CATEGORIES = [
+  'Adagas',
+  'Armas Arcanas',
+  'Armas de Arremesso',
+  'Armas de Fogo',
+  'Armas Pesadas',
+  'Arcos',
+  'Espadas',
+  'Lanças',
+  'Luta',
+  'Malhos',
+] as const;
+
+/** The damage types a weapon can have besides "físico". */
+export const WEAPON_DAMAGE_TYPES = [
+  'ar',
+  'fogo',
+  'gelo',
+  'luz',
+  'raio',
+  'terra',
+  'trevas',
+  'veneno',
+] as const;
+
+/** One option of the Custom Weapon list ("personalização"). Numbers are as printed. */
+export interface WeaponCustomization {
+  id: string;
+  name: string;
+  /** Our own words. */
+  summary: string;
+  /** The "marcial" icon: choosing it makes the weapon martial. */
+  martial: boolean;
+  /** How many of the weapon's customization slots it takes. */
+  slots: number;
+  /** Zênites it adds to the weapon's cost. */
+  cost: number;
+  /** Extra damage. */
+  damage?: number;
+  /** Extra damage instead of `damage` on a heavy weapon ("Armas Pesadas"). */
+  heavyDamage?: number;
+  /** Bonus to the Precisão check. */
+  accuracy?: number;
+  defense?: number;
+  magicDefense?: number;
+  /** The Reader picks the damage type (it replaces "físico"). */
+  chooseDamageType?: boolean;
+  /** Adds a second form, built as another Custom Weapon. */
+  secondForm?: boolean;
+  /** The Ataque action makes two attacks. */
+  doubleAttack?: boolean;
+  /** Categories (from WEAPON_CATEGORIES) that cannot take it. */
+  blockedCategories?: string[];
+  /** Ids of customizations it cannot be combined with (in either direction). */
+  blockedWith?: string[];
+  /** A reminder shown while it is chosen. */
+  note?: string;
+}
+
+/** The Atlas "Armas Personalizadas" rule (Atlas High Fantasy p. 106-108; reprinted in the other two). */
+export interface CustomWeaponRuleDetails {
+  forge: 'custom-weapon';
+  /** How every Custom Weapon starts. */
+  base: {
+    cost: number;
+    /** Damage is "RA + damage", physical. */
+    damage: number;
+    /** Customization slots. */
+    slots: number;
+    /** The two Precisão formulas to choose from, "DES + AST" style. */
+    accuracies: string[];
+  };
+  categories: string[];
+  damageTypes: string[];
+  customizations: WeaponCustomization[];
+  /** Reminders for the Forge, in our own words. */
+  notes: string[];
+}
+
+/** A step-3 change of the Livro Básico "Como criar armas raras" (p. 268). */
+export interface RareAlteration {
+  id: 'one-handed' | 'two-handed' | 'accuracy' | 'damage' | 'attributes';
+  name: string;
+  summary: string;
+  /** Zênites added (for `attributes`, only when the new formula uses one Atributo). */
+  cost: number;
+  damage?: number;
+  accuracy?: number;
+}
+
+/** One line of the Livro Básico weapon-feature table (p. 269). */
+export interface WeaponFeature {
+  id: string;
+  name: string;
+  group: 'defensive' | 'offensive';
+  /** Zênites added to the weapon's cost. */
+  cost: number;
+  summary: string;
+  defense?: number;
+  magicDefense?: number;
+}
+
+/** The Livro Básico "Como criar armas raras" rule (p. 266-269). */
+export interface RareWeaponRuleDetails {
+  forge: 'rare-weapon';
+  damageTypes: string[];
+  /** Cost of a damage type other than physical. */
+  damageTypeCost: number;
+  /** How many step-3 alterations the printed rule allows. */
+  maxAlterations: number;
+  /** A damage modifier at or above this makes the weapon martial. */
+  martialDamage: number;
+  /** Categories that cannot be turned into two-handed weapons. */
+  oneHandedOnlyCategories: string[];
+  /** Slugs of the basic weapons that cannot be a base (unarmed, improvised). */
+  excludedBases: string[];
+  alterations: RareAlteration[];
+  features: WeaponFeature[];
+  notes: string[];
+}
+
+export type RuleDetails =
+  PlainRuleDetails | CustomWeaponRuleDetails | RareWeaponRuleDetails;
 
 export interface DetailsByType {
   rule: RuleDetails;

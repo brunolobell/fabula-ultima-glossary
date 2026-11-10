@@ -55,6 +55,16 @@ describe('ListFilters', () => {
     expect(button(/^classe/)).toHaveFocus();
   });
 
+  it('swallows Escape while a panel is open, so a surrounding dialog stays open', () => {
+    setup([row('classe', 4)]);
+    // Closed: Escape is not ours, so a dialog around the filters may take it.
+    expect(fireEvent.keyDown(button(/^classe/), { key: 'Escape' })).toBe(true);
+    fireEvent.click(button(/^classe/));
+    expect(
+      fireEvent.keyDown(screen.getByRole('checkbox', { name: /^classe 0/ }), { key: 'Escape' }),
+    ).toBe(false);
+  });
+
   it('summarises the chosen values on the button', () => {
     const { rerender } = setup([row('classe', 4)], { classe: ['classe2'] });
     expect(button('classe: classe 2')).toHaveAttribute('data-active', 'true');

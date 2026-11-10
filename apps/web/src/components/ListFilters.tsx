@@ -39,6 +39,9 @@ export function ListFilters({ rows, selection, onToggle, onClear }: Props) {
       className="mt-4"
       onKeyDown={(event) => {
         if (event.key !== 'Escape' || !openParam) return;
+        // Closes the panel only, not a dialog the filters may sit in.
+        event.preventDefault();
+        event.stopPropagation();
         event.currentTarget.querySelector<HTMLButtonElement>('[aria-expanded="true"]')?.focus();
         setOpenParam(null);
       }}

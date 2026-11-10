@@ -54,6 +54,26 @@ _Avoid_: Item, gear
 Which of weapon, armor, shield, accessory, or artifact an Equipment Entry is.
 _Avoid_: Equipment type, equipment category
 
+**Custom Weapon**:
+A weapon a Reader assembles from a base weapon category plus customizations, following the Atlas High Fantasy rules. It is not an Entry. Shown to Readers as "arma personalizada".
+_Avoid_: Homebrew weapon, crafted weapon
+
+**Rare Weapon**:
+A weapon with a special effect beyond a basic weapon's. Either an Equipment Entry from the books or one a Reader designs in the Weapon Forge; "rare" is a rarity, not an Equipment Kind. Shown to Readers as "arma rara".
+_Avoid_: Magic weapon, unique weapon
+
+**Customization**:
+One of the three options a Custom Weapon takes from the Atlas list (such as Certeira, Elemental, Mutável or Rápida); each can be taken once per weapon. Shown to Readers as "personalização". It is not a Weapon Feature.
+_Avoid_: Upgrade, modifier, perk
+
+**Weapon Feature**:
+The single special property a Rare Weapon may carry, chosen from the Core Rulebook's priced list (such as Anticondição, Multi or Perfuradora) or a custom effect the Game Master prices. Shown to Readers as "característica". It is not a Customization.
+_Avoid_: Trait (a Trait is Identity, Theme or Origin), property, enchantment
+
+**Weapon Forge**:
+The modal on the weapons list where a Reader builds a Custom Weapon or a Rare Weapon. Nothing built there is saved: closing the modal or reloading the page discards it. Shown to Readers as "Forja de Armas".
+_Avoid_: Weapon builder, generator, creator
+
 ### Guidance
 
 **Guide**:
