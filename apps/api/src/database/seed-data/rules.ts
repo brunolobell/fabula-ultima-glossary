@@ -127,10 +127,75 @@ Alguns efeitos exigem que você **gaste** PV. Só é possível se isso não redu
 
 ## Chegar a 0 PV
 
-O espírito de luta do personagem é quebrado. As consequências dependem do papel na história: PJ, vilão ou NPC comum (veja a página 87).
+O espírito de luta do personagem é quebrado. As consequências dependem do papel na história: NPC comum, vilão ou PJ. Os três casos estão em [[zero-ponto-de-vida]].
 
 Veja também a [[crise]].`,
     ['recurso', 'combate'],
+  ),
+
+  rule(
+    'Zero Ponto de Vida',
+    86,
+    'O que acontece quando os PV de um personagem chegam a 0: o NPC fica à mercê de quem o derrotou, o vilão foge ou se rende, e o PJ se sacrifica ou se rende.',
+    `Quando os [[pontos-de-vida]] de um personagem chegam a 0, os perigos e danos sofridos ficam insuportáveis. As opções dependem do papel dele na história.
+
+## NPC comum
+
+O NPC perde a vontade de lutar, e **quem o derrotou decide seu destino**: capturá-lo, forçá-lo a fugir, deixá-lo inconsciente, matá-lo ou até fazê-lo se arrepender e reconsiderar suas ações.
+
+Inimigos mais fracos ou sem consciência (um zumbi, um drone autômato, uma partícula irracional de energia elemental) podem simplesmente ser **destruídos**, a critério do mestre.
+
+> **Exemplo:** Yezma reduz a 0 PV um javali maculado por magia. Sabendo que a fera só ficou agressiva por causa da corrupção arcana, ela decide poupá-la e apenas afugentá-la, esperando restaurar sua mente algum dia.
+
+## Vilão
+
+Ao chegar a 0 PV, o vilão escolhe entre **fuga** e **rendição**.
+
+- **Fuga.** O vilão gasta **1 Ponto de Ultima** (página 101) e sai de cena em segurança; o mestre descreve como. Sem Pontos de Ultima, ele ainda pode escapar escalonando para uma versão mais perigosa de si (página 102).
+- **Rendição.** O vilão se rende e passa a ser tratado como qualquer outro NPC: seu destino fica nas mãos de quem o derrotou. É um bom momento para os jogadores propor um arco de redenção, que termine com o antagonista virando aliado (e talvez um novo PJ).
+
+Um vilão cujos propósito e objetivos ainda valem **só se rende se não tiver mais Pontos de Ultima**. O mestre pode, porém, considerar a rendição de um vilão cujas motivações foram resolvidas ou removidas, ou cuja sobrevivência alongaria a campanha sem necessidade (por exemplo, o chefe final derrotado ainda com 2 ou 3 Pontos de Ultima).
+
+> **Exemplo:** sob a mira da pirata celeste Morgan, o comandante Duna pula do convés e despenca rumo ao oceano. Quando Morgan olha por cima do corrimão, ele está agarrado a uma enorme salamandra alada, que o leva embora em direção à capital.
+
+## Personagem de jogador (PJ)
+
+Ao chegar a 0 PV, o PJ escolhe entre **sacrifício** e **rendição**.
+
+### Sacrifício
+
+O PJ dá a vida para realizar um feito tido como impossível: acabar com uma maldição centenária, tirar por um tempo os poderes de um semideus ou repelir sozinho um pequeno exército para os aliados fugirem.
+
+Só é possível se **pelo menos duas** destas condições forem verdadeiras:
+
+- Um vilão está em cena.
+- O sacrifício beneficiaria um personagem com quem você tem um Laço (veja [[lacos]]).
+- Você acredita que o sacrifício tornaria o mundo um lugar melhor.
+
+Jogador e mestre negociam os detalhes e narram juntos o final heroico. Não há limite para o que o sacrifício realiza: exagere, pois o personagem está perdido para sempre.
+
+PJs que se sacrificam aceitam a morte e, em geral, **não voltam à vida**: entram em paz no rio das almas. O jogo não oferece mecânicas de ressurreição porque a morte de um PJ deve ser importante e porque o mistério do pós-vida deve ser explorado e moldado em conjunto, como parte da história. Em geral os espíritos dos mortos retornam ao rio das almas que permeia o mundo, mas alguns são aprisionados por feitiços malignos, levados a outras dimensões ou têm vontade forte o bastante para manter a identidade.
+
+### Rendição
+
+O PJ fica **inconsciente** e incapaz de agir ou afetar a cena com efeitos ou habilidades, **mesmo que seus PV sejam restaurados** a mais de 0. Em um conflito, ele sai da lista de participantes.
+
+- O mestre **não pode matar** um PJ rendido, mas pode impor uma **consequência** (agora ou mais tarde), escolhida na lista abaixo ou qualquer outra que faça sentido.
+- O PJ que se rende recebe **2 Pontos de Fabula**.
+- No início da próxima cena em que aparecer, recupera a consciência e PV suficientes para ficar em [[crise]].
+- Mesmo severas, as consequências devem evitar ferimentos incapacitantes ou permanentes, pelo clima geral de Fabula Ultima.
+- Se vários PJs (ou o grupo todo) se renderem, o mestre impõe consequências separadas ou uma única reviravolta dramática, como uma "derrota roteirizada" de videogame.
+
+> **Exemplo:** quando o último herói cai, a comandante Kelta sorri: não vai eliminá-los agora, pois tem a agenda cheia, e eles nunca chegarão à aldeia a tempo. O Vidro Celeste logo estará nas mãos da imperatriz.
+
+### Exemplos de consequência
+
+- **Trevas.** Você muda seu Tema (veja [[tracos]]) para Culpa, Dúvida, Raiva ou Vingança, à sua escolha.
+- **Desespero.** O inimigo faz um movimento decisivo, ou os heróis perdem a confiança e a aprovação de uma pessoa ou grupo importante.
+- **Perda.** Algo precioso é tomado de você: um artefato mágico, uma pessoa amada, uma relíquia de família.
+- **Ressentimento.** Você apaga um de seus Laços e o substitui por um Laço com um personagem escolhido pelo mestre, de desconfiança, inferioridade ou ódio, à sua escolha.
+- **Separação.** Você deixa o grupo: é capturado, levado para longe ou fica perdido em local desconhecido.`,
+    ['combate', 'estado'],
   ),
 
   rule(
@@ -141,7 +206,9 @@ Veja também a [[crise]].`,
 
 > **Exemplo:** um personagem com 65 PV máximos fica em crise com 32 PV ou menos.
 
-Alguns efeitos de jogo se ativam quando o personagem entra em crise; outros permanecem ativos apenas enquanto ele estiver em crise.`,
+Alguns efeitos de jogo se ativam quando o personagem entra em crise; outros permanecem ativos apenas enquanto ele estiver em crise.
+
+Veja também [[zero-ponto-de-vida]], para o que acontece quando os PV chegam a 0.`,
     ['combate', 'estado'],
   ),
 
