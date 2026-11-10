@@ -3,6 +3,7 @@ import {
   Rank,
   Role,
   RoleSkill,
+  SpellGrant,
 } from '../../entries/entry-types';
 import { rule } from './helpers';
 import { quickAssemblyRoles, quickAssemblyRules } from './quick-assembly-data';
@@ -75,6 +76,15 @@ const readable = (text: string, skill: RoleSkill) =>
     return `(escolha: ${(slot?.label ?? id).toLowerCase()})`;
   });
 
+/** "dois feitiços ou um feitiço e +10 PM", then the list with its level limits. */
+const grantText = (grant: SpellGrant) => {
+  const options = grant.options.map((o) => o.label.toLowerCase()).join(' ou ');
+  const list = grant.from
+    .map((r) => (r.minLevel ? `${r.name} (nível ${r.minLevel}+)` : r.name))
+    .join(', ');
+  return `Escolha ${options}, entre: ${list}. Os feitiços de NPC estão em [[feiticos-de-npc]]; os demais são feitiços de classe do Livro Básico.`;
+};
+
 const skillLine = (skill: RoleSkill) => {
   const only = skill.ranks
     ? ` (só ${skill.ranks.map((r) => RANK_PT[r]).join(' e ')})`
@@ -87,6 +97,7 @@ const skillLine = (skill: RoleSkill) => {
     skill.addsAttack &&
       `Ganha um ${skill.addsAttack.name.toLowerCase()} (RA + ${skill.addsAttack.damage}), com Precisão (${skill.addsAttack.accuracies.join(') ou (')}).`,
     skill.extraVulnerabilities && 'Fica Vulnerável a um tipo de dano a mais.',
+    skill.spells && grantText(skill.spells),
   ].filter(Boolean);
   return `- **${skill.name}**${only}: ${[...effects, ...affinity].join(' ')}`;
 };
@@ -146,9 +157,13 @@ Os valores "pequeno, grande e enorme" das habilidades dependem do nível: ${amou
         )
         .join('; ')}.
 
-## Poderes de função
+${
+  roleDetails.baseSpells
+    ? `## Feitiços\n\n${grantText(roleDetails.baseSpells)}\n\n`
+    : ''
+}## Poderes de função
 
-Um poder de função é escolhido da lista abaixo. Os poderes que ensinam feitiços ainda não estão nesta lista.
+Um poder de função é escolhido da lista abaixo.
 
 ${roleDetails.skills.map(skillLine).join('\n')}
 

@@ -658,12 +658,23 @@ describe('validateSeed', () => {
       });
     });
 
+    /** A Role Rule on its own: no body links, and no spell references (their targets are not in the list). */
+    const aloneWithoutSpells = (name: string) => {
+      const clone = structuredClone(role(name)) as SeedEntry & {
+        details: { skills: { spells?: unknown }[]; baseSpells?: unknown };
+      };
+      clone.body = '';
+      clone.details.skills = clone.details.skills.filter(
+        (skill) => !skill.spells,
+      );
+      delete clone.details.baseSpells;
+      return clone;
+    };
+
     const withRole = (change: (d: Record<string, unknown>) => void) => {
-      const brute = structuredClone(role('Bruto')) as SeedEntry & {
+      const brute = aloneWithoutSpells('Bruto') as SeedEntry & {
         details: Record<string, unknown>;
       };
-      // Only the details are under test: drop the links of the body.
-      brute.body = '';
       change(brute.details);
       return validateSeed([brute]);
     };
@@ -709,6 +720,221 @@ describe('validateSeed', () => {
       );
     });
 
+    describe('spells', () => {
+      type Ref = { kind: string; id: string; name: string; minLevel?: number };
+      type Grant = {
+        from: Ref[];
+        options: { id: string; label: string; count: number; mp: number }[];
+      };
+      const details = (roleName: string) =>
+        role(roleName)?.details as unknown as {
+          skills: { id: string; ranks?: string[]; spells?: Grant }[];
+          baseSpells?: Grant;
+        };
+      const names = (grant?: Grant) => grant?.from.map((r) => r.name);
+      const spellSkill = (roleName: string) =>
+        details(roleName).skills.find((skill) => skill.spells);
+
+      const npc = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Feitiços de NPC',
+      );
+
+      it('seeds the 15 spells of the Livro Básico NPC list (p. 310-311)', () => {
+        expect(npc).toMatchObject({ page: 310 });
+        expect(npc?.source ?? 'livro-basico').toBe('livro-basico');
+        const spells = (
+          npc?.details as unknown as {
+            spells: {
+              name: string;
+              mpCost: string;
+              target: string;
+              duration: string;
+              offensive: boolean;
+            }[];
+          }
+        ).spells;
+        expect(
+          spells.map((s) => [
+            s.name,
+            s.mpCost,
+            s.target,
+            s.duration,
+            s.offensive,
+          ]),
+        ).toEqual([
+          ['Acelerar', '20', 'Uma criatura', 'Instantânea', false],
+          ['Brado de Guerra', '10 × A', 'Até três criaturas', 'Cena', false],
+          ['Concha', '10', 'Pessoal', 'Cena', false],
+          ['Condição em Área', '20', 'Especial', 'Instantânea', false],
+          ['Devastação', '30', 'Especial', 'Instantânea', false],
+          ['Enfraquecer', '10', 'Uma criatura', 'Cena', true],
+          ['Envenenar', '10 × A', 'Até três criaturas', 'Instantânea', true],
+          ['Fúria', '10 × A', 'Até três criaturas', 'Instantânea', true],
+          ['Lamber Feridas', '5', 'Pessoal', 'Instantânea', false],
+          ['Maldição', '5', 'Uma criatura', 'Instantânea', true],
+          ['Roubo de Mana', '10', 'Uma criatura', 'Instantânea', true],
+          ['Roubo de Vida', '10', 'Uma criatura', 'Instantânea', true],
+          ['Sopro', '5', 'Uma criatura', 'Instantânea', true],
+          ['Sopro Amaldiçoado', '10', 'Uma criatura', 'Instantânea', true],
+          ['Ultramaldição', '10', 'Uma criatura', 'Instantânea', true],
+        ]);
+      });
+
+      it('lists the NPC spells in a page that the Role pages link to', () => {
+        expect(npc?.body).toContain('**Sopro Amaldiçoado**');
+        expect(npc?.body).toContain('(escolha: tipo de dano)');
+        expect(npc?.tags).toEqual(expect.arrayContaining(['npc spells']));
+        expect(role('Sentinela')?.body).toContain('[[feiticos-de-npc]]');
+      });
+
+      it('gives each Role the spells the book lists, by their Portuguese names', () => {
+        expect(names(spellSkill('Bruto')?.spells)).toEqual([
+          'Condição em Área',
+          'Ultramaldição',
+          'Sopro Amaldiçoado',
+          'Fúria',
+          'Lamber Feridas',
+          'Roubo de Vida',
+          'Envenenar',
+          'Reforçar',
+        ]);
+        expect(names(spellSkill('Caçador')?.spells)).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Lamber Feridas',
+          'Roubo de Vida',
+          'Espelhar',
+        ]);
+        expect(names(spellSkill('Sabotador')?.spells)).toEqual([
+          'Condição em Área',
+          'Ultramaldição',
+          'Dissipar',
+          'Drenar Espírito',
+          'Envenenar',
+          'Fúria',
+          'Parar',
+          'Enfraquecer',
+        ]);
+        expect(names(spellSkill('Sentinela')?.spells)).toEqual([
+          'Sopro',
+          'Lamber Feridas',
+          'Concha',
+          'Brado de Guerra',
+        ]);
+      });
+
+      it('gives the mage and the support a base choice of spells, and the mage a second list', () => {
+        expect(names(details('Mago').baseSpells)).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Clarão',
+          'Fulgur',
+          'Glacies',
+          'Iceberg',
+          'Ignis',
+          'Lux',
+          'Ômega',
+          'Terra',
+          'Raio',
+          'Umbra',
+          'Ventus',
+        ]);
+        expect(names(spellSkill('Mago')?.spells)).toEqual([
+          'Sopro Amaldiçoado',
+          'Devastação',
+          'Drenar Espírito',
+          'Clarão',
+          'Iceberg',
+          'Roubo de Vida',
+          'Roubo de Mana',
+          'Ômega',
+          'Raio',
+        ]);
+        expect(names(details('Apoio').baseSpells)).toEqual([
+          'Aura',
+          'Despertar',
+          'Barreira',
+          'Purificar',
+          'Divinação',
+          'Mortalha Elemental',
+          'Curar',
+          'Espelhar',
+          'Acelerar',
+          'Reforçar',
+          'Bastião Espiritual',
+          'Brado de Guerra',
+        ]);
+        expect(details('Bruto').baseSpells).toBeUndefined();
+      });
+
+      it('says how many spells a grant gives and what it costs in PM', () => {
+        const options = (grant?: Grant) =>
+          grant?.options.map((o) => [o.id, o.count, o.mp]);
+        expect(options(spellSkill('Bruto')?.spells)).toEqual([['two', 2, 0]]);
+        expect(options(spellSkill('Sabotador')?.spells)).toEqual([
+          ['one', 1, 10],
+        ]);
+        expect(options(spellSkill('Sentinela')?.spells)).toEqual([
+          ['one', 1, 10],
+        ]);
+        expect(options(details('Mago').baseSpells)).toEqual([
+          ['two', 2, 0],
+          ['one', 1, 10],
+        ]);
+        expect(options(spellSkill('Mago')?.spells)).toEqual([
+          ['two', 2, 0],
+          ['one', 1, 10],
+        ]);
+      });
+
+      it('keeps the strongest spells for level 30 and up, as the book does', () => {
+        const level = (grant: Grant | undefined, name: string) =>
+          grant?.from.find((r) => r.name === name)?.minLevel;
+        const base = details('Mago').baseSpells;
+        expect(
+          ['Clarão', 'Iceberg', 'Raio'].map((n) => level(base, n)),
+        ).toEqual([30, 30, 30]);
+        expect(level(base, 'Fulgur')).toBeUndefined();
+        expect(level(spellSkill('Mago')?.spells, 'Devastação')).toBe(30);
+      });
+
+      it('keeps the elite and champion limit of the brute spells', () => {
+        expect(spellSkill('Bruto')?.ranks).toEqual(['elite', 'champion']);
+      });
+
+      const withGrant = (change: (grant: Grant) => void) => {
+        const mage = aloneWithoutSpells('Mago') as SeedEntry & {
+          details: { baseSpells?: Grant };
+        };
+        // Only NPC spells can be resolved here (the NPC rule is in the list).
+        const grant: Grant = {
+          from: (
+            role('Mago')?.details as unknown as { baseSpells: Grant }
+          ).baseSpells.from.filter((ref) => ref.kind === 'npc'),
+          options: [{ id: 'two', label: 'Dois feitiços', count: 2, mp: 0 }],
+        };
+        mage.details.baseSpells = grant;
+        change(grant);
+        return validateSeed([{ ...npc!, body: '' } as SeedEntry, mage]);
+      };
+
+      it('rejects a spell of the NPC list that does not exist', () => {
+        const errors = withGrant((grant) => {
+          grant.from[0] = { kind: 'npc', id: 'fantasma', name: 'Fantasma' };
+        });
+        expect(errors).toEqual([expect.stringContaining('"fantasma"')]);
+      });
+
+      it('rejects a class spell that is not a spell Entry', () => {
+        const errors = withGrant((grant) => {
+          grant.from[1] = { kind: 'class', id: 'nada', name: 'Nada' };
+        });
+        expect(errors).toEqual([
+          expect.stringContaining('"nada" is not a spell'),
+        ]);
+      });
+    });
+
     describe('role skills and customizations', () => {
       type Skill = {
         id: string;
@@ -734,7 +960,7 @@ describe('validateSeed', () => {
         return d;
       };
 
-      it('lists the Role Skills and customizations of every Role (spells come later)', () => {
+      it('lists the Role Skills and customizations of every Role', () => {
         const counts = Object.fromEntries(
           ['Bruto', 'Caçador', 'Mago', 'Sabotador', 'Sentinela', 'Apoio'].map(
             (name) => [
@@ -747,11 +973,11 @@ describe('validateSeed', () => {
           ),
         );
         expect(counts).toEqual({
-          Bruto: [8, 5],
-          Caçador: [8, 4],
-          Mago: [7, 3],
-          Sabotador: [8, 5],
-          Sentinela: [8, 4],
+          Bruto: [9, 5],
+          Caçador: [9, 4],
+          Mago: [8, 3],
+          Sabotador: [9, 5],
+          Sentinela: [9, 4],
           Apoio: [11, 3],
         });
       });
@@ -780,6 +1006,7 @@ describe('validateSeed', () => {
             .map((skill) => [skill.name, skill.ranks]);
         expect(restricted('Bruto')).toEqual([
           ['Relógio de Colapso', ['elite', 'champion']],
+          ['Feitiços', ['elite', 'champion']],
         ]);
         expect(restricted('Sentinela')).toEqual([
           ['Ataque normal múltiplo', ['elite', 'champion']],
@@ -820,10 +1047,9 @@ describe('validateSeed', () => {
       });
 
       const withSkill = (change: (skill: Skill) => void) => {
-        const brute = structuredClone(role('Bruto')) as SeedEntry & {
+        const brute = aloneWithoutSpells('Bruto') as SeedEntry & {
           details: { skills: Skill[] };
         };
-        brute.body = '';
         change(brute.details.skills[0]);
         return validateSeed([brute]);
       };
@@ -848,10 +1074,9 @@ describe('validateSeed', () => {
         });
         // The first Skill now has a fresh id: no error. Repeat it on the second one too.
         expect(errors).toEqual([]);
-        const brute = structuredClone(role('Bruto')) as SeedEntry & {
+        const brute = aloneWithoutSpells('Bruto') as SeedEntry & {
           details: { skills: Skill[] };
         };
-        brute.body = '';
         brute.details.skills[1].id = brute.details.skills[0].id;
         expect(validateSeed([brute])).toEqual([
           expect.stringContaining('repeated'),

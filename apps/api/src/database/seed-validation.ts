@@ -6,12 +6,14 @@ import {
   DAMAGE_TYPES,
   DICE,
   DamageType,
+  NpcSpellsRuleDetails,
   QuickAssemblyRoleDetails,
   QuickAssemblyRuleDetails,
   RANKS,
   ROLES,
   RareWeaponRuleDetails,
   SPECIES,
+  SpellGrant,
   ENTRY_SOURCES,
   ENTRY_TYPES,
   EQUIPMENT_KINDS,
@@ -127,6 +129,53 @@ function checkTokens(
   }
 }
 
+function validateNpcSpells(d: NpcSpellsRuleDetails, fail: Fail) {
+  for (const dup of duplicates(d.spells.map((s) => s.id)))
+    fail(`npc spell "${dup}" is repeated`);
+  for (const spell of d.spells) {
+    const where = `npc spell "${spell.id}"`;
+    if (!spell.name.trim()) fail(`${where} needs a name`);
+    if (!/^\d+( × A)?$/.test(spell.mpCost))
+      fail(`${where} mpCost "${spell.mpCost}" is not "N" or "N × A"`);
+    if (!spell.target || !spell.duration)
+      fail(`${where} needs a target and a duration`);
+    const slots = spell.slots ?? [];
+    for (const [, id] of spell.effect.matchAll(TOKEN)) {
+      if (id === 'damage') {
+        if (spell.damage === undefined)
+          fail(`${where} uses {damage} but has no damage`);
+      } else if (!slots.some((slot) => slot.id === id)) {
+        fail(`${where} uses {${id}} but offers no such choice`);
+      }
+    }
+  }
+}
+
+function checkGrant(
+  grant: SpellGrant,
+  where: string,
+  fail: Fail,
+  expectSpell: (slug: string) => void,
+  npcIds: Set<string>,
+) {
+  if (grant.from.length === 0) fail(`${where} offers no spells`);
+  if (grant.options.length === 0) fail(`${where} has no option`);
+  for (const option of grant.options) {
+    if (!Number.isInteger(option.count) || option.count < 1 || option.mp < 0)
+      fail(`${where} option "${option.id}" is not valid`);
+  }
+  for (const ref of grant.from) {
+    if (ref.kind === 'npc') {
+      if (!npcIds.has(ref.id))
+        fail(`${where} offers "${ref.id}", which is not an NPC spell`);
+    } else {
+      expectSpell(ref.id);
+    }
+    if (ref.minLevel !== undefined && ![30, 40, 50, 60].includes(ref.minLevel))
+      fail(`${where} gives "${ref.id}" a bad minimum level`);
+  }
+}
+
 function validateQuickAssembly(d: QuickAssemblyRuleDetails, fail: Fail) {
   if (d.levels.join() !== '5,10,20,30,40,50,60')
     fail('quick assembly levels must be 5, 10, 20, 30, 40, 50, 60');
@@ -153,7 +202,12 @@ function validateQuickAssembly(d: QuickAssemblyRuleDetails, fail: Fail) {
   }
 }
 
-function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
+function validateQuickAssemblyRole(
+  d: QuickAssemblyRoleDetails,
+  fail: Fail,
+  expectSpell: (slug: string) => void,
+  npcIds: Set<string>,
+) {
   if (!ROLES.includes(d.role)) fail(`unknown role "${d.role}"`);
   const { base } = d;
   for (const code of ATTRIBUTES) {
@@ -223,7 +277,8 @@ function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
         skill.addsAttack ||
         skill.resistances ||
         skill.immunities ||
-        skill.extraVulnerabilities;
+        skill.extraVulnerabilities ||
+        skill.spells;
       if (!hasEffect) fail(`${where} does nothing`);
       for (const slot of skill.slots ?? []) {
         if (slot.options.length < slot.count)
@@ -239,6 +294,8 @@ function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
       for (const rank of skill.ranks ?? []) {
         if (!RANKS.includes(rank)) fail(`${where} has unknown rank "${rank}"`);
       }
+      if (skill.spells)
+        checkGrant(skill.spells, where, fail, expectSpell, npcIds);
       const added = skill.addsAttack;
       if (added) {
         for (const accuracy of added.accuracies) {
@@ -249,6 +306,9 @@ function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
       }
     }
   }
+
+  if (d.baseSpells)
+    checkGrant(d.baseSpells, 'base spells', fail, expectSpell, npcIds);
 
   if (d.attacks.length === 0) fail('a role needs a basic attack');
   for (const attack of d.attacks) {
@@ -274,6 +334,13 @@ function validateQuickAssemblyRole(d: QuickAssemblyRoleDetails, fail: Fail) {
 export function validateSeed(entries: SeedEntry[]): string[] {
   const errors: string[] = [];
   const typeBySlug = new Map<string, EntryType>();
+  const npcIds = new Set<string>(
+    entries.flatMap((e) =>
+      e.type === 'rule' && e.details.forge === 'npc-spells'
+        ? e.details.spells.map((spell) => spell.id)
+        : [],
+    ),
+  );
 
   for (const entry of entries) {
     const slug = resolveSlug(entry);
@@ -332,7 +399,14 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         } else if (details.forge === 'quick-assembly') {
           validateQuickAssembly(details, fail);
         } else if (details.forge === 'quick-assembly-role') {
-          validateQuickAssemblyRole(details, fail);
+          validateQuickAssemblyRole(
+            details,
+            fail,
+            (target) => expectType(slug, target, 'spell'),
+            npcIds,
+          );
+        } else if (details.forge === 'npc-spells') {
+          validateNpcSpells(details, fail);
         } else if (details.forge !== undefined) {
           fail('unknown details.forge');
         }

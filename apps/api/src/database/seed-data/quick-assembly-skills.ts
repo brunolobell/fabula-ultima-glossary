@@ -1,70 +1,17 @@
-import type { AssemblySlot, Role, RoleSkill } from '../../entries/entry-types';
+import type {
+  Role,
+  RoleSkill,
+  SpellGrant,
+  SpellRef,
+} from '../../entries/entry-types';
+import { damage, pick, status } from './assembly-slots';
 
 /**
  * The Role Skills and customizations of Quick Assembly (Bestiary Vol. I, English,
- * printed p. 30-53), in our own words. Spells ("learns N spells from…") come in a
- * later step. Names that the book does not give (a Skill that only changes a basic
+ * printed p. 30-53), in our own words. Names that the book does not give (a Skill that only changes a basic
  * attack, say) are ours, and unofficial like every other term from this book.
  * Keep this file importing only types.
  */
-
-const DAMAGE_PT: [string, string][] = [
-  ['physical', 'físico'],
-  ['air', 'ar'],
-  ['bolt', 'raio'],
-  ['dark', 'trevas'],
-  ['earth', 'terra'],
-  ['fire', 'fogo'],
-  ['ice', 'gelo'],
-  ['light', 'luz'],
-  ['poison', 'veneno'],
-];
-
-/** "dano do tipo {id}": a damage type picked by the Reader. */
-const damage = (id: string, count = 1, min?: number): AssemblySlot => ({
-  id,
-  label: count === 1 ? 'Tipo de dano' : 'Tipos de dano',
-  count,
-  ...(min !== undefined && { min }),
-  options: DAMAGE_PT.map(([value, label]) => ({ value, label })),
-});
-
-const STATUS_PT: [string, string][] = [
-  ['dazed', 'atordoado'],
-  ['enraged', 'enfurecido'],
-  ['poisoned', 'envenenado'],
-  ['shaken', 'abalado'],
-  ['slow', 'lento'],
-  ['weak', 'fraco'],
-];
-
-const status = (
-  id: string,
-  count = 1,
-  only?: string[],
-  label = count === 1 ? 'Condição' : 'Condições',
-): AssemblySlot => ({
-  id,
-  label,
-  count,
-  options: STATUS_PT.filter(([value]) => !only || only.includes(value)).map(
-    ([value, text]) => ({ value, label: text }),
-  ),
-});
-
-const pick = (
-  id: string,
-  label: string,
-  options: [string, string][],
-  count = 1,
-  min?: number,
-): AssemblySlot => ({
-  id,
-  label,
-  count,
-  ...(min !== undefined && { min }),
-  options: options.map(([value, text]) => ({ value, label: text })),
-});
 
 const ATTRIBUTES_PT: [string, string][] = [
   ['DES', 'Destreza'],
@@ -96,6 +43,142 @@ const onAttack = (
   text: string,
   extra: Partial<RoleSkill> = {},
 ): RoleSkill => ({ id, name, effects: [{ to, text }], ...extra });
+
+// ---- Spells ----
+// The Role Skills name spells in English ("see Core Rulebook, p. 310"). Each one is the
+// Livro Básico spell of the same effect: the NPC list (p. 310-311) or a Class spell.
+// Inferred, not printed: Soul Shroud = Bastião Espiritual, Quicken = Acelerar (NPC list),
+// Enrage and Rage = Fúria, Mind Theft = Roubo de Mana.
+
+const npc = (id: string, name: string, minLevel?: number): SpellRef => ({
+  kind: 'npc',
+  id,
+  name,
+  ...(minLevel && { minLevel }),
+});
+const learned = (slug: string, name: string, minLevel?: number): SpellRef => ({
+  kind: 'class',
+  id: slug,
+  name,
+  ...(minLevel && { minLevel }),
+});
+
+const TWO = { id: 'two', label: 'Dois feitiços', count: 2, mp: 0 };
+const ONE = { id: 'one', label: 'Um feitiço e +10 PM', count: 1, mp: 10 };
+
+const spellSkill = (
+  from: SpellRef[],
+  options: SpellGrant['options'],
+  ranks?: RoleSkill['ranks'],
+): RoleSkill => ({
+  id: 'learn-spells',
+  name: 'Feitiços',
+  effects: [],
+  spells: { from, options },
+  ...(ranks && { ranks }),
+});
+
+const BRUTE_SPELLS = spellSkill(
+  [
+    npc('area-status', 'Condição em Área'),
+    npc('curse-xl', 'Ultramaldição'),
+    npc('cursed-breath', 'Sopro Amaldiçoado'),
+    npc('rage', 'Fúria'),
+    npc('lick-wounds', 'Lamber Feridas'),
+    npc('life-theft', 'Roubo de Vida'),
+    npc('poison', 'Envenenar'),
+    learned('reforcar', 'Reforçar'),
+  ],
+  [TWO],
+  ELITE_UP,
+);
+
+const HUNTER_SPELLS = spellSkill(
+  [
+    npc('breath', 'Sopro'),
+    npc('cursed-breath', 'Sopro Amaldiçoado'),
+    npc('lick-wounds', 'Lamber Feridas'),
+    npc('life-theft', 'Roubo de Vida'),
+    learned('espelhar', 'Espelhar'),
+  ],
+  [TWO],
+);
+
+const MAGE_BASE: SpellGrant = {
+  from: [
+    npc('breath', 'Sopro'),
+    npc('cursed-breath', 'Sopro Amaldiçoado'),
+    learned('clarao', 'Clarão', 30),
+    learned('fulgur', 'Fulgur'),
+    learned('glacies', 'Glacies'),
+    learned('iceberg', 'Iceberg', 30),
+    learned('ignis', 'Ignis'),
+    learned('lux', 'Lux'),
+    learned('omega', 'Ômega'),
+    learned('terra', 'Terra'),
+    learned('raio', 'Raio', 30),
+    learned('umbra', 'Umbra'),
+    learned('ventus', 'Ventus'),
+  ],
+  options: [TWO, ONE],
+};
+
+const MAGE_SPELLS = spellSkill(
+  [
+    npc('cursed-breath', 'Sopro Amaldiçoado'),
+    npc('devastation', 'Devastação', 30),
+    learned('drenar-espirito', 'Drenar Espírito'),
+    learned('clarao', 'Clarão', 30),
+    learned('iceberg', 'Iceberg', 30),
+    npc('life-theft', 'Roubo de Vida'),
+    npc('mind-theft', 'Roubo de Mana'),
+    learned('omega', 'Ômega'),
+    learned('raio', 'Raio', 30),
+  ],
+  [TWO, ONE],
+);
+
+const SABOTEUR_SPELLS = spellSkill(
+  [
+    npc('area-status', 'Condição em Área'),
+    npc('curse-xl', 'Ultramaldição'),
+    learned('dissipar', 'Dissipar'),
+    learned('drenar-espirito', 'Drenar Espírito'),
+    npc('poison', 'Envenenar'),
+    npc('rage', 'Fúria'),
+    learned('parar', 'Parar'),
+    npc('weaken', 'Enfraquecer'),
+  ],
+  [ONE],
+);
+
+const SENTINEL_SPELLS = spellSkill(
+  [
+    npc('breath', 'Sopro'),
+    npc('lick-wounds', 'Lamber Feridas'),
+    npc('shell', 'Concha'),
+    npc('war-cry', 'Brado de Guerra'),
+  ],
+  [ONE],
+);
+
+const SUPPORT_BASE: SpellGrant = {
+  from: [
+    learned('aura', 'Aura'),
+    learned('despertar', 'Despertar'),
+    learned('barreira', 'Barreira'),
+    learned('purificar', 'Purificar'),
+    learned('divinacao', 'Divinação'),
+    learned('mortalha-elemental', 'Mortalha Elemental'),
+    learned('curar', 'Curar'),
+    learned('espelhar', 'Espelhar'),
+    npc('quicken', 'Acelerar'),
+    learned('reforcar', 'Reforçar'),
+    learned('bastiao-espiritual', 'Bastião Espiritual'),
+    npc('war-cry', 'Brado de Guerra'),
+  ],
+  options: [TWO, ONE],
+};
 
 // ---- Shared by several Roles ----
 
@@ -175,6 +258,7 @@ const brute = {
       'Quando o ataque forte erra todos os alvos, preenche 1 seção de um relógio de seis seções chamado "Colapso". Se o relógio ficar cheio, o NPC perde este poder e cada criatura presente na cena sofre uma quantidade pequena ({minor}) de dano do tipo {type}.',
       { ranks: ELITE_UP, slots: [damage('type')] },
     ),
+    BRUTE_SPELLS,
     rule(
       'enhancing-guard',
       'Guarda Reforçada',
@@ -279,6 +363,7 @@ const hunter = {
       },
     } satisfies RoleSkill,
     strongMagicDefense,
+    HUNTER_SPELLS,
     rule(
       'ambush',
       'Emboscada',
@@ -359,6 +444,7 @@ const hunter = {
 
 const mage = {
   extra: 'immunity' as const,
+  baseSpells: MAGE_BASE,
   skills: [
     statusImmunity(['dazed', 'enraged', 'poisoned', 'shaken']),
     {
@@ -375,6 +461,7 @@ const mage = {
       'normal',
       'Quando o ataque faz um ou mais inimigos perderem PV, eles ficam voláteis: o dano causado a uma criatura volátil ignora Resistências. A criatura deixa de ser volátil ao recuperar qualquer quantidade de PV ou no fim da cena.',
     ),
+    MAGE_SPELLS,
     rule(
       'element-drain',
       'Dreno Elemental',
@@ -447,6 +534,7 @@ const saboteur = {
       },
     } satisfies RoleSkill,
     strongMagicDefense,
+    SABOTEUR_SPELLS,
     action(
       'cruel-hypnosis',
       'Hipnose Cruel',
@@ -530,6 +618,7 @@ const sentinel = {
         slots: [status('condition', 1, ['dazed', 'shaken', 'slow', 'weak'])],
       },
     ),
+    SENTINEL_SPELLS,
     action(
       'barricade',
       'Barricada',
@@ -608,6 +697,7 @@ const inspireSlots = [
 
 const support = {
   extra: 'skill' as const,
+  baseSpells: SUPPORT_BASE,
   skills: [
     normalMultiple(),
     normalMagicDefense,
@@ -676,5 +766,6 @@ export const quickAssemblySkills: Record<
     extra: 'hp' | 'immunity' | 'skill';
     skills: RoleSkill[];
     customizations: RoleSkill[];
+    baseSpells?: SpellGrant;
   }
 > = { brute, hunter, mage, saboteur, sentinel, support };

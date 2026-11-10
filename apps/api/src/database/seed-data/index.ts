@@ -40,6 +40,7 @@ import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
 import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
 import { poderesHeroicosTechnoFantasy } from './heroic-skills/techno-fantasy';
 import { inBook } from './helpers';
+import { npcSpellsRule } from './npc-spells';
 import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
 import { weaponForgeRules } from './weapon-forge';
@@ -67,6 +68,7 @@ export const seedEntries: SeedEntry[] = [
   ...quimerista,
   ...armasBasicas,
   ...criaturasLivroBasico,
+  npcSpellsRule,
   ...quickAssemblySeed,
   ...weaponForgeRules,
   ...servicesAndTransport,
