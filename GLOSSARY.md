@@ -72,7 +72,7 @@ _Avoid_: Magic weapon, unique weapon
 
 **Customization**:
 One of the three options a Custom Weapon takes from the Atlas list (such as Certeira, Elemental, Mutável or Rápida); each can be taken once per weapon. Shown to Readers as "personalização". It is not a Weapon Feature.
-_Avoid_: Upgrade, modifier, perk
+_Avoid_: Upgrade, modifier, perk; not the Role Customization of Quick Assembly
 
 **Weapon Feature**:
 The single special property a Rare Weapon may carry, chosen from the Core Rulebook's priced list (such as Anticondição, Multi or Perfuradora) or a custom effect the Game Master prices. Shown to Readers as "característica". It is not a Customization.
@@ -207,6 +207,14 @@ _Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb fo
 **Role**:
 One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation), with the Roles named Bruto, Caçador, Mago, Sabotador, Sentinela and Apoio (also unofficial).
 _Avoid_: Class (a Class belongs to a Player's character), archetype
+
+**Role Skill**:
+A special ability a Creature takes from the list of its Role under Quick Assembly: a special rule, an extra action, or a change to a basic attack. A level and a Rank decide how many it gets. Shown to Readers as "poder de função" (unofficial translation).
+_Avoid_: Skill (alone; a Skill belongs to a Class), NPC power
+
+**Role Customization**:
+What a soldier or elite takes under Quick Assembly in place of a Role Skill: one option from a short list of its Role, or what the Role gives instead (more Hit Points, an Immunity or one more Role Skill). A champion takes none. Shown to Readers as "personalização" (unofficial translation); it is not a Custom Weapon's Customization.
+_Avoid_: Customization (alone; that is the Atlas Custom Weapon option), upgrade
 
 **Boss Skill**:
 A special ability that only a champion Creature may take under Quick Assembly, giving a boss its own gimmick. Shown to Readers as "poder de chefe" (unofficial translation).
