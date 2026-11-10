@@ -40,7 +40,6 @@ import {
   SPECIES_LABEL,
   VILLAIN_TIER_LABEL,
 } from '../../lib/creatures';
-import { Modal } from '../Modal';
 import { SpeciesPanel } from './SpeciesPanel';
 import { SpellPicker } from './SpellPicker';
 import { StatBlock } from '../StatBlock';
@@ -58,8 +57,6 @@ interface Props {
   /** The Rule "Feitiços de NPC" and every entry (for the Class spells). */
   npcSpells?: NpcSpellsRuleDetails;
   entries: ReadonlyMap<string, EntrySummary>;
-  open: boolean;
-  onClose: () => void;
 }
 
 const options = <T extends string>(
@@ -232,14 +229,7 @@ function AttackEditor({
  * Assembly. The draft lives in this component's state only; the stat block can be
  * copied as text, and nothing is saved.
  */
-export function CreatureAssembler({
-  rules,
-  roles,
-  npcSpells,
-  entries,
-  open,
-  onClose,
-}: Props) {
+export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
   const [role, setRole] = useState<Role>('brute');
   const [input, setInput] = useState<AssemblyInput>(() =>
     defaultInput(roles.brute),
@@ -349,12 +339,13 @@ export function CreatureAssembler({
   );
 
   return (
-    <Modal open={open} onClose={onClose} title="Laboratório Oroboros">
-      <div className="flex-1 overflow-y-auto px-4 pb-6 sm:px-6">
+    <div>
+      <h1 className="h-main">Laboratório Oroboros</h1>
+      <div>
         <p className="mt-3 text-muted">
           Siga a <strong>Montagem Rápida</strong> do Bestiary Vol. I (livro em
           inglês; os termos em português são tradução nossa). Nada é salvo:
-          copie a ficha antes de fechar.
+          copie a ficha antes de sair da página.
         </p>
 
         <div className="mt-4 grid gap-6 lg:grid-cols-2">
@@ -787,6 +778,6 @@ export function CreatureAssembler({
           </div>
         </div>
       </div>
-    </Modal>
+    </div>
   );
 }

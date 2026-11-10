@@ -669,15 +669,27 @@ describe('Creatures', () => {
     await waitFor(() => expect(link).toHaveTextContent('Criaturas1'));
   });
 
-  it('adds a "Laboratório Oroboros" shortcut that opens the Assembler and is never the current page', async () => {
+  it('adds a "Laboratório Oroboros" menu link to its page, current only there', async () => {
     mockApi();
     renderAt('/criaturas');
     const nav = within(menu());
     fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
     const shortcut = nav.getByRole('link', { name: 'Laboratório Oroboros' });
-    expect(shortcut).toHaveAttribute('href', '/criaturas?montagem=rapida');
+    expect(shortcut).toHaveAttribute('href', '/laboratorio-oroboros');
     expect(shortcut).not.toHaveAttribute('aria-current');
     expect(nav.getByRole('link', { name: /^Criaturas/ })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('marks the Laboratório Oroboros link as current on its page, and not Criaturas', async () => {
+    mockApi();
+    renderAt('/laboratorio-oroboros');
+    const nav = within(menu());
+    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
+    expect(nav.getByRole('link', { name: 'Laboratório Oroboros' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    expect(nav.getByRole('link', { name: /^Criaturas/ })).not.toHaveAttribute('aria-current');
   });
 
   it('marks the Creatures link on the list and on a Creature page', async () => {

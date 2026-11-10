@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { LAB_PATH } from '../lib/laboratory';
 import { Footer } from './Footer';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
@@ -28,7 +29,9 @@ export function Layout() {
       <div className="flex flex-1">
         <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
         <main id="conteudo" className="min-w-0 flex-1 px-4 py-8 sm:px-6">
-          <div className="mx-auto max-w-reading">
+          <div
+            className={`mx-auto ${pathname === LAB_PATH ? 'max-w-5xl' : 'max-w-reading'}`}
+          >
             <Outlet />
           </div>
         </main>

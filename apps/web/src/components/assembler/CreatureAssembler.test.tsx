@@ -28,44 +28,54 @@ function renderAt(path: string) {
 
 const openDialog = async () => {
   mockApi();
-  renderAt('/criaturas?montagem=rapida');
-  const dialog = await screen.findByRole('dialog', {
-    name: 'Laboratório Oroboros',
-  });
-  return within(dialog);
+  renderAt('/laboratorio-oroboros');
+  await screen.findByRole('heading', { level: 1, name: 'Laboratório Oroboros' });
+  return within(screen.getByRole('main'));
 };
 
 const stat = (dialog: ReturnType<typeof within>, label: string) =>
   dialog.getByText(label, { selector: 'dt' }).nextElementSibling?.textContent;
 
-describe('Creature Assembler: opening and closing', () => {
-  it('is offered on the Creatures list, closed until asked, and opened by the button', async () => {
+describe('Creature Assembler: the page', () => {
+  it('is offered on the Creatures list as a link to its own page', async () => {
     mockApi();
     renderAt('/criaturas');
     const main = within(screen.getByRole('main'));
-    fireEvent.click(
-      await main.findByRole('button', { name: 'Laboratório Oroboros' }),
-    );
+    const link = await main.findByRole('link', { name: 'Laboratório Oroboros' });
+    expect(link).toHaveAttribute('href', '/laboratorio-oroboros');
+    fireEvent.click(link);
     expect(
-      await screen.findByRole('dialog', { name: 'Laboratório Oroboros' }),
+      await screen.findByRole('heading', { level: 1, name: 'Laboratório Oroboros' }),
     ).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it('opens straight from a link with ?montagem=rapida, as the Rules link to it', async () => {
-    const dialog = await openDialog();
-    expect(
-      dialog.getByRole('heading', { name: 'Laboratório Oroboros' }),
-    ).toBeInTheDocument();
+  it('is a page, not a dialog, with the form and the stat block side by side', async () => {
+    const page = await openDialog();
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(page.getByLabelText('Nome')).toBeInTheDocument();
+    expect(page.getByRole('region', { name: 'Ficha' })).toBeInTheDocument();
   });
 
-  it('closes with the close button', async () => {
-    const dialog = await openDialog();
-    fireEvent.click(dialog.getByRole('button', { name: 'Fechar' }));
-    await waitFor(() =>
-      expect(
-        screen.queryByRole('heading', { name: 'Laboratório Oroboros' }),
-      ).toBeNull(),
-    );
+  it('sends the old modal link (/criaturas?montagem=rapida) to the page', async () => {
+    mockApi();
+    renderAt('/criaturas?montagem=rapida');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Laboratório Oroboros' }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Nome')).toBeInTheDocument();
+  });
+
+  it('says so when the Rules are incomplete, with a way back to the list', async () => {
+    mockApi({ stale: true });
+    renderAt('/laboratorio-oroboros');
+    expect(
+      await screen.findByText(/regras da Montagem Rápida ainda não chegaram/),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('link', { name: 'Voltar às criaturas' }),
+    ).toHaveAttribute('href', '/criaturas');
+    expect(screen.queryByLabelText('Nome')).toBeNull();
   });
 
   it('is not offered on the other lists', async () => {
@@ -73,7 +83,9 @@ describe('Creature Assembler: opening and closing', () => {
     renderAt('/regras');
     await screen.findByRole('heading', { level: 1, name: 'Regras' });
     expect(
-      screen.queryByRole('button', { name: 'Laboratório Oroboros' }),
+      within(screen.getByRole('main')).queryByRole('link', {
+        name: 'Laboratório Oroboros',
+      }),
     ).toBeNull();
   });
 });
@@ -584,17 +596,16 @@ describe('Creature Assembler: older Rule data', () => {
     const main = within(screen.getByRole('main'));
     await main.findByText('Cactonto');
     expect(
-      main.queryByRole('button', { name: 'Laboratório Oroboros' }),
+      main.queryByRole('link', { name: 'Laboratório Oroboros' }),
     ).toBeNull();
   });
 
-  it('does not open from a link either', async () => {
+  it('lands the old link on the page\'s own message when the Rules are incomplete', async () => {
     mockApi({ stale: true });
     renderAt('/criaturas?montagem=rapida');
-    await screen.findByText('Cactonto');
     expect(
-      screen.queryByRole('dialog', { name: 'Laboratório Oroboros' }),
-    ).toBeNull();
+      await screen.findByText(/regras da Montagem Rápida ainda não chegaram/),
+    ).toBeInTheDocument();
   });
 });
 

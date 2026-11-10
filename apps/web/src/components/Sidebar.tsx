@@ -27,7 +27,7 @@ import {
   equipmentPath,
   kindFromParam,
 } from '../lib/equipmentKinds';
-import { ASSEMBLER_METHOD, ASSEMBLER_PARAM } from '../lib/assemblerParam';
+import { LAB_PATH } from '../lib/laboratory';
 import { sortedGuides } from '../lib/guides';
 import {
   TRAVEL_TYPES,
@@ -76,8 +76,8 @@ interface MenuItem {
   types: readonly EntryType[];
   /** Equipment Kind this item filters by; `null` is "all equipment". */
   kind?: string | null;
-  /** Opens a tool on a list instead of being a page: never current, no count. */
-  action?: boolean;
+  /** A tool page of its own (not an Entry Type list): current by its path, no count. */
+  page?: boolean;
 }
 
 interface MenuGroup {
@@ -103,9 +103,9 @@ const GROUPS: MenuGroup[] = [
       {
         label: 'Laboratório Oroboros',
         icon: GiMagicSwirl,
-        to: `${typePath('creature')}?${ASSEMBLER_PARAM}=${ASSEMBLER_METHOD}`,
-        types: ['creature'],
-        action: true,
+        to: LAB_PATH,
+        types: [],
+        page: true,
       },
     ],
   },
@@ -179,7 +179,7 @@ export function Sidebar({ open, onClose }: Props) {
   }
 
   const isActive = (item: MenuItem) => {
-    if (item.action) return false;
+    if (item.page) return pathname === item.to;
     if (!currentType || !item.types.includes(currentType)) return false;
     if (item.kind === undefined) return true;
     if (item.kind === null) return onList && currentKind === null;
@@ -281,7 +281,7 @@ export function Sidebar({ open, onClose }: Props) {
                           >
                             <span className="flex items-center justify-between gap-2">
                               <MenuLabel icon={item.icon}>{item.label}</MenuLabel>
-                              {!isLoading && !item.action && (
+                              {!isLoading && !item.page && (
                                 <span
                                   className={`text-[15px] font-normal ${
                                     active ? 'text-accent-ink' : 'text-muted'

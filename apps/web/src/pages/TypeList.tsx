@@ -1,6 +1,5 @@
-import { useParams, useSearchParams } from 'react-router-dom';
-import { CreatureAssembler } from '../components/assembler/CreatureAssembler';
-import { assemblyRulesComplete } from '../lib/creatureAssembly';
+import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { readAssemblyRules } from '../lib/assemblyRules';
 import { WeaponForge } from '../components/forge/WeaponForge';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
@@ -23,25 +22,15 @@ import {
   toggleValue,
 } from '../lib/listFilters';
 import {
-  ASSEMBLER_METHOD,
-  ASSEMBLER_PARAM,
-  isAssemblerOpen,
-} from '../lib/assemblerParam';
-import {
-  NPC_SPELLS_SLUG,
-  QUICK_ASSEMBLY_SLUG,
-  ROLE_ORDER,
-  ROLE_RULE_SLUG,
-} from '../lib/creatures';
+  LAB_PATH,
+  LEGACY_ASSEMBLER_PARAM,
+  LEGACY_ASSEMBLER_VALUE,
+} from '../lib/laboratory';
 import { FORGE_PARAM, forgeTabFromParam, type ForgeTab } from '../lib/forgeTab';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import type {
   CustomWeaponRuleDetails,
-  NpcSpellsRuleDetails,
-  QuickAssemblyRoleDetails,
-  QuickAssemblyRuleDetails,
   RareWeaponRuleDetails,
-  Role,
 } from '../api/types';
 
 /** Slugs of the two Rules whose `details` feed the Weapon Forge. */
@@ -56,6 +45,12 @@ export function TypeList() {
 
   useDocumentTitle(type ? TYPE_INFO[type].plural : 'Não encontrado');
   if (!type) return <NotFoundState />;
+  // The old modal link (`/criaturas?montagem=rapida`) now goes to the page.
+  if (
+    type === 'creature' &&
+    params.get(LEGACY_ASSEMBLER_PARAM) === LEGACY_ASSEMBLER_VALUE
+  )
+    return <Navigate to={LAB_PATH} replace />;
 
   const ofType = entries.filter((e) => e.type === type);
   const selection = readSelection(type, params);
@@ -99,41 +94,9 @@ export function TypeList() {
       { replace },
     );
 
-  // The Creature Assembler is offered on the Creatures list once the Quick Assembly
-  // Rules are loaded. Its open state is in the URL (so the Rules can link to it);
-  // what the Reader builds is not.
-  const assemblyRules = bySlug.get(QUICK_ASSEMBLY_SLUG)?.details as
-    | QuickAssemblyRuleDetails
-    | undefined;
-  const roleRules = ROLE_ORDER.map(
-    (role) =>
-      [role, bySlug.get(ROLE_RULE_SLUG[role])?.details] as [
-        Role,
-        QuickAssemblyRoleDetails | undefined,
-      ],
-  );
-  const roles = Object.fromEntries(roleRules) as Record<
-    Role,
-    QuickAssemblyRoleDetails
-  >;
-  // Offered only with complete Rules: an older response can lack parts of them.
-  const assembler =
-    type === 'creature' && assemblyRules && assemblyRulesComplete(assemblyRules, roles)
-      ? { rules: assemblyRules, roles }
-      : null;
-  const assemblerOpen = assembler
-    ? isAssemblerOpen(params.get(ASSEMBLER_PARAM))
-    : false;
-  const setAssemblerOpen = (next: boolean, replace: boolean) =>
-    setParams(
-      (prev) => {
-        const copy = new URLSearchParams(prev);
-        if (next) copy.set(ASSEMBLER_PARAM, ASSEMBLER_METHOD);
-        else copy.delete(ASSEMBLER_PARAM);
-        return copy;
-      },
-      { replace },
-    );
+  // The Laboratório Oroboros (the Creature Assembler) is a page of its own, linked
+  // from the Creatures list once the Quick Assembly Rules are loaded and complete.
+  const assembler = type === 'creature' && readAssemblyRules(bySlug) !== null;
 
   return (
     <div>
@@ -167,30 +130,14 @@ export function TypeList() {
       )}
 
       {assembler && (
-        <>
-          <p className="mt-4">
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => setAssemblerOpen(true, false)}
-            >
-              Laboratório Oroboros
-            </button>{' '}
-            <span className="text-[15px] text-muted">
-              Monte uma criatura pela Montagem Rápida. Nada é salvo.
-            </span>
-          </p>
-          <CreatureAssembler
-            rules={assembler.rules}
-            roles={assembler.roles}
-            npcSpells={
-              bySlug.get(NPC_SPELLS_SLUG)?.details as NpcSpellsRuleDetails | undefined
-            }
-            entries={bySlug}
-            open={assemblerOpen}
-            onClose={() => setAssemblerOpen(false, true)}
-          />
-        </>
+        <p className="mt-4">
+          <Link to={LAB_PATH} className="btn-primary">
+            Laboratório Oroboros
+          </Link>{' '}
+          <span className="text-[15px] text-muted">
+            Monte uma criatura pela Montagem Rápida. Nada é salvo.
+          </span>
+        </p>
       )}
 
       <ListFilters
