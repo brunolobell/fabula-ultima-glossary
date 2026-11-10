@@ -201,7 +201,7 @@ The method in the Bestiary Vol. I for building a Creature fast: pick a Role, a l
 _Avoid_: Standard creation (the Core Rulebook's own method is not offered by the app's builder)
 
 **Creature Assembler**:
-The modal on the Creatures list where a Reader builds a Creature by following Quick Assembly. Nothing built there is saved: the Reader can only copy the finished stat block as text, and closing the modal or reloading the page discards it. Shown to Readers as "Laboratório Oroboros" (the button, the menu shortcut and the modal share the name).
+The page where a Reader builds a Creature by following Quick Assembly. Nothing built there is saved: the Reader can only copy the finished stat block as text, and leaving or reloading the page discards it. Shown to Readers as "Laboratório Oroboros" (the button, the menu link and the page title share the name).
 _Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb for invoking a Trait or Bond), creature builder, generator, "Montagem de Criaturas" and "Montar criatura" (the earlier names)
 
 **Role**:
