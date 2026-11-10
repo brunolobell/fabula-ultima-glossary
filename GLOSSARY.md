@@ -208,6 +208,10 @@ _Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb fo
 One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation), with the Roles named Bruto, Caçador, Mago, Sabotador, Sentinela and Apoio (also unofficial).
 _Avoid_: Class (a Class belongs to a Player's character), archetype
 
+**NPC Spell**:
+One of the 15 spells of the Core Rulebook's list for Creatures (Sopro, Roubo de Vida, Condição em Área…). The Game Master renames it and picks its damage type or condition when making the stat block. Shown to Readers as "feitiço de NPC".
+_Avoid_: Class spell (a Spell belongs to a Class; a Creature may also learn some of those), monster spell
+
 **Role Skill**:
 A special ability a Creature takes from the list of its Role under Quick Assembly: a special rule, an extra action, or a change to a basic attack. A level and a Rank decide how many it gets. Shown to Readers as "poder de função" (unofficial translation).
 _Avoid_: Skill (alone; a Skill belongs to a Class), NPC power
