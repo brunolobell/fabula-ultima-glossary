@@ -45,6 +45,9 @@ export interface AttackChoice {
 /** The key of a customization among `AssemblyInput.skills`. */
 export const customKey = (id: string) => `c:${id}`;
 
+/** The key of a Boss Skill among `AssemblyInput.skills`. */
+export const bossKey = (id: string) => `b:${id}`;
+
 /** The key of the Negative Skill among `AssemblyInput.skills`. */
 export const negativeKey = (id: string) => `n:${id}`;
 
@@ -80,6 +83,8 @@ export interface AssemblyInput {
   magicFormula: string;
   /** The id of the Negative Skill, if the Creature takes one; its choices are under `n:<id>`. */
   negative: string | null;
+  /** The ids of the Boss Skills picked; their choices are under `b:<id>`. */
+  bosses: string[];
 }
 
 /** A spell the Reader can pick: from the NPC list, or a Class spell read from its Entry. */
@@ -293,6 +298,9 @@ export function assembleCreature(
   const customization = input.customization?.startsWith('c:')
     ? role.customizations.find((c) => customKey(c.id) === input.customization)
     : undefined;
+  const pickedBosses = rules.bossSkills.filter((b) =>
+    input.bosses.includes(b.id),
+  );
   const negative = input.negative
     ? rules.negativeSkills.find((n) => n.id === input.negative)
     : undefined;
@@ -304,6 +312,10 @@ export function assembleCreature(
     ...(negative
       ? [[negative, negativeKey(negative.id)] as [RoleSkill, string]]
       : []),
+    ...pickedBosses.map((skill): [RoleSkill, string] => [
+      skill,
+      bossKey(skill.id),
+    ]),
   ];
 
   for (const [skill] of chosen) {
@@ -526,15 +538,41 @@ export function assembleCreature(
     (picksExtra && role.extra === 'skill' ? 1 : 0) +
     // A Negative Skill buys one more Role Skill (or a Boss Skill).
     (negative ? 1 : 0);
+  // Boss Skills: a champion has its own; any beyond take the place of a Role Skill.
+  const bossBudget = champion ? rules.champion.bossSkills : 0;
+  const bossTaken = pickedBosses.length;
+  if (bossTaken < bossBudget) {
+    const missing = bossBudget - bossTaken;
+    warnings.push(
+      `Escolha ${missing} ${plural(missing, 'poder de chefe', 'poderes de chefe')} (há ${bossTaken}).`,
+    );
+  }
+  const replaced = Math.max(0, bossTaken - bossBudget);
+  if (replaced > roleSkills) {
+    warnings.push(
+      `Há ${bossTaken} ${plural(bossTaken, 'poder de chefe', 'poderes de chefe')}, mas o perfil dá ${bossBudget} (cada um a mais ocupa um poder de função).`,
+    );
+  }
+  if (bossTaken > 2) {
+    warnings.push('Mais de dois poderes de chefe: o livro pede muito cuidado.');
+  }
+  for (const group of rules.bossGroups) {
+    if (pickedBosses.filter((b) => b.group === group.id).length > 1) {
+      warnings.push(`Dois poderes de ${group.name}: o livro aconselha evitar.`);
+    }
+  }
+
+  // Role Skills: what the level and rank give, less those a Boss Skill replaced.
+  const roleNeeded = Math.max(0, roleSkills - replaced);
   const taken = pickedSkills.length;
-  if (taken < roleSkills) {
-    const missing = roleSkills - taken;
+  if (taken < roleNeeded) {
+    const missing = roleNeeded - taken;
     warnings.push(
       `Escolha ${missing} ${plural(missing, 'poder de função', 'poderes de função')} (há ${taken}).`,
     );
-  } else if (taken > roleSkills) {
+  } else if (taken > roleNeeded) {
     warnings.push(
-      `Há ${taken} ${plural(taken, 'poder de função', 'poderes de função')}, mas o perfil dá ${roleSkills}.`,
+      `Há ${taken} ${plural(taken, 'poder de função', 'poderes de função')}, mas o perfil dá ${roleNeeded}.`,
     );
   }
 
@@ -611,6 +649,7 @@ export function defaultInput(
     spellChoices: {},
     magicFormula: 'AST + VON',
     negative: null,
+    bosses: [],
     ...over,
   };
 }
@@ -627,7 +666,13 @@ export function assemblyRulesComplete(
 ): boolean {
   if (
     rules?.forge !== 'quick-assembly' ||
-    ![rules.levels, rules.amounts, rules.negativeSkills].every(Array.isArray) ||
+    ![
+      rules.levels,
+      rules.amounts,
+      rules.negativeSkills,
+      rules.bossSkills,
+      rules.bossGroups,
+    ].every(Array.isArray) ||
     !rules.elite ||
     !rules.champion ||
     !rules.villainTiers

@@ -32,6 +32,7 @@ const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
   spellChoices: {},
   magicFormula: 'AST + VON',
   negative: null,
+  bosses: [],
   ...over,
 });
 
@@ -867,6 +868,13 @@ describe('assemblyRulesComplete', () => {
   it('rejects Rules that miss a part a later step added (an older seed)', () => {
     const noNegatives = rules() as Partial<typeof quickAssemblyRules>;
     delete noNegatives.negativeSkills;
+    for (const part of ['bossSkills', 'bossGroups'] as const) {
+      const older = rules() as Partial<typeof quickAssemblyRules>;
+      delete older[part];
+      expect(
+        assemblyRulesComplete(older as typeof quickAssemblyRules, roles()),
+      ).toBe(false);
+    }
     expect(
       assemblyRulesComplete(noNegatives as typeof quickAssemblyRules, roles()),
     ).toBe(false);
@@ -889,5 +897,89 @@ describe('assemblyRulesComplete', () => {
     const partial: Partial<ReturnType<typeof roles>> = roles();
     delete partial.support;
     expect(assemblyRulesComplete(rules(), partial)).toBe(false);
+  });
+});
+
+describe('assembleCreature: Boss Skills', () => {
+  const champion = (over: Partial<AssemblyInput> = {}) =>
+    assemble('brute', { level: 20, rank: 'champion', championX: 2, ...over });
+
+  it('asks a champion for its Boss Skill, and puts it in the stat block', () => {
+    expect(champion().warnings).toContain('Escolha 1 poder de chefe (há 0).');
+    const done = champion({ bosses: ['second-wind'] });
+    expect(done.warnings.join(' ')).not.toContain('poder de chefe');
+    // The massive amount is 60 from level 20.
+    expect(
+      done.details.specialRules.find((r) => r.name === 'Segundo Fôlego')
+        ?.effect,
+    ).toContain('uma quantidade enorme (60) de PM');
+  });
+
+  it("fills the Reader's choices into a Boss Skill", () => {
+    const { details } = champion({
+      bosses: ['aura-of-suffering'],
+      skills: { 'b:aura-of-suffering': { condition: ['slow'] } },
+    });
+    expect(
+      details.specialRules.find((r) => r.name === 'Aura de Sofrimento')?.effect,
+    ).toContain('não podem se recuperar de lento');
+    expect(champion({ bosses: ['aura-of-suffering'] }).warnings).toContain(
+      'Escolha condição em Aura de Sofrimento.',
+    );
+  });
+
+  it('lets a Boss Skill beyond the first take the place of a Role Skill', () => {
+    // A level 20 champion 2 brute gets 1 + 2 = 3 Role Skills and 1 Boss Skill.
+    expect(champion({ bosses: ['second-wind'] }).warnings).toContain(
+      'Escolha 3 poderes de função (há 0).',
+    );
+    const two = champion({ bosses: ['second-wind', 'undo'] });
+    expect(two.warnings).toContain('Escolha 2 poderes de função (há 0).');
+  });
+
+  it('lets a Negative Skill buy a Boss Skill for a soldier instead of a Role Skill', () => {
+    const soldier = assemble('brute', {
+      negative: 'final-delay',
+      bosses: ['second-wind'],
+    });
+    expect(soldier.warnings.join(' ')).not.toContain('poder de função');
+    expect(soldier.warnings.join(' ')).not.toContain('Há 1 poder de chefe');
+  });
+
+  it('warns when a soldier takes a Boss Skill the build does not pay for', () => {
+    const result = assemble('brute', { bosses: ['second-wind'] });
+    expect(result.warnings).toContain(
+      'Há 1 poder de chefe, mas o perfil dá 0 (cada um a mais ocupa um poder de função).',
+    );
+  });
+
+  it("warns about more than two, and about two of the same group (the book's advice)", () => {
+    const many = champion({ bosses: ['second-wind', 'undo', 'regeneration'] });
+    expect(many.warnings).toContain(
+      'Mais de dois poderes de chefe: o livro pede muito cuidado.',
+    );
+    expect(many.warnings).toContain(
+      'Dois poderes de Sobrevivência: o livro aconselha evitar.',
+    );
+    const mixed = champion({ bosses: ['second-wind', 'doom'] });
+    expect(mixed.warnings.join(' ')).not.toContain('aconselha evitar');
+  });
+
+  it("teaches a spell through Devastação, with the level's extra damage", () => {
+    const { details, warnings } = assemble('brute', {
+      level: 30,
+      rank: 'champion',
+      bosses: ['devastation'],
+      skills: { 'b:devastation': { spells: ['npc:devastation'] } },
+      spellChoices: { 'npc:devastation': { type: ['fire'] } },
+    });
+    expect(details.spells[0].effect).toContain('Causa 35 de dano do tipo fogo');
+    expect(warnings.join(' ')).not.toContain('feitiço');
+  });
+
+  it('ignores a Boss Skill the rules do not have', () => {
+    const result = champion({ bosses: ['nonsense'] });
+    expect(result.details.specialRules).toEqual([]);
+    expect(result.warnings).toContain('Escolha 1 poder de chefe (há 0).');
   });
 });

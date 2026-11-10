@@ -597,3 +597,111 @@ describe('Creature Assembler: older Rule data', () => {
     ).toBeNull();
   });
 });
+
+describe('Creature Assembler: Boss Skills', () => {
+  const preview = (dialog: ReturnType<typeof within>) =>
+    within(dialog.getByRole('region', { name: 'Ficha' }));
+  const asChampion = async () => {
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Patente'), {
+      target: { value: 'champion' },
+    });
+    return dialog;
+  };
+
+  it('offers the 40 Boss Skills in their 7 groups to a champion', async () => {
+    const dialog = await asChampion();
+    const bosses = within(
+      dialog.getByRole('group', { name: /Poderes de chefe/ }),
+    );
+    expect(bosses.getAllByRole('checkbox')).toHaveLength(40);
+    expect(
+      bosses.getAllByRole('heading', { level: 4 }).map((h) => h.textContent),
+    ).toEqual([
+      'Campo de batalha',
+      'Controle',
+      'Destrutivos',
+      'Elementais',
+      'Objetivo',
+      'Invocação',
+      'Sobrevivência',
+    ]);
+  });
+
+  it('counts the picked ones against what a champion gets', async () => {
+    const dialog = await asChampion();
+    const bosses = within(
+      dialog.getByRole('group', { name: /Poderes de chefe/ }),
+    );
+    expect(bosses.getByText(/0 de 1/)).toBeInTheDocument();
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).toHaveTextContent('Escolha 1 poder de chefe (há 0).');
+    fireEvent.click(bosses.getByRole('checkbox', { name: /Segundo Fôlego/ }));
+    expect(bosses.getByText(/1 de 1/)).toBeInTheDocument();
+    expect(
+      dialog.getByRole('status', { name: 'Pendências' }),
+    ).not.toHaveTextContent('poder de chefe');
+  });
+
+  it('puts the Boss Skill in the stat block and asks for its choices', async () => {
+    const dialog = await asChampion();
+    const bosses = within(
+      dialog.getByRole('group', { name: /Poderes de chefe/ }),
+    );
+    fireEvent.click(
+      bosses.getByRole('checkbox', { name: /Aura de Sofrimento/ }),
+    );
+    fireEvent.change(bosses.getByLabelText('Condição'), {
+      target: { value: 'slow' },
+    });
+    const rules = within(
+      preview(dialog).getByRole('region', { name: 'Regras especiais' }),
+    );
+    expect(rules.getByText('Aura de Sofrimento')).toBeInTheDocument();
+    expect(
+      rules.getByText(/não podem se recuperar de lento/),
+    ).toBeInTheDocument();
+  });
+
+  it('shows what the book says a Boss Skill is for', async () => {
+    const dialog = await asChampion();
+    const bosses = within(
+      dialog.getByRole('group', { name: /Poderes de chefe/ }),
+    );
+    expect(
+      bosses.getByText(/conjuradores poderosos, elementais e demônios/),
+    ).toBeInTheDocument();
+  });
+
+  it('is not offered to a soldier without a Negative Skill, and is once one is taken', async () => {
+    const dialog = await openDialog();
+    expect(
+      dialog.queryByRole('group', { name: /Poderes de chefe/ }),
+    ).toBeNull();
+    fireEvent.change(dialog.getByLabelText('Poder negativo'), {
+      target: { value: 'final-delay' },
+    });
+    expect(
+      dialog.getByRole('group', { name: /Poderes de chefe/ }),
+    ).toBeInTheDocument();
+  });
+
+  it('offers the Devastação spell and asks for its damage type', async () => {
+    const dialog = await asChampion();
+    fireEvent.change(dialog.getByLabelText('Nível'), {
+      target: { value: '30' },
+    });
+    const bosses = within(
+      dialog.getByRole('group', { name: /Poderes de chefe/ }),
+    );
+    fireEvent.click(bosses.getByRole('checkbox', { name: /^Devastação/ }));
+    fireEvent.click(bosses.getByRole('button', { name: /Devastação/ }));
+    fireEvent.change(bosses.getByLabelText('Tipo de dano'), {
+      target: { value: 'fire' },
+    });
+    expect(
+      preview(dialog).getByText(/Causa 35 de dano do tipo fogo/),
+    ).toBeInTheDocument();
+  });
+});

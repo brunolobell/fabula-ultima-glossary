@@ -16,6 +16,7 @@ import type {
 } from '../../api/types';
 import {
   assembleCreature,
+  bossKey,
   customKey,
   negativeKey,
   defaultAttackChoice,
@@ -265,9 +266,11 @@ export function CreatureAssembler({
       ...prev,
       attacks: fresh.attacks,
       choices: {},
-      // The Negative Skill belongs to the Creature, not to the Role: keep it.
+      // The Negative and Boss Skills belong to the Creature, not to the Role: keep them.
       skills: Object.fromEntries(
-        Object.entries(prev.skills).filter(([key]) => key.startsWith('n:')),
+        Object.entries(prev.skills).filter(
+          ([key]) => key.startsWith('n:') || key.startsWith('b:'),
+        ),
       ),
       customization: null,
       baseSpells: {},
@@ -294,11 +297,6 @@ export function CreatureAssembler({
   };
 
   const { required } = result;
-  const skillsNote =
-    result.bossSkills > 0
-      ? `${result.bossSkills} ${result.bossSkills === 1 ? 'poder de chefe' : 'poderes de chefe'}`
-      : null;
-
   const toggleSkill = (skill: RoleSkill, on: boolean) =>
     setInput((prev) => {
       const skills = { ...prev.skills };
@@ -306,6 +304,23 @@ export function CreatureAssembler({
       else delete skills[skill.id];
       return { ...prev, skills };
     });
+  const toggleBoss = (skill: RoleSkill, on: boolean) =>
+    setInput((prev) => {
+      const skills = { ...prev.skills };
+      if (on) skills[bossKey(skill.id)] = {};
+      else delete skills[bossKey(skill.id)];
+      return {
+        ...prev,
+        skills,
+        bosses: on
+          ? [...prev.bosses, skill.id]
+          : prev.bosses.filter((id) => id !== skill.id),
+      };
+    });
+  const showBosses =
+    input.rank === 'champion' ||
+    input.negative !== null ||
+    input.bosses.length > 0;
   const setSpellChoices = (key: string, choices: Choices) =>
     setInput((prev) => ({
       ...prev,
@@ -606,6 +621,68 @@ export function CreatureAssembler({
               </ul>
             </fieldset>
 
+            {showBosses && (
+              <fieldset className="mt-4">
+                <legend className="h-tertiary">
+                  Poderes de chefe ({input.bosses.length} de {result.bossSkills}
+                  )
+                </legend>
+                {rules.bossGroups.map((group) => (
+                  <div key={group.id}>
+                    <h4 className="mt-3 font-heading uppercase tracking-wider">
+                      {group.name}
+                    </h4>
+                    <p className="text-[15px] text-muted">{group.summary}</p>
+                    <ul className="mt-1">
+                      {rules.bossSkills
+                        .filter((b) => b.group === group.id)
+                        .map((skill) => {
+                          const on = input.bosses.includes(skill.id);
+                          return (
+                            <li key={skill.id}>
+                              <label className="flex min-h-[44px] items-start gap-2">
+                                <input
+                                  type="checkbox"
+                                  className="mt-1"
+                                  checked={on}
+                                  onChange={(event) =>
+                                    toggleBoss(skill, event.target.checked)
+                                  }
+                                />
+                                <span>
+                                  <strong>{skill.name}</strong>
+                                  {skill.advice && (
+                                    <span className="text-muted">
+                                      {' '}
+                                      ({skill.advice})
+                                    </span>
+                                  )}
+                                  <span className="block text-[15px] text-muted">
+                                    {skillPreview(skill)}
+                                  </span>
+                                </span>
+                              </label>
+                              {on && (
+                                <SkillChoices
+                                  skill={skill}
+                                  value={input.skills[bossKey(skill.id)] ?? {}}
+                                  onChange={(choices) =>
+                                    setSkillChoices(bossKey(skill.id), choices)
+                                  }
+                                  catalog={catalog}
+                                  spellChoices={input.spellChoices}
+                                  onSpellChoices={setSpellChoices}
+                                />
+                              )}
+                            </li>
+                          );
+                        })}
+                    </ul>
+                  </div>
+                ))}
+              </fieldset>
+            )}
+
             <h3 className="h-tertiary mt-4">Ataques básicos</h3>
             {[
               ...profile.attacks,
@@ -661,12 +738,6 @@ export function CreatureAssembler({
                       <li key={warning}>{warning}</li>
                     ))}
                   </ul>
-                )}
-                {skillsNote && (
-                  <p className="mt-2">
-                    Escolha {skillsNote}. Os poderes de chefe ainda não são
-                    oferecidos aqui: anote-os à parte.
-                  </p>
                 )}
               </div>
 
