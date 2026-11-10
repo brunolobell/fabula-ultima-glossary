@@ -46,6 +46,19 @@ export const TYPE_INFO: Record<EntryType, TypeInfo> = {
     plural: 'Equipamento',
     description: 'Armas, armaduras, escudos e acessórios.',
   },
+  service: {
+    slug: 'servicos',
+    label: 'Serviço',
+    plural: 'Serviços',
+    description: 'Hospedagem, recarga de PI e passagens, com o custo em zênites.',
+  },
+  transport: {
+    slug: 'transportes',
+    label: 'Transporte',
+    plural: 'Transportes',
+    description:
+      'Montarias e veículos genéricos: custo, passageiros e distância por dia de Viagem.',
+  },
   guide: {
     slug: 'guias',
     label: 'Guia',
@@ -62,7 +75,12 @@ export const BROWSE_TYPES: EntryType[] = [
   'heroic-skill',
   'spell',
   'equipment',
+  'service',
+  'transport',
 ];
+
+/** The two lists the menu reaches with one link and the Serviços | Transportes switch joins. */
+export const TRAVEL_TYPES: readonly EntryType[] = ['service', 'transport'];
 
 export function typeFromSlug(slug: string | undefined): EntryType | undefined {
   return (Object.keys(TYPE_INFO) as EntryType[]).find(

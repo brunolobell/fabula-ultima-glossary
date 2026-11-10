@@ -493,3 +493,107 @@ describe('Skill and Spell rows show what identifies them', () => {
   });
 });
 
+
+describe('Services and transports', () => {
+  it('adds one "Serviços e transporte" link to the Equipamento group, counting both lists', async () => {
+    mockApi();
+    renderAt('/equipamento');
+    const nav = within(menu());
+    const link = await nav.findByRole('link', { name: /^Serviços e transporte/ });
+    expect(link).toHaveAttribute('href', '/servicos');
+    await waitFor(() => expect(link).toHaveTextContent('4'));
+    expect(link).not.toHaveAttribute('aria-current');
+  });
+
+  it('marks that link on the service list and on a Transport page', async () => {
+    mockApi();
+    renderAt('/transportes/montaria-terrestre');
+    const nav = within(menu());
+    const link = await nav.findByRole('link', { name: /^Serviços e transporte/ });
+    await waitFor(() => expect(link).toHaveAttribute('aria-current', 'page'));
+    expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+  });
+
+  it('lists Services with a switch to Transports at the top of both lists', async () => {
+    mockApi();
+    renderAt('/servicos');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByRole('heading', { level: 1, name: 'Serviços' })).toBeInTheDocument();
+    expect(await main.findByText('Viagem aérea')).toBeInTheDocument();
+    expect(main.getByText('Descanso (vila)')).toBeInTheDocument();
+    expect(main.queryByText('Montaria terrestre')).toBeNull();
+
+    const switcher = main.getByRole('navigation', { name: 'Serviços e transporte' });
+    expect(within(switcher).getByRole('link', { name: /^Serviços/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    fireEvent.click(within(switcher).getByRole('link', { name: /^Transportes/ }));
+    expect(await main.findByRole('heading', { level: 1, name: 'Transportes' })).toBeInTheDocument();
+    expect(await main.findByText('Montaria terrestre')).toBeInTheDocument();
+    expect(
+      within(main.getByRole('navigation', { name: 'Serviços e transporte' })).getByRole('link', {
+        name: /^Transportes/,
+      }),
+    ).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('does not show the switch on other lists', async () => {
+    mockApi();
+    renderAt('/regras');
+    await screen.findByRole('heading', { level: 1, name: 'Regras' });
+    expect(screen.queryByRole('navigation', { name: 'Serviços e transporte' })).toBeNull();
+  });
+
+  it('shows cost and where each row goes', async () => {
+    mockApi();
+    renderAt('/transportes');
+    const row = (await screen.findByRole('link', { name: /montaria terrestre/i })).closest('a')!;
+    await waitFor(() =>
+      expect(row).toHaveTextContent('Montaria · Terrestre · 200z · ver Livro Básico'),
+    );
+  });
+
+  it('shows a Transport stat bar with the distance on each scale', async () => {
+    mockApi();
+    renderAt('/transportes/veiculo-planetario');
+    await screen.findByRole('heading', { level: 1, name: 'Veículo planetário' });
+    expect(screen.getByText('20.000z')).toBeInTheDocument();
+    expect(screen.getByText('Cerca de 50')).toBeInTheDocument();
+    expect(screen.getByText('Planetária ×4 · Interplanetária ×2 · Interestelar ×1')).toBeInTheDocument();
+  });
+
+  it('leaves out the scales a Transport cannot reach', async () => {
+    mockApi();
+    renderAt('/transportes/montaria-terrestre');
+    await screen.findByRole('heading', { level: 1, name: 'Montaria terrestre' });
+    expect(screen.getByText('Planetária ×2')).toBeInTheDocument();
+    expect(screen.getByText('Até 2')).toBeInTheDocument();
+  });
+
+  it('shows a Service stat bar', async () => {
+    mockApi();
+    renderAt('/servicos/viagem-aerea');
+    await screen.findByRole('heading', { level: 1, name: 'Viagem aérea' });
+    expect(screen.getByText('40z')).toBeInTheDocument();
+    expect(screen.getByText('Viagem')).toBeInTheDocument();
+    expect(screen.getByText('Aéreo')).toBeInTheDocument();
+  });
+
+  it('is offered on the home page next to the other types', async () => {
+    mockApi();
+    renderAt('/');
+    const grid = screen.getByRole('region', { name: 'Navegar por tipo' });
+    expect(await within(grid).findByRole('link', { name: /serviços.*2 entradas/i })).toHaveAttribute(
+      'href',
+      '/servicos',
+    );
+    expect(within(grid).getByRole('link', { name: /transportes.*2 entradas/i })).toHaveAttribute(
+      'href',
+      '/transportes',
+    );
+  });
+});

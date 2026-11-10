@@ -204,7 +204,7 @@ Os passos lembram os da criação de mundo, mas **não precisam seguir uma ordem
         title: 'Equipamento e dinheiro',
         intro:
           'Use o valor inicial de 500z para comprar equipamentos e some o que sobrar a uma rolagem de 2d6 × 10 para determinar o dinheiro inicial.',
-        entries: ['equipamento'],
+        entries: ['equipamento', 'servicos-e-transporte'],
       },
       {
         title: 'Descrição e nome',
@@ -250,7 +250,7 @@ Os passos lembram os da criação de mundo, mas **não precisam seguir uma ordem
         title: 'Equipamento',
         intro:
           'Quatro categorias de itens, básicos ou raros, e o que significa um item ser marcial.',
-        entries: ['equipamento'],
+        entries: ['equipamento', 'servicos-e-transporte'],
       },
     ],
   }),

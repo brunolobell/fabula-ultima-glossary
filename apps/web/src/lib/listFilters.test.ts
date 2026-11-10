@@ -189,3 +189,66 @@ describe('counts follow the other rows', () => {
   });
 });
 
+
+describe('services and transports', () => {
+  const transport = (
+    slug: string,
+    transportClass: string,
+    medium: string,
+    source?: EntrySummary['source'],
+  ) =>
+    entry(slug, 'transport', { transportClass, medium, cost: 1, passengers: 2 }, source);
+  const service = (slug: string, group: string, medium?: string) =>
+    entry(slug, 'service', { group, medium, cost: 1 });
+
+  const transports = [
+    transport('montaria-terrestre', 'mount', 'land'),
+    transport('veiculo-voador', 'vehicle', 'air'),
+    transport('veiculo-planetario', 'vehicle', 'planetary', 'techno-fantasy'),
+  ];
+  const services = [
+    service('descanso-vila', 'settlement'),
+    service('viagem-aerea', 'travel', 'air'),
+    service('viagem-terrestre', 'travel', 'land'),
+  ];
+  const read = (type: 'service' | 'transport', query: string) =>
+    readSelection(type, new URLSearchParams(query));
+
+  it('offers Transports a Classe, a Meio and a Livro row', () => {
+    const rows = buildRows('transport', transports, index);
+    expect(rows.map((r) => [r.param, r.label])).toEqual([
+      ['classe', 'Classe'],
+      ['meio', 'Meio'],
+      ['livro', 'Livro'],
+    ]);
+    expect(rows[0].options.map((o) => o.label)).toEqual(['Montaria', 'Veículo']);
+    expect(rows[1].options.map((o) => o.label)).toEqual([
+      'Terrestre',
+      'Aéreo',
+      'Planetário',
+    ]);
+  });
+
+  it('filters Transports by class and by medium (AND between rows)', () => {
+    const vehicles = applyFilters('transport', transports, read('transport', 'classe=vehicle'));
+    expect(slugs(vehicles)).toEqual(['veiculo-voador', 'veiculo-planetario']);
+    const aerial = applyFilters(
+      'transport',
+      transports,
+      read('transport', 'classe=vehicle&meio=air'),
+    );
+    expect(slugs(aerial)).toEqual(['veiculo-voador']);
+  });
+
+  it('offers Services a Grupo and a Meio row, with only travel fares in Meio', () => {
+    const rows = buildRows('service', services, index);
+    expect(rows.map((r) => r.param)).toEqual(['grupo', 'meio']);
+    expect(rows[0].options.map((o) => o.label)).toEqual([
+      'Vila',
+      'Viagem',
+    ]);
+    expect(rows[1].options.map((o) => o.label)).toEqual(['Terrestre', 'Aéreo']);
+    const air = applyFilters('service', services, read('service', 'meio=air'));
+    expect(slugs(air)).toEqual(['viagem-aerea']);
+  });
+});

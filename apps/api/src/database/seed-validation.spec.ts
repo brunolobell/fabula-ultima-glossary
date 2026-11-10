@@ -358,4 +358,177 @@ describe('validateSeed', () => {
       ]);
     });
   });
+  describe('services and transport', () => {
+    const named = (type: 'service' | 'transport', name: string) =>
+      seedEntries.find((e) => e.type === type && e.name === name);
+    const ofType = (type: 'service' | 'transport', source: string) =>
+      seedEntries.filter(
+        (e) => e.type === type && (e.source ?? 'livro-basico') === source,
+      );
+
+    it('seeds the Livro Básico table (p. 125) and the Techno Fantasy one (p. 79)', () => {
+      expect(ofType('service', 'livro-basico')).toHaveLength(7);
+      expect(ofType('transport', 'livro-basico')).toHaveLength(8);
+      expect(ofType('service', 'techno-fantasy')).toHaveLength(2);
+      expect(ofType('transport', 'techno-fantasy')).toHaveLength(4);
+      for (const e of ofType('service', 'livro-basico'))
+        expect(e.page).toBe(125);
+      for (const e of ofType('transport', 'techno-fantasy'))
+        expect(e.page).toBe(79);
+    });
+
+    it('keeps the book numbers for a Service', () => {
+      expect(named('service', 'Recarga de PI')?.details).toEqual({
+        group: 'settlement',
+        cost: 10,
+      });
+      expect(named('service', 'Descanso (cidade)')?.details).toMatchObject({
+        cost: 20,
+      });
+      expect(named('service', 'Viagem aérea')?.details).toEqual({
+        group: 'travel',
+        medium: 'air',
+        cost: 40,
+      });
+      expect(named('service', 'Viagem interestelar')?.details).toMatchObject({
+        cost: 100,
+      });
+    });
+
+    it('keeps the book numbers for a Transport', () => {
+      expect(named('transport', 'Montaria terrestre')?.details).toEqual({
+        transportClass: 'mount',
+        medium: 'land',
+        cost: 200,
+        passengers: 2,
+        distance: { planetary: 2, interplanetary: null, interstellar: null },
+      });
+      expect(named('transport', 'Veículo voador')?.details).toMatchObject({
+        cost: 8000,
+        passengers: 20,
+        distance: { planetary: 3 },
+      });
+      expect(named('transport', 'Veículo planetário')?.details).toEqual({
+        transportClass: 'vehicle',
+        medium: 'planetary',
+        cost: 20000,
+        passengers: 50,
+        approximate: true,
+        distance: { planetary: 4, interplanetary: 2, interstellar: 1 },
+      });
+      expect(
+        named('transport', 'Montaria interplanetária')?.details,
+      ).toMatchObject({
+        distance: { planetary: 3, interplanetary: 1, interstellar: null },
+      });
+    });
+
+    it('explains the shared rules in a Rule per book that every row links to', () => {
+      const core = seedEntries.find((e) => e.name === 'Serviços e Transporte');
+      const space = seedEntries.find(
+        (e) => e.name === 'Serviços e Transporte (viagem espacial)',
+      );
+      expect(core).toMatchObject({ type: 'rule', page: 124 });
+      expect(space).toMatchObject({
+        type: 'rule',
+        page: 79,
+        source: 'techno-fantasy',
+      });
+      for (const e of seedEntries.filter(
+        (x) => x.type === 'service' || x.type === 'transport',
+      )) {
+        const rule = e.source === 'techno-fantasy' ? space : core;
+        expect(e.body).toContain(`[[${resolveSlug(rule!)}]]`);
+      }
+    });
+
+    it('points the equipment steps of two guides at the Rule', () => {
+      for (const name of ['Criar um personagem', 'Como jogar']) {
+        const guide = seedEntries.find((e) => e.name === name);
+        const entries =
+          guide?.type === 'guide'
+            ? guide.details.steps.flatMap((s) => s.entries)
+            : [];
+        expect(entries).toContain('servicos-e-transporte');
+      }
+    });
+
+    const service = (details: object): SeedEntry =>
+      ({
+        type: 'service',
+        name: 'Descanso',
+        page: 125,
+        summary: 'a',
+        details,
+      }) as SeedEntry;
+    const transport = (details: object): SeedEntry =>
+      ({
+        type: 'transport',
+        name: 'Carroça',
+        page: 125,
+        summary: 'a',
+        details,
+      }) as SeedEntry;
+    const ok = {
+      transportClass: 'vehicle',
+      medium: 'land',
+      cost: 600,
+      passengers: 6,
+      distance: { planetary: 2, interplanetary: null, interstellar: null },
+    };
+
+    it('rejects a Service with a bad group, cost or medium', () => {
+      expect(validateSeed([service({ group: 'x', cost: 5 })])).toEqual([
+        expect.stringContaining('details.group'),
+      ]);
+      expect(
+        validateSeed([service({ group: 'settlement', cost: -1 })]),
+      ).toEqual([expect.stringContaining('details.cost')]);
+      expect(validateSeed([service({ group: 'travel', cost: 10 })])).toEqual([
+        expect.stringContaining('travel fare needs details.medium'),
+      ]);
+      expect(
+        validateSeed([
+          service({ group: 'settlement', cost: 5, medium: 'air' }),
+        ]),
+      ).toEqual([expect.stringContaining('only a travel fare')]);
+    });
+
+    it('rejects a Transport with a bad class, medium, passengers or distance', () => {
+      expect(validateSeed([transport(ok)])).toEqual([]);
+      expect(validateSeed([transport({ ...ok, transportClass: 'x' })])).toEqual(
+        [expect.stringContaining('details.transportClass')],
+      );
+      expect(validateSeed([transport({ ...ok, medium: 'x' })])).toEqual([
+        expect.stringContaining('details.medium'),
+      ]);
+      expect(validateSeed([transport({ ...ok, passengers: 0 })])).toEqual([
+        expect.stringContaining('details.passengers'),
+      ]);
+      expect(
+        validateSeed([
+          transport({
+            ...ok,
+            distance: {
+              planetary: null,
+              interplanetary: null,
+              interstellar: null,
+            },
+          }),
+        ]),
+      ).toEqual([expect.stringContaining('at least one distance')]);
+      expect(
+        validateSeed([
+          transport({
+            ...ok,
+            distance: {
+              planetary: 0,
+              interplanetary: null,
+              interstellar: null,
+            },
+          }),
+        ]),
+      ).toEqual([expect.stringContaining('distance.planetary')]);
+    });
+  });
 });

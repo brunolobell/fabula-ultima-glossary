@@ -8,6 +8,8 @@ export type EntryType =
   | 'heroic-skill'
   | 'spell'
   | 'equipment'
+  | 'service'
+  | 'transport'
   | 'guide';
 
 export type EntrySource =
@@ -76,6 +78,46 @@ export interface EquipmentDetails {
   notes?: string | null;
 }
 
+/** Where a Transport or a Travel Service can go. */
+export type Medium =
+  | 'land'
+  | 'water'
+  | 'submarine'
+  | 'air'
+  | 'planetary'
+  | 'interplanetary'
+  | 'interstellar';
+
+export type ServiceGroup = 'settlement' | 'travel';
+
+export interface ServiceDetails {
+  group: ServiceGroup;
+  /** Cost in zênites (z). */
+  cost: number;
+  /** Travel fares only. */
+  medium?: Medium;
+}
+
+export type TransportClass = 'mount' | 'vehicle';
+
+export interface TransportDistance {
+  planetary: number | null;
+  interplanetary: number | null;
+  interstellar: number | null;
+}
+
+export interface TransportDetails {
+  transportClass: TransportClass;
+  medium: Medium;
+  /** Cost in zênites (z). */
+  cost: number;
+  /** The most passengers it carries. */
+  passengers: number;
+  /** The book says "cerca de N" instead of an exact limit. */
+  approximate?: boolean;
+  distance: TransportDistance;
+}
+
 export interface GuideStep {
   title: string;
   intro: string;
@@ -97,6 +139,8 @@ export interface DetailsByType {
   'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
+  service: ServiceDetails;
+  transport: TransportDetails;
   guide: GuideDetails;
 }
 

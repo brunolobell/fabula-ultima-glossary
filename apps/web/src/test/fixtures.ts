@@ -179,6 +179,72 @@ const pvExtras: Entry = {
   },
 };
 
+const montariaTerrestre: Entry = {
+  ...base,
+  id: '30',
+  slug: 'montaria-terrestre',
+  name: 'Montaria terrestre',
+  type: 'transport',
+  summary: 'Cavalgadura genérica de terra.',
+  body: 'Leva uma ou duas pessoas.',
+  tags: ['transporte', 'montaria'],
+  page: 125,
+  details: {
+    transportClass: 'mount',
+    medium: 'land',
+    cost: 200,
+    passengers: 2,
+    distance: { planetary: 2, interplanetary: null, interstellar: null },
+  },
+};
+
+const veiculoPlanetario: Entry = {
+  ...base,
+  id: '31',
+  slug: 'veiculo-planetario',
+  name: 'Veículo planetário',
+  type: 'transport',
+  summary: 'Nave grande para viagens espaciais.',
+  body: 'Leva muita gente.',
+  tags: ['transporte', 'veículo'],
+  source: 'techno-fantasy',
+  page: 79,
+  details: {
+    transportClass: 'vehicle',
+    medium: 'planetary',
+    cost: 20000,
+    passengers: 50,
+    approximate: true,
+    distance: { planetary: 4, interplanetary: 2, interstellar: 1 },
+  },
+};
+
+const viagemAerea: Entry = {
+  ...base,
+  id: '32',
+  slug: 'viagem-aerea',
+  name: 'Viagem aérea',
+  type: 'service',
+  summary: 'Passagem de um dia pelo ar.',
+  body: 'Pague para uma pessoa voar.',
+  tags: ['serviço', 'viagem'],
+  page: 125,
+  details: { group: 'travel', medium: 'air', cost: 40 },
+};
+
+const descansoVila: Entry = {
+  ...base,
+  id: '33',
+  slug: 'descanso-vila',
+  name: 'Descanso (vila)',
+  type: 'service',
+  summary: 'Uma noite de descanso.',
+  body: 'Pague para dormir uma noite.',
+  tags: ['serviço', 'assentamento'],
+  page: 125,
+  details: { group: 'settlement', cost: 10 },
+};
+
 const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   [
     tracos,
@@ -190,6 +256,10 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     anel,
     feiticoPoderoso,
     pvExtras,
+    montariaTerrestre,
+    veiculoPlanetario,
+    viagemAerea,
+    descansoVila,
     criar,
   ].map(
     (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],

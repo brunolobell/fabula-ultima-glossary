@@ -5,6 +5,9 @@ import {
   ENTRY_TYPES,
   EQUIPMENT_KINDS,
   EntryType,
+  MEDIUMS,
+  SERVICE_GROUPS,
+  TRANSPORT_CLASSES,
 } from '../entries/entry-types';
 import { SeedEntry } from './seed-data/types';
 
@@ -156,6 +159,46 @@ export function validateSeed(entries: SeedEntry[]): string[] {
             fail('weapon details.range must be melee or ranged');
           }
         }
+        break;
+      }
+      case 'service': {
+        const { group, cost, medium } = entry.details;
+        if (!SERVICE_GROUPS.includes(group))
+          fail(`unknown details.group "${group}"`);
+        if (!Number.isInteger(cost) || cost < 0)
+          fail('details.cost must be a non-negative integer');
+        if (medium !== undefined && !MEDIUMS.includes(medium))
+          fail(`unknown details.medium "${medium}"`);
+        if (group === 'travel' && !medium)
+          fail('a travel fare needs details.medium');
+        if (group === 'settlement' && medium)
+          fail('only a travel fare has details.medium');
+        break;
+      }
+      case 'transport': {
+        const { transportClass, medium, cost, passengers, distance } =
+          entry.details;
+        if (!TRANSPORT_CLASSES.includes(transportClass))
+          fail(`unknown details.transportClass "${transportClass}"`);
+        if (!MEDIUMS.includes(medium))
+          fail(`unknown details.medium "${medium}"`);
+        if (!Number.isInteger(cost) || cost < 0)
+          fail('details.cost must be a non-negative integer');
+        if (!Number.isInteger(passengers) || passengers < 1)
+          fail('details.passengers must be a positive integer');
+        const scales = Object.entries(distance ?? {});
+        for (const [scale, multiplier] of scales) {
+          if (
+            multiplier !== null &&
+            !(Number.isInteger(multiplier) && multiplier >= 1)
+          ) {
+            fail(
+              `details.distance.${scale} must be a positive integer or null`,
+            );
+          }
+        }
+        if (scales.every(([, multiplier]) => multiplier === null))
+          fail('a Transport needs at least one distance multiplier');
         break;
       }
       case 'guide': {

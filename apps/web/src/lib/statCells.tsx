@@ -5,13 +5,22 @@ import type {
   HeroicSkillDetails,
   Entry,
   EntrySummary,
+  ServiceDetails,
   SkillDetails,
   SpellDetails,
+  TransportDetails,
 } from '../api/types';
 import { BoltIcon } from '../components/Icons';
 import { Requirements } from '../components/Requirements';
 import { decorateChecks } from './check';
 import { entryPath } from './entryTypes';
+import {
+  MEDIUM_LABEL,
+  SERVICE_GROUP_LABEL,
+  TRANSPORT_CLASS_LABEL,
+  costLabel,
+  distanceLabel,
+} from './travel';
 
 
 export interface Cell {
@@ -127,6 +136,25 @@ export function statCells(
       });
       if (d.martial) cells.push({ label: 'Marcial', value: 'Sim' });
       return cells;
+    }
+    case 'service': {
+      const d = entry.details as ServiceDetails;
+      const cells: Cell[] = [
+        { label: 'Custo', value: costLabel(d.cost) },
+        { label: 'Grupo', value: SERVICE_GROUP_LABEL[d.group] },
+      ];
+      if (d.medium) cells.push({ label: 'Meio', value: MEDIUM_LABEL[d.medium] });
+      return cells;
+    }
+    case 'transport': {
+      const d = entry.details as TransportDetails;
+      return [
+        { label: 'Custo', value: costLabel(d.cost) },
+        { label: 'Classe', value: TRANSPORT_CLASS_LABEL[d.transportClass] },
+        { label: 'Meio', value: MEDIUM_LABEL[d.medium] },
+        { label: 'Passageiros', value: `${d.approximate ? 'Cerca de' : 'Até'} ${d.passengers}` },
+        { label: 'Distância', value: distanceLabel(d.distance) },
+      ];
     }
     default:
       return [];

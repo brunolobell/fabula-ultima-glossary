@@ -29,6 +29,10 @@ import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
 import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
 import { itensRarosTechnoFantasy } from './equipment/techno-fantasy/itens-raros';
 import { gameSetupRules } from './game-setup';
+import {
+  servicesAndTransport,
+  servicesAndTransportTechnoFantasy,
+} from './services-transport';
 import { guides } from './guides';
 import { poderesHeroicosHighFantasy } from './heroic-skills/high-fantasy';
 import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
@@ -59,6 +63,7 @@ export const seedEntries: SeedEntry[] = [
   ...orador,
   ...quimerista,
   ...armasBasicas,
+  ...servicesAndTransport,
   ...poderesHeroicosLivroBasico,
   // Atlas High Fantasy
   ...inBook('high-fantasy', [
@@ -82,4 +87,5 @@ export const seedEntries: SeedEntry[] = [
   ...inBook('techno-fantasy', [...esper, ...mutante, ...piloto]),
   ...inBook('techno-fantasy', poderesHeroicosTechnoFantasy),
   ...itensRarosTechnoFantasy,
+  ...inBook('techno-fantasy', servicesAndTransportTechnoFantasy),
 ];

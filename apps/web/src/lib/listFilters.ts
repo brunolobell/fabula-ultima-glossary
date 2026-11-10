@@ -4,11 +4,21 @@ import type {
   EquipmentDetails,
   HeroicSkillDetails,
   SkillDetails,
+  ServiceDetails,
   SpellDetails,
+  TransportDetails,
 } from '../api/types';
 import { EQUIPMENT_KIND_FILTERS, kindFromParam } from './equipmentKinds';
 import { isOpenToAll } from './requirements';
 import { SOURCE_LABEL } from './sources';
+import {
+  MEDIUM_LABEL,
+  MEDIUM_ORDER,
+  SERVICE_GROUP_LABEL,
+  SERVICE_GROUP_ORDER,
+  TRANSPORT_CLASS_LABEL,
+  TRANSPORT_CLASS_ORDER,
+} from './travel';
 
 type Index = ReadonlyMap<string, EntrySummary>;
 
@@ -65,6 +75,14 @@ const classRow = (label: string, values: (e: EntrySummary) => string[]): RowSpec
 
 const kindParamOf = (kind: EquipmentDetails['kind']) =>
   EQUIPMENT_KIND_FILTERS.find((f) => f.kind === kind)?.param ?? kind;
+
+const mediumRow = (values: (e: EntrySummary) => string[]): RowSpec => ({
+  param: 'meio',
+  label: 'Meio',
+  values,
+  labelOf: (value) => MEDIUM_LABEL[value as keyof typeof MEDIUM_LABEL] ?? value,
+  order: MEDIUM_ORDER,
+});
 
 const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
   class: [bookRow],
@@ -127,6 +145,34 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
       labelOf: (value) => (value === 'sim' ? 'Marcial' : 'Não marcial'),
       order: ['sim', 'nao'],
     },
+    bookRow,
+  ],
+  service: [
+    {
+      param: 'grupo',
+      label: 'Grupo',
+      values: (e) => [(e.details as ServiceDetails).group],
+      labelOf: (value) =>
+        SERVICE_GROUP_LABEL[value as keyof typeof SERVICE_GROUP_LABEL] ?? value,
+      order: SERVICE_GROUP_ORDER,
+    },
+    // Only travel fares go anywhere, so the other Services have no Meio.
+    mediumRow((e) => {
+      const { medium } = e.details as ServiceDetails;
+      return medium ? [medium] : [];
+    }),
+  ],
+  transport: [
+    {
+      param: 'classe',
+      label: 'Classe',
+      values: (e) => [(e.details as TransportDetails).transportClass],
+      labelOf: (value) =>
+        TRANSPORT_CLASS_LABEL[value as keyof typeof TRANSPORT_CLASS_LABEL] ??
+        value,
+      order: TRANSPORT_CLASS_ORDER,
+    },
+    mediumRow((e) => [(e.details as TransportDetails).medium]),
     bookRow,
   ],
 };

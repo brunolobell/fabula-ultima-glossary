@@ -11,7 +11,7 @@ A single self-contained reference page about one piece of the game, with a name,
 _Avoid_: Term, article, record, page
 
 **Entry Type**:
-The kind of an Entry: Rule, Class, Skill, Heroic Skill, Spell, Equipment, or Guide.
+The kind of an Entry: Rule, Class, Skill, Heroic Skill, Spell, Equipment, Service, Transport, or Guide.
 _Avoid_: Category (a Fabula Ultima game term for weapons), kind (reserved for Equipment Kind)
 
 **Rule**:
@@ -106,6 +106,10 @@ _Avoid_: Health, energy
 The state of having current Hit Points at or below half of the maximum, rounded down. Shown to Readers as "Crise".
 _Avoid_: Bloodied, wounded
 
+**Inventory Points**:
+The pool a character spends to pull items from the backpack during play. Shown to Readers as "Pontos de Inventário (PI)".
+_Avoid_: Item slots, carry weight
+
 **Condition**:
 A temporary status, such as Abalado or Lento, that lowers one or more Attribute dice. Shown to Readers as "Condição".
 _Avoid_: Status effect, debuff
@@ -125,6 +129,40 @@ _Avoid_: Slice, segment, tick
 **Fabula Points**:
 The meta-currency spent to invoke Traits and Bonds. Shown to Readers as "Pontos de Fabula".
 _Avoid_: Hero points
+
+### Travel and money
+
+**Zenit**:
+The currency of the game, written as a number followed by "z". Shown to Readers as "zênite".
+_Avoid_: Gold, coin, money
+
+**Travel**:
+Moving the Party across the World's map, counted in days of Travel; a Transport multiplies how far one day takes the Party. Shown to Readers as "Viagem".
+_Avoid_: Journey, trip
+
+**Service**:
+Something a Party pays Zeniths for and does not keep, such as a night's rest, a recharge of Inventory Points, or a fare for a day of Travel. Shown to Readers as "serviço".
+_Avoid_: Item, purchase
+
+**Transport**:
+A Mount or a Vehicle a Party buys, which carries a number of passengers and multiplies the distance of a day of Travel. It is not Equipment. Shown to Readers as "meio de transporte" or "transporte".
+_Avoid_: Item, vehicle (alone; a Vehicle is one kind of Transport)
+
+**Mount**:
+A Transport that is a creature, or a creature-like conveyance, bought in generic form. It has no statistics and cannot fight. Shown to Readers as "montaria".
+_Avoid_: Pet, companion (the Andarilho's "Companheiro Fiel" is a Skill)
+
+**Vehicle**:
+A Transport that is a built craft, such as a cart, boat or aircraft, bigger than a Mount and carrying more passengers. Shown to Readers as "veículo".
+_Avoid_: Car, ship
+
+**Medium**:
+Where a Transport or a Travel Service can go: land, water, underwater, air, or, in Techno Fantasy, between planets or stars. Shown to Readers as "meio" in list filters.
+_Avoid_: Terrain, environment
+
+**Cost**:
+The price of a Service or Transport, in Zeniths. Shown to Readers as "custo".
+_Avoid_: Price
 
 ### Setting up a game
 

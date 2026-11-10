@@ -4,7 +4,19 @@ import { useEntryIndex } from '../hooks/useEntryIndex';
 import { decorateChecks } from '../lib/check';
 import { entryPath } from '../lib/entryTypes';
 import { requirementText } from '../lib/requirements';
-import type { HeroicSkillDetails, SkillDetails, SpellDetails } from '../api/types';
+import type {
+  HeroicSkillDetails,
+  ServiceDetails,
+  SkillDetails,
+  SpellDetails,
+  TransportDetails,
+} from '../api/types';
+import {
+  MEDIUM_LABEL,
+  SERVICE_GROUP_LABEL,
+  TRANSPORT_CLASS_LABEL,
+  costLabel,
+} from '../lib/travel';
 import { PageRef } from './PageRef';
 import { TypeBadge } from './TypeBadge';
 
@@ -26,6 +38,44 @@ function ClassName({ slug }: { slug: string }) {
   return entry ? <span className="text-ink">{entry.name} · </span> : null;
 }
 
+/** "Viagem · Aéreo · 40z · ": what a Service or Transport is, then its cost in bold. */
+function CostFacts({
+  labels,
+  cost,
+}: {
+  labels: (string | undefined)[];
+  cost: number;
+}) {
+  return (
+    <>
+      {labels.filter(Boolean).join(' · ')}
+      {' · '}
+      <strong className="text-ink">{costLabel(cost)}</strong>
+      {' · '}
+    </>
+  );
+}
+
+function ServiceFacts({ entry }: { entry: EntrySummary }) {
+  const d = entry.details as ServiceDetails;
+  return (
+    <CostFacts
+      labels={[SERVICE_GROUP_LABEL[d.group], d.medium && MEDIUM_LABEL[d.medium]]}
+      cost={d.cost}
+    />
+  );
+}
+
+function TransportFacts({ entry }: { entry: EntrySummary }) {
+  const d = entry.details as TransportDetails;
+  return (
+    <CostFacts
+      labels={[TRANSPORT_CLASS_LABEL[d.transportClass], MEDIUM_LABEL[d.medium]]}
+      cost={d.cost}
+    />
+  );
+}
+
 /** The facts a Reader scans for, then where it is in the book. */
 function RowMeta({ entry }: { entry: EntrySummary }) {
   return (
@@ -42,6 +92,8 @@ function RowMeta({ entry }: { entry: EntrySummary }) {
           </span>
         </>
       )}
+      {entry.type === 'service' && <ServiceFacts entry={entry} />}
+      {entry.type === 'transport' && <TransportFacts entry={entry} />}
       <PageRef page={entry.page} source={entry.source} />
     </p>
   );

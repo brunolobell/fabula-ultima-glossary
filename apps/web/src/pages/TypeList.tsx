@@ -1,10 +1,16 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
+import { TravelTabs } from '../components/TravelTabs';
 import { ErrorState, ListSkeleton, NotFoundState } from '../components/States';
 import { useEntryIndex } from '../hooks/useEntryIndex';
 import { kindFromParam } from '../lib/equipmentKinds';
-import { TYPE_INFO, countLabel, typeFromSlug } from '../lib/entryTypes';
+import {
+  TRAVEL_TYPES,
+  TYPE_INFO,
+  countLabel,
+  typeFromSlug,
+} from '../lib/entryTypes';
 import {
   applyFilters,
   buildRows,
@@ -42,6 +48,7 @@ export function TypeList() {
   return (
     <div>
       <h1 className="h-main">{title}</h1>
+      {TRAVEL_TYPES.includes(type) && <TravelTabs />}
       <p className="mt-4">{TYPE_INFO[type].description}</p>
 
       <ListFilters

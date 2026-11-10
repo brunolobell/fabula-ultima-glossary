@@ -5,6 +5,8 @@ export const ENTRY_TYPES = [
   'heroic-skill',
   'spell',
   'equipment',
+  'service',
+  'transport',
   'guide',
 ] as const;
 export type EntryType = (typeof ENTRY_TYPES)[number];
@@ -113,6 +115,52 @@ export interface GuideDetails {
   steps: GuideStep[];
 }
 
+/** Where a Transport or a Travel Service can go (the "meio"). */
+export const MEDIUMS = [
+  'land',
+  'water',
+  'submarine',
+  'air',
+  'planetary',
+  'interplanetary',
+  'interstellar',
+] as const;
+export type Medium = (typeof MEDIUMS)[number];
+
+export const SERVICE_GROUPS = ['settlement', 'travel'] as const;
+export type ServiceGroup = (typeof SERVICE_GROUPS)[number];
+
+export interface ServiceDetails {
+  /** `settlement`: PI recharge and rest. `travel`: a fare for one day of Travel. */
+  group: ServiceGroup;
+  /** Cost in zênites (z). */
+  cost: number;
+  /** Travel fares only: where the fare takes the passenger. */
+  medium?: Medium;
+}
+
+export const TRANSPORT_CLASSES = ['mount', 'vehicle'] as const;
+export type TransportClass = (typeof TRANSPORT_CLASSES)[number];
+
+/** How many times farther a day of Travel goes, by scale; null where the Transport cannot go. */
+export interface TransportDistance {
+  planetary: number | null;
+  interplanetary: number | null;
+  interstellar: number | null;
+}
+
+export interface TransportDetails {
+  transportClass: TransportClass;
+  medium: Medium;
+  /** Cost in zênites (z). */
+  cost: number;
+  /** The most passengers it carries (the book says "um ou dois", "cerca de seis"). */
+  passengers: number;
+  /** The book gives `passengers` as "cerca de N" instead of an exact limit. */
+  approximate?: boolean;
+  distance: TransportDistance;
+}
+
 export type RuleDetails = Record<string, never>;
 
 export interface DetailsByType {
@@ -122,5 +170,7 @@ export interface DetailsByType {
   'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
+  service: ServiceDetails;
+  transport: TransportDetails;
   guide: GuideDetails;
 }

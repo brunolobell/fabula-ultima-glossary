@@ -1,4 +1,4 @@
-import { EntrySource } from '../../entries/entry-types';
+import { EntrySource, Medium } from '../../entries/entry-types';
 import { slugify } from '../../entries/slug';
 import { SeedEntry } from './types';
 
@@ -133,6 +133,70 @@ export const spell = (
     },
   };
 };
+
+export interface ServiceInput {
+  name: string;
+  page: number;
+  /** Cost in zênites. */
+  cost: number;
+  group: 'settlement' | 'travel';
+  /** Travel fares only. */
+  medium?: Medium;
+  summary: string;
+  body: string;
+}
+
+/** A Service ("Serviço"): something paid for and not kept. */
+export const service = ({
+  cost,
+  group,
+  medium,
+  ...rest
+}: ServiceInput): Of<'service'> => ({
+  type: 'service',
+  tags: ['serviço', group === 'travel' ? 'viagem' : 'assentamento'],
+  details: medium ? { group, cost, medium } : { group, cost },
+  ...rest,
+});
+
+export interface TransportInput {
+  name: string;
+  page: number;
+  transportClass: 'mount' | 'vehicle';
+  medium: Medium;
+  cost: number;
+  /** The most passengers it carries. */
+  passengers: number;
+  /** The book says "cerca de N" instead of an exact limit. */
+  approximate?: boolean;
+  /** Distance multipliers as `[planetary, interplanetary, interstellar]`; null where it cannot go. */
+  distance: [number | null, number | null, number | null];
+  summary: string;
+  body: string;
+}
+
+/** A Transport ("Transporte"): a Mount or a Vehicle that multiplies a day of Travel. */
+export const transport = ({
+  transportClass,
+  medium,
+  cost,
+  passengers,
+  approximate,
+  distance: [planetary, interplanetary, interstellar],
+  ...rest
+}: TransportInput): Of<'transport'> => ({
+  type: 'transport',
+  tags: ['transporte', transportClass === 'mount' ? 'montaria' : 'veículo'],
+  details: {
+    transportClass,
+    medium,
+    cost,
+    passengers,
+    ...(approximate && { approximate }),
+    distance: { planetary, interplanetary, interstellar },
+  },
+  ...rest,
+});
 
 export interface GuideInput {
   name: string;

@@ -4,6 +4,7 @@ import {
   GiBackpack,
   GiBookCover,
   GiBroadsword,
+  GiCaravan,
   GiChestArmor,
   GiCharacter,
   GiCheckedShield,
@@ -26,7 +27,13 @@ import {
   kindFromParam,
 } from '../lib/equipmentKinds';
 import { sortedGuides } from '../lib/guides';
-import { TYPE_INFO, entryPath, typeFromSlug, typePath } from '../lib/entryTypes';
+import {
+  TRAVEL_TYPES,
+  TYPE_INFO,
+  entryPath,
+  typeFromSlug,
+  typePath,
+} from '../lib/entryTypes';
 import { ChevronIcon, CloseIcon } from './Icons';
 
 const itemClass = (isActive: boolean) =>
@@ -69,7 +76,8 @@ interface MenuItem {
   label: string;
   icon: IconType;
   to: string;
-  type: EntryType;
+  /** Every Entry Type this item covers. */
+  types: readonly EntryType[];
   /** Equipment Kind this item filters by; `null` is "all equipment". */
   kind?: string | null;
 }
@@ -88,14 +96,14 @@ const GROUPS: MenuGroup[] = [
     title: 'Criação de Personagem',
     icon: GiCharacter,
     items: [
-      { label: 'Classes', icon: GiHelmet, to: typePath('class'), type: 'class' },
-      { label: 'Feitiços', icon: GiMagicSwirl, to: typePath('spell'), type: 'spell' },
-      { label: 'Poderes', icon: GiStarsStack, to: typePath('skill'), type: 'skill' },
+      { label: 'Classes', icon: GiHelmet, to: typePath('class'), types: ['class'] },
+      { label: 'Feitiços', icon: GiMagicSwirl, to: typePath('spell'), types: ['spell'] },
+      { label: 'Poderes', icon: GiStarsStack, to: typePath('skill'), types: ['skill'] },
       {
         label: 'Poderes Heroicos',
         icon: GiCrown,
         to: typePath('heroic-skill'),
-        type: 'heroic-skill',
+        types: ['heroic-skill'],
       },
     ],
   },
@@ -108,7 +116,7 @@ const GROUPS: MenuGroup[] = [
         label: 'Todo o equipamento',
         icon: GiOpenTreasureChest,
         to: equipmentPath(),
-        type: 'equipment',
+        types: ['equipment'],
         kind: null,
       },
       ...EQUIPMENT_KIND_FILTERS.map(
@@ -116,10 +124,16 @@ const GROUPS: MenuGroup[] = [
           label: f.label,
           icon: KIND_ICONS[f.kind],
           to: equipmentPath(f.param),
-          type: 'equipment',
+          types: ['equipment'],
           kind: f.kind,
         }),
       ),
+      {
+        label: 'Serviços e transporte',
+        icon: GiCaravan,
+        to: typePath('service'),
+        types: TRAVEL_TYPES,
+      },
     ],
   },
 ];
@@ -147,7 +161,7 @@ export function Sidebar({ open, onClose }: Props) {
   }
 
   const isActive = (item: MenuItem) => {
-    if (item.type !== currentType) return false;
+    if (!currentType || !item.types.includes(currentType)) return false;
     if (item.kind === undefined) return true;
     if (item.kind === null) return onList && currentKind === null;
     return item.kind === currentKind;
@@ -177,7 +191,7 @@ export function Sidebar({ open, onClose }: Props) {
   const count = (item: MenuItem) =>
     entries.filter(
       (e) =>
-        e.type === item.type &&
+        item.types.includes(e.type) &&
         (!item.kind || (e.details as EquipmentDetails).kind === item.kind),
     ).length;
 
