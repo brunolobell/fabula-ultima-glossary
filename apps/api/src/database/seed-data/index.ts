@@ -24,6 +24,7 @@ import { mercador } from './classes/natural-fantasy/mercador';
 import { esper } from './classes/techno-fantasy/esper';
 import { mutante } from './classes/techno-fantasy/mutante';
 import { piloto } from './classes/techno-fantasy/piloto';
+import { criaturasBestiaryVol1 } from './creatures/bestiary-vol-1';
 import { criaturasLivroBasico } from './creatures/livro-basico';
 import { armasBasicas } from './equipment/armas-basicas';
 import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
@@ -68,6 +69,7 @@ export const seedEntries: SeedEntry[] = [
   ...quimerista,
   ...armasBasicas,
   ...criaturasLivroBasico,
+  ...criaturasBestiaryVol1,
   npcSpellsRule,
   ...quickAssemblySeed,
   ...weaponForgeRules,

@@ -394,13 +394,16 @@ describe('validateSeed', () => {
         ...entry,
       }) as SeedEntry;
 
-    // Creatures with a stat block (Creature Groups have none).
+    // The Livro Básico Creatures with a stat block (Creature Groups have none).
     const bestiary = seedEntries.filter(
       (
         e,
       ): e is Extract<SeedEntry, { type: 'creature' }> & {
         details: CreatureDetails;
-      } => e.type === 'creature' && !isCreatureGroup(e.details),
+      } =>
+        e.type === 'creature' &&
+        (e.source ?? 'livro-basico') === 'livro-basico' &&
+        !isCreatureGroup(e.details),
     );
     const ofSpecies = (species: string) =>
       bestiary.filter((e) => e.details.species === species);
