@@ -159,3 +159,7 @@ export function speciesAlways(rule: SpeciesRule): string {
       : []),
   ].join('; ');
 }
+
+/** A Creature Group has no stat block, only `{ group: true }`. */
+export const isCreatureGroup = (details: unknown): boolean =>
+  (details as { group?: unknown } | null)?.group === true;

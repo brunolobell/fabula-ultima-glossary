@@ -29,6 +29,7 @@ import {
   typeFromSlug,
   typePath,
 } from '../lib/entryTypes';
+import { RANK_LABEL, SPECIES_LABEL, isCreatureGroup } from '../lib/creatures';
 import { extractLinkedSlugs } from '../lib/links';
 import { rememberEntry } from '../lib/recent';
 import { statBlockTexts } from '../lib/statBlock';
@@ -110,6 +111,36 @@ function ChildSection({ child, index }: { child: Entry; index: Index }) {
         <p>{decorateChecks(child.summary)}</p>
       )}
     </section>
+  );
+}
+
+/** The members of a Creature Group: a heading, the facts and the whole stat block of each. */
+function GroupMembers({ members }: { members: Entry[] }) {
+  return (
+    <>
+      {members.map((member) => {
+        const d = member.details as CreatureDetails;
+        return (
+          <section
+            key={member.slug}
+            id={member.slug}
+            aria-labelledby={`${member.slug}-titulo`}
+          >
+            <h2 id={`${member.slug}-titulo`} className="h-secondary">
+              {member.name}
+            </h2>
+            <p className="text-[15px] text-muted">
+              Nível {d.level} · {SPECIES_LABEL[d.species]} · {RANK_LABEL[d.rank]}
+              {' · '}
+              <PageRef page={member.page} source={member.source} /> ·{' '}
+              <Link to={entryPath(member)}>Abrir página</Link>
+            </p>
+            <p>{decorateChecks(member.summary)}</p>
+            <StatBlock details={d} idPrefix={`${member.slug}-`} nested />
+          </section>
+        );
+      })}
+    </>
   );
 }
 
@@ -249,6 +280,12 @@ export function EntryPage() {
   if (entry.type !== urlType) return <Navigate to={entryPath(entry)} replace />;
 
   const isClass = entry.type === 'class';
+  const isGroup = entry.type === 'creature' && isCreatureGroup(entry.details);
+  const groupSlug =
+    entry.type === 'creature' && !isGroup
+      ? (entry.details as CreatureDetails).groupSlug
+      : undefined;
+  const parentGroup = groupSlug ? bySlug.get(groupSlug) : undefined;
   const classDetails = isClass ? (entry.details as ClassDetails) : null;
 
   return (
@@ -281,6 +318,12 @@ export function EntryPage() {
         </p>
       )}
 
+      {parentGroup && (
+        <p className="mt-2">
+          Parte do grupo <Link to={entryPath(parentGroup)}>{parentGroup.name}</Link>
+        </p>
+      )}
+
       <div className="highlight-key">
         <p>{decorateChecks(entry.summary)}</p>
       </div>
@@ -291,8 +334,13 @@ export function EntryPage() {
           entry.summary,
           entry.body,
           ...(classDetails?.freeBenefits ?? []),
-          ...(entry.type === 'creature'
+          ...(entry.type === 'creature' && !isGroup
             ? statBlockTexts(entry.details as CreatureDetails)
+            : []),
+          ...(isGroup
+            ? entry.children.flatMap((m) =>
+                statBlockTexts(m.details as CreatureDetails),
+              )
             : []),
           ...statCells(entry, bySlug).map((c) => c.label),
           ...entry.children.flatMap((c) => [
@@ -307,10 +355,11 @@ export function EntryPage() {
         <ClassContent entry={entry} index={bySlug} />
       ) : (
         <>
-          {entry.type === 'creature' && (
+          {entry.type === 'creature' && !isGroup && (
             <StatBlock details={entry.details as CreatureDetails} />
           )}
           <EntryBody body={entry.body} index={bySlug} />
+          {isGroup && <GroupMembers members={entry.children} />}
         </>
       )}
 

@@ -190,6 +190,8 @@ export interface CreatureSummaryDetails {
   villain: boolean;
   /** English name of a Bestiary Vol. I Creature. */
   originalName?: string;
+  /** Slug of the Creature Group this Creature belongs to. */
+  groupSlug?: string;
   traits: string[];
   attributes: { DES: Die; AST: Die; VIG: Die; VON: Die };
   hp: number;
@@ -203,6 +205,14 @@ export interface CreatureSummaryDetails {
   magicDefense: number;
   hasSpells: boolean;
   affinities: Partial<Record<DamageType, Affinity>>;
+}
+
+/**
+ * A Creature Group: a Creature Entry with no stat block. The entry endpoint
+ * sends its members as `children`, stat blocks in full.
+ */
+export interface CreatureGroupDetails {
+  group: true;
 }
 
 /** The whole stat block, as the entry endpoint sends it. */
@@ -509,7 +519,7 @@ export interface DetailsByType {
   'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
-  creature: CreatureDetails;
+  creature: CreatureDetails | CreatureGroupDetails;
   service: ServiceDetails;
   transport: TransportDetails;
   guide: GuideDetails;

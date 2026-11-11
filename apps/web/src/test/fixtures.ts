@@ -1,5 +1,10 @@
 import { vi } from 'vitest';
-import type { Entry, EntryWithChildren, Role } from '../api/types';
+import type {
+  CreatureDetails,
+  Entry,
+  EntryWithChildren,
+  Role,
+} from '../api/types';
 import { npcSpells } from '../../../api/src/database/seed-data/npc-spells-data';
 import {
   quickAssemblyRoles,
@@ -318,6 +323,48 @@ const cactonto: Entry = {
   },
 };
 
+/** A Creature Group of the Livro Básico shape, for `mockApi({ groups: true })`. */
+const ghost = (
+  id: string,
+  slug: string,
+  name: string,
+  level: number,
+  species: 'undead' | 'beast',
+  hp: number,
+): Entry => ({
+  ...cactonto,
+  id,
+  slug,
+  name,
+  summary: `${name} assombra as ruínas.`,
+  page: 340,
+  details: {
+    ...(cactonto.details as CreatureDetails),
+    level,
+    species,
+    hp,
+    crisis: Math.floor(hp / 2),
+    groupSlug: 'fantasmas',
+  },
+});
+
+const espectro = ghost('30', 'espectro', 'Espectro', 20, 'undead', 100);
+const aparicao = ghost('31', 'aparicao', 'Aparição', 25, 'undead', 130);
+
+const fantasmas: EntryWithChildren = {
+  ...base,
+  id: '32',
+  slug: 'fantasmas',
+  name: 'Fantasmas',
+  type: 'creature',
+  summary: 'Almas que não encontraram descanso.',
+  body: 'Os fantasmas **sempre** aparecem em bando. [[tracos]]',
+  tags: ['criatura'],
+  page: 340,
+  details: { group: true },
+  children: [espectro, aparicao],
+};
+
 const ROLE_SLUG: Record<Role, [string, string]> = {
   brute: ['montagem-rapida-bruto', 'Montagem Rápida: Bruto'],
   hunter: ['montagem-rapida-cacador', 'Montagem Rápida: Caçador'],
@@ -441,8 +488,22 @@ const fold = (s: string) =>
 /**
  * `stale`: serve the Quick Assembly Rules as an older seed wrote them (no Negative
  * Skills), as a browser can when it holds a cached response from before a re-seed.
+ * `groups`: also serve the Creature Group "Fantasmas" and its two members.
  */
-export function mockApi({ stale = false }: { stale?: boolean } = {}) {
+export function mockApi({
+  stale = false,
+  groups = false,
+}: { stale?: boolean; groups?: boolean } = {}) {
+  const table = groups
+    ? {
+        ...DETAILS,
+        ...Object.fromEntries(
+          [fantasmas, { ...espectro, children: [] }, { ...aparicao, children: [] }].map(
+            (e) => [e.slug, e],
+          ),
+        ),
+      }
+    : DETAILS;
   const older = <T extends { slug: string; details: unknown }>(entry: T): T =>
     stale && entry.slug === 'montagem-rapida'
       ? {
@@ -454,13 +515,13 @@ export function mockApi({ stale = false }: { stale?: boolean } = {}) {
     const url = new URL(input, 'http://localhost');
     if (url.pathname === '/api/entries') {
       const q = fold(url.searchParams.get('search') ?? '');
-      const list = Object.values(DETAILS)
+      const list = Object.values(table)
         .filter((e) => fold(`${e.name} ${e.summary} ${e.body}`).includes(q))
         .map(summaryOf)
         .map(older);
       return { ok: true, status: 200, json: async () => list };
     }
-    const entry = DETAILS[url.pathname.replace('/api/entries/', '')];
+    const entry = table[url.pathname.replace('/api/entries/', '')];
     return entry
       ? { ok: true, status: 200, json: async () => older(entry) }
       : { ok: false, status: 404, json: async () => ({}) };

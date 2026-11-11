@@ -12,7 +12,7 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
-import { RANK_LABEL, SPECIES_LABEL } from '../lib/creatures';
+import { RANK_LABEL, SPECIES_LABEL, isCreatureGroup } from '../lib/creatures';
 import {
   MEDIUM_LABEL,
   SERVICE_GROUP_LABEL,
@@ -78,14 +78,23 @@ function TransportFacts({ entry }: { entry: EntrySummary }) {
   );
 }
 
+/** The Creature Group of a member, plain text (the row is already a link). */
+function GroupName({ slug }: { slug: string }) {
+  const { bySlug } = useEntryIndex();
+  const entry = bySlug.get(slug);
+  return entry ? <span className="text-ink">Grupo {entry.name} · </span> : null;
+}
+
 /** "Nível 15 · Planta · Soldado · PV 90 · ": what a Creature is, at a glance. */
 function CreatureFacts({ entry }: { entry: EntrySummary }) {
+  if (isCreatureGroup(entry.details)) return <>Grupo de criaturas · </>;
   const d = entry.details as CreatureSummaryDetails;
   return (
     <>
       Nível {d.level} · {SPECIES_LABEL[d.species]} · {RANK_LABEL[d.rank]} · PV{' '}
       <strong className="text-ink">{d.hp}</strong>
       {' · '}
+      {d.groupSlug && <GroupName slug={d.groupSlug} />}
     </>
   );
 }

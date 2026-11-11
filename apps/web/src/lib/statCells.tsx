@@ -14,7 +14,12 @@ import type {
 import { BoltIcon } from '../components/Icons';
 import { Requirements } from '../components/Requirements';
 import { decorateChecks } from './check';
-import { RANK_LABEL, ROLE_LABEL, SPECIES_LABEL } from './creatures';
+import {
+  RANK_LABEL,
+  ROLE_LABEL,
+  SPECIES_LABEL,
+  isCreatureGroup,
+} from './creatures';
 import { entryPath } from './entryTypes';
 import {
   MEDIUM_LABEL,
@@ -140,6 +145,7 @@ export function statCells(
       return cells;
     }
     case 'creature': {
+      if (isCreatureGroup(entry.details)) return [];
       const d = entry.details as CreatureDetails;
       const cells: Cell[] = [
         { label: 'Nível', value: d.level },

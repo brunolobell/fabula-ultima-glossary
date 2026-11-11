@@ -9,24 +9,37 @@ import { StatBar } from './StatBar';
 function Section({
   id,
   title,
+  nested,
   children,
 }: {
   id: string;
   title: string;
+  nested: boolean;
   children: ReactNode;
 }) {
+  const Heading = nested ? 'h3' : 'h2';
   return (
     <section aria-labelledby={id}>
-      <h2 id={id} className="h-secondary">
+      <Heading id={id} className={nested ? 'h-tertiary' : 'h-secondary'}>
         {title}
-      </h2>
+      </Heading>
       {children}
     </section>
   );
 }
 
 /** The stat block of a Creature: the facts a Game Master reads at the table. */
-export function StatBlock({ details: d }: { details: CreatureDetails }) {
+export function StatBlock({
+  details: d,
+  idPrefix = '',
+  nested = false,
+}: {
+  details: CreatureDetails;
+  /** Keeps the ids of the sections apart when a page holds several stat blocks. */
+  idPrefix?: string;
+  /** Under a heading of its own (a member of a Creature Group): sections are h3. */
+  nested?: boolean;
+}) {
   const affinities = DAMAGE_ORDER.flatMap((damage) => {
     const affinity = d.affinities[damage];
     return affinity ? [{ damage, affinity }] : [];
@@ -44,7 +57,11 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
         <StatBar cells={numberCells(d)} />
       </div>
 
-      <Section id="afinidades" title="Afinidades a dano">
+      <Section
+        id={`${idPrefix}afinidades`}
+        nested={nested}
+        title="Afinidades a dano"
+      >
         {affinities.length > 0 ? (
           <ul
             aria-label="Afinidades a dano"
@@ -60,7 +77,11 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
       </Section>
 
       {d.attacks.length > 0 && (
-        <Section id="ataques-basicos" title="Ataques básicos">
+        <Section
+          id={`${idPrefix}ataques-basicos`}
+          nested={nested}
+          title="Ataques básicos"
+        >
           <ul className="bullets">
             {d.attacks.map((attack) => (
               <li key={attack.name}>
@@ -92,7 +113,7 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
       )}
 
       {d.spells.length > 0 && (
-        <Section id="feiticos" title="Feitiços">
+        <Section id={`${idPrefix}feiticos`} nested={nested} title="Feitiços">
           <ul className="bullets">
             {d.spells.map((spell) => (
               <li key={spell.name}>
@@ -124,7 +145,11 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
       )}
 
       {d.otherActions.length > 0 && (
-        <Section id="outras-acoes" title="Outras ações">
+        <Section
+          id={`${idPrefix}outras-acoes`}
+          nested={nested}
+          title="Outras ações"
+        >
           <ul className="bullets">
             {d.otherActions.map((action) => (
               <li key={action.name}>
@@ -136,7 +161,11 @@ export function StatBlock({ details: d }: { details: CreatureDetails }) {
       )}
 
       {d.specialRules.length > 0 && (
-        <Section id="regras-especiais" title="Regras especiais">
+        <Section
+          id={`${idPrefix}regras-especiais`}
+          nested={nested}
+          title="Regras especiais"
+        >
           <ul className="bullets">
             {d.specialRules.map((rule) => (
               <li key={rule.name}>

@@ -20,6 +20,7 @@ import {
   ROLE_ORDER,
   SPECIES_LABEL,
   affinityLabel,
+  isCreatureGroup,
 } from './creatures';
 import { EQUIPMENT_KIND_FILTERS, kindFromParam } from './equipmentKinds';
 import { isOpenToAll } from './requirements';
@@ -259,6 +260,18 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     bookRow,
   ],
 };
+
+// A Creature Group has no stat block, so it has no value in the rows about stats
+// (only in "Livro"): any of those filters leaves it out, and keeps its members.
+ROWS.creature = (ROWS.creature ?? []).map((spec) =>
+  spec === bookRow
+    ? spec
+    : {
+        ...spec,
+        values: (e: EntrySummary) =>
+          isCreatureGroup(e.details) ? [] : spec.values(e),
+      },
+);
 
 const specsOf = (type: EntryType) => ROWS[type] ?? [];
 
