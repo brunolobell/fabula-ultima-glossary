@@ -249,6 +249,38 @@ export const creature = ({
   details,
 });
 
+export interface CreatureGroupInput {
+  name: string;
+  /** Set it only to resolve a slug collision. */
+  slug?: string;
+  page: number;
+  /** Our own words. */
+  summary: string;
+  /** The text the members share: description, tactics, routine. */
+  body?: string;
+}
+
+/**
+ * A Creature Group ("grupo de criaturas"): a Creature Entry with no stat block.
+ * Its members set `groupSlug` to its slug; the seed keeps their order.
+ */
+export const creatureGroup = ({
+  name,
+  slug,
+  page,
+  summary,
+  body = '',
+}: CreatureGroupInput): Of<'creature'> => ({
+  type: 'creature',
+  name,
+  ...(slug && { slug }),
+  page,
+  summary,
+  body,
+  tags: ['criatura', 'grupo'],
+  details: { group: true },
+});
+
 /** Marks every entry as coming from a supplement book (`page` is that book's printed page). */
 export const inBook = (
   source: EntrySource,

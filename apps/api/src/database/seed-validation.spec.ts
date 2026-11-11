@@ -3,6 +3,7 @@ import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
   classEntry,
+  creatureGroup,
   heroicSkill,
   rule,
   skill,
@@ -525,6 +526,22 @@ describe('validateSeed', () => {
         }) as SeedEntry;
       const member = (name: string, groupSlug: string): SeedEntry =>
         creature({ groupSlug }, { name });
+
+      it('builds a Group with creatureGroup(), tagged and without stats', () => {
+        const built = creatureGroup({
+          name: 'Fantasmas',
+          page: 330,
+          summary: 'Almas inquietas.',
+        });
+        expect(built).toMatchObject({
+          type: 'creature',
+          details: { group: true },
+          tags: ['criatura', 'grupo'],
+        });
+        expect(validateSeed([built, member('Espectro', 'fantasmas')])).toEqual(
+          [],
+        );
+      });
 
       it('accepts a Group whose members point to it', () => {
         expect(
