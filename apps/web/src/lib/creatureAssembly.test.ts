@@ -1,0 +1,1154 @@
+import { describe, expect, it } from 'vitest';
+import {
+  quickAssemblyRoles,
+  quickAssemblyRules,
+} from '../../../api/src/database/seed-data/quick-assembly-data';
+import { npcSpells } from '../../../api/src/database/seed-data/npc-spells-data';
+import type { EntrySummary } from '../api/types';
+import {
+  assembleCreature,
+  assemblyRulesComplete,
+  buildSpellCatalog,
+  type AssemblyInput,
+} from './creatureAssembly';
+
+const input = (over: Partial<AssemblyInput> = {}): AssemblyInput => ({
+  name: 'Criatura',
+  level: 5,
+  rank: 'soldier',
+  championX: 2,
+  customization: null,
+  skills: {},
+  species: null,
+  traits: [],
+  villain: false,
+  tier: 'minor',
+  vulnerabilities: [],
+  resistances: [],
+  immunities: [],
+  attacks: {},
+  choices: {},
+  baseSpells: {},
+  spellChoices: {},
+  magicFormula: 'AST + VON',
+  negative: null,
+  bosses: [],
+  speciesPicks: [],
+  speciesVulnerability: null,
+  speciesExtra: null,
+  speciesChoices: {},
+  ...over,
+});
+
+const classSpell = (
+  slug: string,
+  name: string,
+  mpCost: string,
+  target: string,
+  duration: string,
+  offensive: boolean,
+  summary: string,
+): EntrySummary => ({
+  id: slug,
+  slug,
+  name,
+  type: 'spell',
+  summary,
+  source: 'livro-basico',
+  page: 188,
+  tags: [],
+  details: { classSlug: 'x', mpCost, target, duration, offensive },
+});
+
+// The real summaries of three Class spells, as the seed writes them.
+const classSpells = new Map(
+  [
+    classSpell(
+      'fulgur',
+      'Fulgur',
+      '10 × A',
+      'Até três criaturas',
+      'Instantânea',
+      true,
+      'Uma onda de raios: causa (RA + 15) pontos de dano de raio a cada alvo atingido; na oportunidade, os alvos ficam atordoados.',
+    ),
+    classSpell(
+      'clarao',
+      'Clarão',
+      '20',
+      'Uma criatura',
+      'Instantânea',
+      true,
+      'Um raio de fogo tão quente que supera as defesas do alvo: causa (RA + 25) pontos de dano de fogo, ignorando Resistências.',
+    ),
+    classSpell(
+      'drenar-espirito',
+      'Drenar Espírito',
+      '5',
+      'Uma criatura',
+      'Instantânea',
+      true,
+      'Consome a psique do alvo: ele perde (RA + 20) PM e você recupera metade dos PM que ele de fato perdeu.',
+    ),
+    classSpell(
+      'curar',
+      'Curar',
+      '10 × A',
+      'Até três criaturas',
+      'Instantânea',
+      false,
+      'Revigora seus companheiros: cada alvo recupera 40 PV (50 a partir do 20º nível, 60 a partir do 40º).',
+    ),
+  ].map((e) => [e.slug, e] as const),
+);
+
+const catalog = buildSpellCatalog(
+  { forge: 'npc-spells', spells: npcSpells },
+  classSpells,
+);
+
+const assemble = (
+  role: keyof typeof quickAssemblyRoles,
+  over?: Partial<AssemblyInput>,
+) =>
+  assembleCreature(
+    quickAssemblyRules,
+    quickAssemblyRoles[role],
+    input(over),
+    catalog,
+  );
+
+describe('assembleCreature: the Juggernaut of the book (Bestiary Vol. I p. 28)', () => {
+  // "a level 30 elite brute enemy, a bright red construct": Insight d8, Initiative
+  // +3 (2 for elite, 1 for the die), 240 Hit Points and 70 Mind Points, then +10 Hit
+  // Points doubled by the rank (260). Both attacks deal 5 extra damage and have +3.
+  const juggernaut = () =>
+    assemble('brute', {
+      name: 'Juggernaut',
+      level: 30,
+      rank: 'elite',
+      customization: 'extra',
+      species: 'construct',
+      traits: ['bulky', 'destructive', 'predictable', 'watchful'],
+      vulnerabilities: ['bolt', 'ice'],
+      resistances: ['dark', 'physical'],
+      immunities: ['air'],
+      // "Enhancing Guard (tied to the missile salvo) and Steady Recovery".
+      skills: {
+        'enhancing-guard': { attack: ['normal'] },
+        'steady-recovery': {},
+      },
+      attacks: {
+        normal: {
+          name: 'Missile Salvo',
+          range: 'ranged',
+          accuracy: 'DES + VIG',
+          damageType: 'fire',
+          choices: {},
+        },
+        strong: {
+          name: 'Steel Bash',
+          range: 'melee',
+          accuracy: 'VIG + VIG',
+          damageType: 'physical',
+          choices: {},
+        },
+      },
+    });
+
+  it('has the numbers the book works out', () => {
+    const { details } = juggernaut();
+    expect(details.attributes).toEqual({ DES: 8, AST: 8, VIG: 10, VON: 8 });
+    expect(details.hp).toBe(260);
+    expect(details.crisis).toBe(130);
+    expect(details.mp).toBe(70);
+    // 7 at level 5 for a brute, plus 3.
+    expect(details.initiative).toBe(10);
+    expect(details.level).toBe(30);
+    expect(details.rank).toBe('elite');
+    expect(details.role).toBe('brute');
+  });
+
+  it('gives both attacks +3 accuracy and 5 extra damage', () => {
+    const { details } = juggernaut();
+    expect(
+      details.attacks.map((a) => [
+        a.name,
+        a.range,
+        a.accuracyBonus,
+        a.damage,
+        a.damageType,
+      ]),
+    ).toEqual([
+      ['Missile Salvo', 'ranged', 3, 10, 'fire'],
+      ['Steel Bash', 'melee', 3, 15, 'physical'],
+    ]);
+  });
+
+  it('keeps the two Role Skills the book adds (level 20 and elite)', () => {
+    const result = juggernaut();
+    expect(result.roleSkills).toBe(2);
+    expect(result.bossSkills).toBe(0);
+  });
+
+  it('turns the chosen types into Vulnerabilities, Resistances and Immunities', () => {
+    expect(juggernaut().details.affinities).toEqual({
+      bolt: 'vulnerable',
+      ice: 'vulnerable',
+      dark: 'resistant',
+      physical: 'resistant',
+      air: 'immune',
+      // "Since we already know constructs are Resistant to earth and Immune to poison."
+      earth: 'resistant',
+      poison: 'immune',
+    });
+  });
+
+  it('is complete: no warnings', () => {
+    expect(juggernaut().warnings).toEqual([]);
+  });
+});
+
+describe('assembleCreature: ranks and levels', () => {
+  it('multiplies by X for a champion that replaces X soldiers', () => {
+    // Hunter, level 20 (table: 80 PV, 60 PM, WLP d8): base Initiative 9, so +3 for X = 3.
+    const result = assemble('hunter', {
+      level: 20,
+      rank: 'champion',
+      championX: 3,
+    });
+    expect(result.details.hp).toBe(240);
+    expect(result.details.mp).toBe(120);
+    expect(result.details.initiative).toBe(12);
+    // One Role Skill for level 20, plus X; one Boss Skill.
+    expect(result.roleSkills).toBe(4);
+    expect(result.bossSkills).toBe(1);
+  });
+
+  it('does not add the +10 Hit Points to a champion', () => {
+    const result = assemble('brute', {
+      level: 10,
+      rank: 'champion',
+      championX: 2,
+      customization: 'extra',
+    });
+    expect(result.details.hp).toBe(160);
+  });
+
+  it('keeps the level 5 profile for a soldier', () => {
+    const { details } = assemble('mage');
+    expect(details.attributes).toEqual({ DES: 8, AST: 8, VIG: 6, VON: 10 });
+    expect([
+      details.hp,
+      details.crisis,
+      details.mp,
+      details.initiative,
+    ]).toEqual([40, 20, 55, 8]);
+    expect([details.defense, details.magicDefense]).toEqual([
+      { value: 1, fixed: false },
+      2,
+    ]);
+  });
+
+  it('adds the level bonuses to Defesa (sentinel, level 30)', () => {
+    const { details } = assemble('sentinel', { level: 30 });
+    expect([details.defense.value, details.magicDefense]).toEqual([4, 2]);
+  });
+
+  it('adds the Precisão bonus a level grants (hunter, level 10)', () => {
+    const { details } = assemble('hunter', { level: 10 });
+    // +1 for the level, +3 granted at level 10.
+    expect(details.attacks[0].accuracyBonus).toBe(4);
+  });
+
+  it("adds the special rules a level grants, with the Reader's choice filled in", () => {
+    const hunter = assemble('hunter', { level: 30 });
+    expect(hunter.details.specialRules.map((r) => r.effect)).toEqual([
+      'Enquanto estiver em crise, o dano do ataque normal ignora Resistências.',
+    ]);
+    const sentinel = assemble('sentinel', {
+      level: 50,
+      choices: { immune: ['poisoned', 'weak'] },
+    });
+    expect(sentinel.details.specialRules.map((r) => r.effect)).toContain(
+      'Imune às condições envenenado e fraco.',
+    );
+  });
+});
+
+describe('assembleCreature: villains', () => {
+  it('gives Ultima Points by tier, and none to an ordinary Creature', () => {
+    expect(assemble('brute').ultimaPoints).toBeNull();
+    expect(
+      assemble('brute', { villain: true, tier: 'minor' }).ultimaPoints,
+    ).toBe(5);
+    expect(
+      assemble('brute', { villain: true, tier: 'major' }).ultimaPoints,
+    ).toBe(10);
+    expect(
+      assemble('brute', { villain: true, tier: 'supreme' }).ultimaPoints,
+    ).toBe(15);
+    expect(assemble('brute', { villain: true }).details.villain).toBe(true);
+  });
+});
+
+describe('assembleCreature: basic attacks', () => {
+  it("fills the Reader's choices into the text of the chosen option", () => {
+    const sabotage = (option: string, choices: Record<string, string[]> = {}) =>
+      assemble('saboteur', {
+        level: 20,
+        attacks: {
+          normal: {
+            range: 'melee',
+            accuracy: 'DES + VON',
+            damageType: 'poison',
+            option,
+            choices,
+          },
+        },
+      }).details.attacks[0];
+
+    // The minor amount is 20 from level 20.
+    expect(sabotage('mp').effect).toBe('Cada alvo atingido perde 20 PM.');
+    expect(sabotage('inventory').effect).toBe('Cada alvo atingido perde 1 PI.');
+    expect(sabotage('status', { status: ['slow'] }).effect).toBe(
+      'Cada alvo atingido sofre a condição lento.',
+    );
+  });
+
+  it('fills a choice of the attack itself (sentinel)', () => {
+    const { details } = assemble('sentinel', {
+      attacks: {
+        normal: {
+          range: 'melee',
+          accuracy: 'DES + VIG',
+          damageType: 'physical',
+          choices: { status: ['shaken'] },
+        },
+      },
+    });
+    expect(details.attacks[0].effect).toBe(
+      'Cada alvo atingido sofre a condição abalado.',
+    );
+  });
+
+  it('names the attacks "Ataque Normal" and "Ataque Forte" until the Reader renames them', () => {
+    const { details } = assemble('brute');
+    expect(details.attacks.map((a) => a.name)).toEqual([
+      'Ataque Normal',
+      'Ataque Forte',
+    ]);
+    expect(details.attacks[0].effect).toBe('O ataque tem multi (2).');
+  });
+
+  it("prints the damage of a basic attack as RA plus the table value and the level's extra", () => {
+    const { details } = assemble('brute', { level: 40 });
+    // Normal RA + 5, strong RA + 10, plus 10 extra damage at level 40.
+    expect(details.attacks.map((a) => a.damage)).toEqual([15, 20]);
+  });
+});
+
+describe('assembleCreature: what is still missing', () => {
+  it('asks for the Vulnerabilities, Resistances and Immunities the Role and level require', () => {
+    const result = assemble('brute', { level: 30 });
+    expect(result.required).toEqual({
+      vulnerabilities: 2,
+      resistances: 2,
+      immunities: 1,
+    });
+    expect(result.warnings).toEqual([
+      'Escolha 2 Vulnerabilidades (há 0).',
+      'Escolha 2 Resistências (há 0).',
+      'Escolha 1 Imunidade (há 0).',
+      'Escolha 1 poder de função (há 0).',
+    ]);
+  });
+
+  it('asks for one more Vulnerability when the Reader picks enraged or poisoned', () => {
+    const base = {
+      vulnerabilities: ['fire'] as const,
+      attacks: {
+        normal: {
+          range: 'melee' as const,
+          accuracy: 'DES + AST',
+          damageType: 'physical' as const,
+          option: 'status',
+        },
+      },
+    };
+    const calm = assemble('saboteur', {
+      vulnerabilities: [...base.vulnerabilities],
+      attacks: {
+        normal: { ...base.attacks.normal, choices: { status: ['slow'] } },
+      },
+    });
+    const angry = assemble('saboteur', {
+      vulnerabilities: [...base.vulnerabilities],
+      attacks: {
+        normal: { ...base.attacks.normal, choices: { status: ['enraged'] } },
+      },
+    });
+    expect(calm.required.vulnerabilities).toBe(1);
+    expect(calm.warnings).toEqual([]);
+    expect(angry.required.vulnerabilities).toBe(2);
+    expect(angry.warnings).toEqual(['Escolha 2 Vulnerabilidades (há 1).']);
+  });
+
+  it('warns, never blocks, when a damage type has two Affinities', () => {
+    const result = assemble('mage', {
+      vulnerabilities: ['fire'],
+      resistances: ['fire'],
+    });
+    expect(result.warnings).toContain('Fogo tem mais de uma Afinidade.');
+    expect(result.details.affinities.fire).toBe('vulnerable');
+  });
+
+  it('asks the Reader to pick a basic-attack option the Role requires', () => {
+    const result = assemble('saboteur', { vulnerabilities: ['fire'] });
+    expect(result.warnings).toEqual([
+      'Escolha uma opção para o Ataque Normal.',
+    ]);
+  });
+
+  it('rejects an illegal level only by warning', () => {
+    const result = assemble('mage', { level: 15, vulnerabilities: ['fire'] });
+    expect(result.warnings).toContain(
+      'O nível deve ser 5, 10, 20, 30, 40, 50 ou 60.',
+    );
+  });
+});
+
+describe('assembleCreature: Role Skills', () => {
+  const brute = (over: Partial<AssemblyInput> = {}) => assemble('brute', over);
+  const sentinel = (over: Partial<AssemblyInput> = {}) =>
+    assemble('sentinel', over);
+
+  it('adds a named Skill as a special rule or an "outra ação"', () => {
+    const { details } = brute({
+      level: 20,
+      skills: { 'steady-recovery': {}, crush: {} },
+    });
+    expect(details.specialRules.map((r) => r.name)).toContain(
+      'Recuperação Constante',
+    );
+    const crush = details.otherActions.find((a) => a.name === 'Esmagar');
+    expect(crush?.effect).toContain(
+      'perder 20 PV (30 PV se o NPC for de nível 30 ou mais)',
+    );
+  });
+
+  it('writes a Skill that changes an attack into the text of that attack', () => {
+    const { details } = brute({
+      level: 20,
+      skills: { crush: {}, 'normal-magic-defense': {} },
+    });
+    const [normal, strong] = details.attacks;
+    expect(normal.effect).toBe(
+      'O ataque tem multi (2). Atinge a Defesa Mágica em vez da Defesa.',
+    );
+    expect(strong.effect).toContain('ficam envolvidas');
+  });
+
+  it('lets a Skill turn the strong attack ranged with another formula', () => {
+    const { details } = brute({
+      level: 20,
+      skills: { 'ranged-strong': { condition: ['slow'] } },
+    });
+    const strong = details.attacks[1];
+    expect([strong.range, strong.accuracy]).toEqual(['ranged', 'DES + VIG']);
+    expect(strong.effect).toBe('Cada alvo atingido sofre a condição lento.');
+  });
+
+  it('fills the choices of a Skill into its text, joining several with "e"', () => {
+    const { details } = sentinel({
+      level: 20,
+      skills: { barricade: { types: ['fire', 'ice'] } },
+    });
+    expect(details.otherActions[0]).toEqual({
+      name: 'Barricada',
+      effect: expect.stringContaining('Resistentes a dano do tipo fogo e gelo'),
+    });
+  });
+
+  it('accepts one damage type for the Barricada, but asks for at least one', () => {
+    const one = sentinel({
+      level: 20,
+      skills: { barricade: { types: ['fire'] } },
+    });
+    expect(one.warnings.join(' ')).not.toContain('Tipos de dano');
+    const none = sentinel({ level: 20, skills: { barricade: { types: [] } } });
+    expect(none.warnings).toContain('Escolha tipos de dano em Barricada.');
+  });
+
+  it("adds the strong attack a Skill gives (hunter), with the Reader's picks", () => {
+    const { details } = assemble('hunter', {
+      level: 20,
+      skills: { 'strong-attack': {} },
+      attacks: {
+        strong: {
+          name: 'Golpe Mortal',
+          range: 'melee',
+          accuracy: 'DES + VIG',
+          damageType: 'dark',
+          choices: {},
+        },
+      },
+    });
+    const strong = details.attacks.find((a) => a.name === 'Golpe Mortal');
+    // RA + 15, plus 5 extra damage at level 20; +2 from the table and +3 the hunter gets at level 10.
+    expect([strong?.damage, strong?.accuracyBonus, strong?.damageType]).toEqual(
+      [20, 5, 'dark'],
+    );
+    expect(strong?.effect).toContain('multi (2)');
+  });
+
+  it('applies a Skill to the strong attack only when there is one', () => {
+    const result = assemble('hunter', {
+      level: 20,
+      skills: { 'strong-magic-defense': {} },
+    });
+    expect(result.warnings).toContain(
+      'Ataque forte contra Defesa Mágica precisa de um ataque forte.',
+    );
+    const withStrong = assemble('hunter', {
+      level: 20,
+      skills: { 'strong-attack': {}, 'strong-magic-defense': {} },
+    });
+    expect(withStrong.details.attacks[1].effect).toContain(
+      'Atinge a Defesa Mágica',
+    );
+  });
+
+  it('warns when a soldier takes a Skill that is for elites and champions only', () => {
+    const result = brute({
+      level: 20,
+      skills: { collapse: { type: ['fire'] } },
+    });
+    expect(result.warnings).toContain(
+      'Relógio de Colapso é só para elite e campeão.',
+    );
+    const elite = brute({
+      level: 20,
+      rank: 'elite',
+      skills: { collapse: { type: ['fire'] } },
+    });
+    expect(elite.warnings.join(' ')).not.toContain('só para');
+  });
+
+  it('counts the Skills against what the level and rank give', () => {
+    // A level 5 soldier gets none; an elite gets one.
+    expect(brute({ skills: { 'steady-recovery': {} } }).warnings).toContain(
+      'Há 1 poder de função, mas o perfil dá 0.',
+    );
+    expect(brute({ rank: 'elite' }).warnings).toContain(
+      'Escolha 1 poder de função (há 0).',
+    );
+    const done = brute({ rank: 'elite', skills: { 'steady-recovery': {} } });
+    expect(done.warnings.join(' ')).not.toContain('poder de função');
+  });
+
+  it('asks for the choices of a picked Skill', () => {
+    const result = brute({ level: 20, skills: { 'ranged-strong': {} } });
+    expect(result.warnings).toContain(
+      'Escolha condição em Ataque forte à distância.',
+    );
+  });
+
+  it('ignores a Skill id the Role does not have', () => {
+    expect(
+      brute({ level: 20, skills: { nonsense: {} } }).details.specialRules,
+    ).toEqual([]);
+  });
+
+  it('asks for more Resistances and Vulnerabilities when a Skill adds them', () => {
+    // The 2 the level 10 grant already asks for, plus the 2 of the Skill.
+    expect(
+      sentinel({ level: 20, skills: { 'resist-two': {} } }).required
+        .resistances,
+    ).toBe(4);
+    const support = assemble('support', {
+      level: 40,
+      rank: 'champion',
+      championX: 2,
+      skills: {
+        'advise-and-inspire': { resource: ['hp'], attribute: ['VON'] },
+      },
+    });
+    expect(support.required.vulnerabilities).toBe(2);
+    expect(support.details.otherActions.map((a) => a.name)).toEqual([
+      'Aconselhar',
+      'Inspirar',
+    ]);
+    // The minor amount of level 40 is 30.
+    expect(support.details.otherActions[1].effect).toContain(
+      'uma quantidade pequena (30) de PV',
+    );
+    expect(support.details.otherActions[1].effect).toContain('dado de Vontade');
+  });
+});
+
+describe('assembleCreature: customization', () => {
+  it('gives a brute +10 Hit Points (before the Rank multiplier) and nothing for a champion', () => {
+    const soldier = assemble('brute', { customization: 'extra' });
+    expect(soldier.details.hp).toBe(80);
+    const champion = assemble('brute', {
+      rank: 'champion',
+      customization: 'extra',
+    });
+    expect(champion.details.hp).toBe(140);
+    expect(champion.warnings).toContain(
+      'Campeões não escolhem personalização.',
+    );
+  });
+
+  it('gives a mage an Immunity to choose, and the others one more Role Skill', () => {
+    expect(
+      assemble('mage', { customization: 'extra' }).required.immunities,
+    ).toBe(1);
+    const hunter = assemble('hunter', {
+      rank: 'elite',
+      customization: 'extra',
+    });
+    // Elite 1 + customization 1 = 2 Skills to pick.
+    expect(hunter.warnings).toContain('Escolha 2 poderes de função (há 0).');
+  });
+
+  it('adds a customization as a special rule, with its choice filled in', () => {
+    const { details } = assemble('brute', {
+      customization: 'c:bad-temper',
+      skills: { 'c:bad-temper': { benefit: ['damage'] } },
+    });
+    expect(details.specialRules).toEqual([
+      {
+        name: 'Mau Humor',
+        effect:
+          'Enquanto estiver em crise, o NPC causa 5 de dano adicional com o ataque normal.',
+      },
+    ]);
+  });
+});
+
+describe('assembleCreature: spells', () => {
+  const pickTwo = (spells: string[], over: Partial<AssemblyInput> = {}) =>
+    assemble('mage', {
+      baseSpells: { option: ['two'], spells },
+      vulnerabilities: ['fire'],
+      ...over,
+    });
+
+  it('builds a spell from the NPC list, filling in the damage type', () => {
+    const result = assemble('sentinel', {
+      level: 20,
+      skills: { 'learn-spells': { option: ['one'], spells: ['npc:breath'] } },
+      spellChoices: { 'npc:breath': { type: ['ice'] } },
+    });
+    // Sopro is RA + 10, plus 5 extra damage at level 20.
+    expect(result.details.spells).toEqual([
+      {
+        name: 'Sopro',
+        mpCost: '5',
+        target: 'Uma criatura',
+        duration: 'Instantânea',
+        offensive: true,
+        accuracy: 'AST + VON',
+        accuracyBonus: 2,
+        effect: 'Causa (RA + 15) de dano do tipo gelo ao alvo.',
+      },
+    ]);
+    expect(result.details.hasSpells).toBe(true);
+  });
+
+  it('adds the +10 PM of the option "one spell and +10 PM"', () => {
+    const plain = assemble('sentinel', { level: 20 });
+    const withSpell = assemble('sentinel', {
+      level: 20,
+      skills: { 'learn-spells': { option: ['one'], spells: ['npc:shell'] } },
+    });
+    expect(withSpell.details.mp - plain.details.mp).toBe(10);
+  });
+
+  it('lets the Reader pick the option of a grant that offers two', () => {
+    const two = pickTwo(['class:fulgur', 'npc:breath']);
+    expect(two.details.spells.map((s) => s.name)).toEqual(['Fulgur', 'Sopro']);
+    expect(two.details.mp).toBe(55);
+    const one = assemble('mage', {
+      baseSpells: { option: ['one'], spells: ['class:fulgur'] },
+      vulnerabilities: ['fire'],
+    });
+    expect(one.details.mp).toBe(65);
+  });
+
+  it("writes a Class spell from its entry, with the level's extra damage added", () => {
+    const { details } = pickTwo(['class:fulgur', 'npc:breath'], { level: 20 });
+    expect(details.spells[0]).toMatchObject({
+      name: 'Fulgur',
+      mpCost: '10 × A',
+      target: 'Até três criaturas',
+      offensive: true,
+      accuracy: 'AST + VON',
+    });
+    // RA + 15 at level 5, RA + 20 at level 20.
+    expect(details.spells[0].effect).toContain(
+      '(RA + 20) pontos de dano de raio',
+    );
+  });
+
+  it('leaves a spell that does no damage as written, with no Magic check (support)', () => {
+    const { details } = assemble('support', {
+      baseSpells: { option: ['one'], spells: ['class:curar'] },
+      vulnerabilities: ['fire'],
+    });
+    expect(details.spells[0]).not.toHaveProperty('accuracy');
+    expect(details.spells[0].effect).toContain('cada alvo recupera 40 PV');
+  });
+
+  it('reads the caster as "o NPC"', () => {
+    const { details } = assemble('saboteur', {
+      level: 20,
+      skills: {
+        'learn-spells': { option: ['one'], spells: ['class:drenar-espirito'] },
+      },
+    });
+    expect(details.spells[0].effect).toContain('o NPC recupera metade dos PM');
+    expect(details.spells[0].effect).not.toContain('você');
+  });
+
+  it('uses the Magic check the Reader picked', () => {
+    const { details } = pickTwo(['npc:breath', 'npc:cursed-breath'], {
+      magicFormula: 'VIG + VON',
+    });
+    expect(details.spells.map((s) => s.accuracy)).toEqual([
+      'VIG + VON',
+      'VIG + VON',
+    ]);
+  });
+
+  it("adds the level's extra damage to a spell with fixed damage (Devastação)", () => {
+    const { details } = assemble('mage', {
+      level: 30,
+      skills: {
+        'learn-spells': { option: ['one'], spells: ['npc:devastation'] },
+      },
+      spellChoices: { 'npc:devastation': { type: ['fire'] } },
+    });
+    expect(details.spells[0].effect).toContain('Causa 35 de dano do tipo fogo');
+  });
+
+  it('asks for the option, the count and the choices of a spell', () => {
+    expect(assemble('mage').warnings).toContain(
+      'Escolha a opção de feitiços (Feitiços).',
+    );
+    expect(pickTwo(['class:fulgur']).warnings).toContain(
+      'Escolha 2 feitiços em Feitiços (há 1).',
+    );
+    const open = assemble('sentinel', {
+      level: 20,
+      skills: { 'learn-spells': { option: ['one'], spells: ['npc:breath'] } },
+    });
+    expect(open.warnings).toContain('Escolha tipo de dano em Sopro.');
+  });
+
+  it('warns about a spell below its level, and about one the grant does not offer', () => {
+    expect(pickTwo(['class:clarao', 'npc:breath']).warnings).toContain(
+      'Clarão só a partir do nível 30.',
+    );
+    expect(pickTwo(['npc:shell', 'npc:breath']).warnings).toContain(
+      'Feitiço fora da lista: npc:shell.',
+    );
+  });
+
+  it("gives the brute's spell Skill its single option without asking", () => {
+    const result = assemble('brute', {
+      level: 20,
+      rank: 'elite',
+      skills: {
+        'learn-spells': { spells: ['npc:poison', 'npc:rage'] },
+        'steady-recovery': {},
+      },
+    });
+    expect(result.details.spells.map((s) => s.name)).toEqual([
+      'Envenenar',
+      'Fúria',
+    ]);
+    expect(result.warnings.join(' ')).not.toContain('opção de feitiços');
+  });
+});
+
+describe('assembleCreature: Negative Skills', () => {
+  const brute = (over: Partial<AssemblyInput> = {}) =>
+    assemble('brute', { level: 20, ...over });
+
+  it('puts the drawback in the stat block and buys one more Role Skill', () => {
+    const plain = brute();
+    const withDrawback = brute({ negative: 'final-delay' });
+    expect(withDrawback.details.specialRules.map((r) => r.name)).toContain(
+      'Atraso Final',
+    );
+    expect(withDrawback.roleSkills).toBe(plain.roleSkills + 1);
+    expect(withDrawback.warnings).toContain(
+      'Escolha 2 poderes de função (há 0).',
+    );
+  });
+
+  it("fills in the amounts of the level and the Reader's choices", () => {
+    const rule = (
+      id: string,
+      name: string,
+      choices: Record<string, string[]>,
+      level = 20,
+    ) =>
+      assemble('brute', {
+        level,
+        negative: id,
+        skills: { [`n:${id}`]: choices },
+      }).details.specialRules.find((r) => r.name === name)?.effect;
+
+    // The heavy amount is 40 from level 20 (30 below).
+    expect(
+      rule('final-detonation', 'Detonação Final', { type: ['fire'] }),
+    ).toContain('uma quantidade grande (40) de dano do tipo fogo');
+    expect(
+      rule('final-detonation', 'Detonação Final', { type: ['fire'] }, 10),
+    ).toContain('quantidade grande (30)');
+    expect(
+      rule('painful-miss', 'Erro Doloroso', {
+        attack: ['normal'],
+        victim: ['ally'],
+      }),
+    ).toBe(
+      'Depois de errar todos os alvos com o ataque normal, o NPC faz um aliado escolhido ao acaso perder uma quantidade pequena (20) de PV (depois de resolvido o ataque).',
+    );
+  });
+
+  it('ties each action to its own condition (Amarras de Condição)', () => {
+    const { details } = brute({
+      negative: 'status-bind',
+      skills: {
+        'n:status-bind': {
+          normal: ['dazed'],
+          strong: ['shaken'],
+          skill: ['slow'],
+          spell: ['weak'],
+        },
+      },
+    });
+    const rule = details.specialRules.find(
+      (r) => r.name === 'Amarras de Condição',
+    );
+    expect(rule?.effect).toContain(
+      'ataque normal (atordoado), ataque forte (abalado), ação Poder (lento) e ação Feitiço (fraco)',
+    );
+  });
+
+  it('asks for the choices of the Negative Skill', () => {
+    const result = brute({ negative: 'final-detonation' });
+    expect(result.warnings).toContain(
+      'Escolha tipo de dano em Detonação Final.',
+    );
+  });
+
+  it('ignores a Negative Skill the rules do not have', () => {
+    const result = brute({ negative: 'nonsense' });
+    expect(result.details.specialRules).toEqual([]);
+    expect(result.roleSkills).toBe(brute().roleSkills);
+  });
+
+  it('gives a champion the same one more Skill', () => {
+    const plain = brute({ rank: 'champion', championX: 2 });
+    const bought = brute({
+      rank: 'champion',
+      championX: 2,
+      negative: 'final-delay',
+    });
+    expect(bought.roleSkills).toBe(plain.roleSkills + 1);
+  });
+});
+
+describe('assemblyRulesComplete', () => {
+  const roles = () => structuredClone(quickAssemblyRoles);
+  const rules = () => structuredClone(quickAssemblyRules);
+
+  it('accepts the Rules as the seed writes them', () => {
+    expect(assemblyRulesComplete(rules(), roles())).toBe(true);
+  });
+
+  it('rejects Rules that miss a part a later step added (an older seed)', () => {
+    const noNegatives = rules() as Partial<typeof quickAssemblyRules>;
+    delete noNegatives.negativeSkills;
+    for (const part of ['bossSkills', 'bossGroups', 'species'] as const) {
+      const older = rules() as Partial<typeof quickAssemblyRules>;
+      delete older[part];
+      expect(
+        assemblyRulesComplete(older as typeof quickAssemblyRules, roles()),
+      ).toBe(false);
+    }
+    expect(
+      assemblyRulesComplete(noNegatives as typeof quickAssemblyRules, roles()),
+    ).toBe(false);
+
+    for (const part of [
+      'skills',
+      'customizations',
+      'attacks',
+      'progression',
+      'extra',
+    ] as const) {
+      const incomplete = roles();
+      delete (incomplete.mage as Partial<(typeof incomplete)['mage']>)[part];
+      expect(assemblyRulesComplete(rules(), incomplete)).toBe(false);
+    }
+  });
+
+  it('rejects a missing Rule or a Role that is missing', () => {
+    expect(assemblyRulesComplete(undefined, roles())).toBe(false);
+    const partial: Partial<ReturnType<typeof roles>> = roles();
+    delete partial.support;
+    expect(assemblyRulesComplete(rules(), partial)).toBe(false);
+  });
+});
+
+describe('assembleCreature: Boss Skills', () => {
+  const champion = (over: Partial<AssemblyInput> = {}) =>
+    assemble('brute', { level: 20, rank: 'champion', championX: 2, ...over });
+
+  it('asks a champion for its Boss Skill, and puts it in the stat block', () => {
+    expect(champion().warnings).toContain('Escolha 1 poder de chefe (há 0).');
+    const done = champion({ bosses: ['second-wind'] });
+    expect(done.warnings.join(' ')).not.toContain('poder de chefe');
+    // The massive amount is 60 from level 20.
+    expect(
+      done.details.specialRules.find((r) => r.name === 'Segundo Fôlego')
+        ?.effect,
+    ).toContain('uma quantidade enorme (60) de PM');
+  });
+
+  it("fills the Reader's choices into a Boss Skill", () => {
+    const { details } = champion({
+      bosses: ['aura-of-suffering'],
+      skills: { 'b:aura-of-suffering': { condition: ['slow'] } },
+    });
+    expect(
+      details.specialRules.find((r) => r.name === 'Aura de Sofrimento')?.effect,
+    ).toContain('não podem se recuperar de lento');
+    expect(champion({ bosses: ['aura-of-suffering'] }).warnings).toContain(
+      'Escolha condição em Aura de Sofrimento.',
+    );
+  });
+
+  it('lets a Boss Skill beyond the first take the place of a Role Skill', () => {
+    // A level 20 champion 2 brute gets 1 + 2 = 3 Role Skills and 1 Boss Skill.
+    expect(champion({ bosses: ['second-wind'] }).warnings).toContain(
+      'Escolha 3 poderes de função (há 0).',
+    );
+    const two = champion({ bosses: ['second-wind', 'undo'] });
+    expect(two.warnings).toContain('Escolha 2 poderes de função (há 0).');
+  });
+
+  it('lets a Negative Skill buy a Boss Skill for a soldier instead of a Role Skill', () => {
+    const soldier = assemble('brute', {
+      negative: 'final-delay',
+      bosses: ['second-wind'],
+    });
+    expect(soldier.warnings.join(' ')).not.toContain('poder de função');
+    expect(soldier.warnings.join(' ')).not.toContain('Há 1 poder de chefe');
+  });
+
+  it('warns when a soldier takes a Boss Skill the build does not pay for', () => {
+    const result = assemble('brute', { bosses: ['second-wind'] });
+    expect(result.warnings).toContain(
+      'Há 1 poder de chefe, mas o perfil dá 0 (cada um a mais ocupa um poder de função).',
+    );
+  });
+
+  it("warns about more than two, and about two of the same group (the book's advice)", () => {
+    const many = champion({ bosses: ['second-wind', 'undo', 'regeneration'] });
+    expect(many.warnings).toContain(
+      'Mais de dois poderes de chefe: o livro pede muito cuidado.',
+    );
+    expect(many.warnings).toContain(
+      'Dois poderes de Sobrevivência: o livro aconselha evitar.',
+    );
+    const mixed = champion({ bosses: ['second-wind', 'doom'] });
+    expect(mixed.warnings.join(' ')).not.toContain('aconselha evitar');
+  });
+
+  it("teaches a spell through Devastação, with the level's extra damage", () => {
+    const { details, warnings } = assemble('brute', {
+      level: 30,
+      rank: 'champion',
+      bosses: ['devastation'],
+      skills: { 'b:devastation': { spells: ['npc:devastation'] } },
+      spellChoices: { 'npc:devastation': { type: ['fire'] } },
+    });
+    expect(details.spells[0].effect).toContain('Causa 35 de dano do tipo fogo');
+    expect(warnings.join(' ')).not.toContain('feitiço');
+  });
+
+  it('ignores a Boss Skill the rules do not have', () => {
+    const result = champion({ bosses: ['nonsense'] });
+    expect(result.details.specialRules).toEqual([]);
+    expect(result.warnings).toContain('Escolha 1 poder de chefe (há 0).');
+  });
+});
+
+describe('assembleCreature: Species', () => {
+  const as = (
+    species: AssemblyInput['species'],
+    over: Partial<AssemblyInput> = {},
+  ) => assemble('brute', { species, ...over });
+  const rule = (result: ReturnType<typeof as>, name: string) =>
+    result.details.specialRules.find((r) => r.name === name)?.effect;
+
+  it('gives a Construct what it always has, and says so in a rule', () => {
+    const result = as('construct');
+    expect(result.details.affinities).toMatchObject({
+      earth: 'resistant',
+      poison: 'immune',
+    });
+    expect(rule(result, 'Construto')).toBe('Imune à condição envenenado.');
+    expect(result.warnings.join(' ')).not.toContain('Espécie');
+  });
+
+  it('asks a Plant for its Vulnerability, from the types the book allows', () => {
+    expect(as('plant').warnings).toContain(
+      'Escolha a Vulnerabilidade da Espécie.',
+    );
+    const fine = as('plant', {
+      speciesVulnerability: 'fire',
+      speciesPicks: ['thorns'],
+    });
+    expect(fine.details.affinities.fire).toBe('vulnerable');
+    expect(rule(fine, 'Planta')).toBe(
+      'Imune às condições atordoado, enfurecido e abalado.',
+    );
+    expect(rule(fine, 'Espinhos')).toContain('5 de dano físico');
+    const wrong = as('plant', {
+      speciesVulnerability: 'earth',
+      speciesPicks: ['thorns'],
+    });
+    expect(wrong.warnings).toContain(
+      'Terra não está entre as Vulnerabilidades que a Espécie permite.',
+    );
+  });
+
+  it("adds a humanoid's options: a bonus, flying and one more Role Skill", () => {
+    const plain = as('humanoid', { speciesVulnerability: 'dark' });
+    const built = as('humanoid', {
+      speciesVulnerability: 'dark',
+      speciesPicks: ['opposed', 'flying', 'role-skill'],
+    });
+    expect(rule(built, 'Bônus em testes opostos')).toContain(
+      'passado ou ao treinamento',
+    );
+    expect(rule(built, 'Voo')).toBe(
+      'Segue o poder de NPC Voo (Livro Básico, p. 309).',
+    );
+    expect(built.roleSkills).toBe(plain.roleSkills + 1);
+    expect(built.warnings.join(' ')).not.toContain('opções da Espécie');
+  });
+
+  it('adds +10 Hit Points before the Rank multiplier', () => {
+    // An elite brute at level 5 has 70 PV: (70 + 10) x 2.
+    const result = as('beast', {
+      rank: 'elite',
+      speciesPicks: ['hp', 'flying'],
+    });
+    expect(result.details.hp).toBe(160);
+  });
+
+  it('asks for the Resistances a Species or an option gives', () => {
+    expect(as('demon').required.resistances).toBe(2);
+    expect(
+      as('monster', { speciesPicks: ['resistances', 'hp'] }).required
+        .resistances,
+    ).toBe(2);
+    expect(as('elemental').required.immunities).toBe(1);
+  });
+
+  it('swaps a Resistance for an Absorption, and warns when there is none to swap', () => {
+    const built = (type: string) =>
+      as('demon', {
+        resistances: ['fire', 'ice'],
+        speciesPicks: ['absorb'],
+        speciesChoices: { absorb: { type: [type] } },
+      });
+    expect(built('fire').details.affinities.fire).toBe('absorbs');
+    expect(built('fire').details.affinities.ice).toBe('resistant');
+    expect(built('dark').warnings).toContain(
+      'Absorção em trevas exige uma Resistência nesse tipo.',
+    );
+    expect(as('demon', { speciesPicks: ['absorb'] }).warnings).toContain(
+      'Escolha tipo de dano em Troca uma Resistência por uma Absorção.',
+    );
+  });
+
+  it('lets an Elemental take an extra Vulnerability to buy an option', () => {
+    const without = as('elemental', { immunities: ['air'] });
+    expect(without.warnings.join(' ')).not.toContain('opções da Espécie');
+    const plain = as('elemental', {
+      immunities: ['air'],
+      speciesExtra: 'fire',
+    });
+    expect(plain.details.affinities.fire).toBe('vulnerable');
+    expect(plain.warnings).toContain('Escolha 1 opção da Espécie (há 0).');
+    const done = as('elemental', {
+      immunities: ['air'],
+      speciesExtra: 'fire',
+      speciesPicks: ['flying'],
+    });
+    expect(done.warnings.join(' ')).not.toContain('opção da Espécie');
+  });
+
+  it('gives an Undead its fixed Affinities and the reminder about healing', () => {
+    const result = as('undead', {
+      speciesExtra: 'fire',
+      speciesPicks: ['absorb'],
+    });
+    // Immunity to dark becomes an Absorption of dark, as the option says.
+    expect(result.details.affinities).toMatchObject({
+      light: 'vulnerable',
+      poison: 'immune',
+      dark: 'absorbs',
+      fire: 'vulnerable',
+    });
+    expect(rule(result, 'Morto-vivo')).toContain(
+      'Efeitos que recuperam PV podem ferir',
+    );
+  });
+
+  it('teaches a spell with +10 PM through a Species option', () => {
+    const plain = as('beast', { speciesPicks: ['hp', 'flying'] });
+    const result = as('beast', {
+      speciesPicks: ['spell', 'hp'],
+      speciesChoices: { spell: { spells: ['npc:shell'] } },
+    });
+    expect(result.details.spells.map((sp) => sp.name)).toEqual(['Concha']);
+    expect(result.details.mp - plain.details.mp).toBe(10);
+  });
+
+  it('asks for the number of options, and for no more than an option allows', () => {
+    expect(as('beast').warnings).toContain(
+      'Escolha 2 opções da Espécie (há 0).',
+    );
+    expect(
+      as('beast', { speciesPicks: ['hp', 'flying', 'opposed'] }).warnings,
+    ).toContain('Há 3 opções da Espécie, mas a Espécie dá 2.');
+    const thrice = as('beast', {
+      speciesPicks: ['role-skill', 'role-skill', 'role-skill'],
+    });
+    expect(thrice.warnings).toContain(
+      'Um poder de função a mais só pode ser escolhida 2 vezes.',
+    );
+    expect(
+      as('beast', { speciesPicks: ['role-skill', 'role-skill'] }).warnings.join(
+        ' ',
+      ),
+    ).not.toContain('só pode ser escolhida');
+  });
+
+  it('warns when the Role gives an Affinity the Species already fixed', () => {
+    const result = as('construct', { vulnerabilities: ['earth'] });
+    expect(result.warnings).toContain('Terra tem mais de uma Afinidade.');
+    expect(result.details.affinities.earth).toBe('resistant');
+  });
+});

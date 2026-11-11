@@ -5,12 +5,14 @@ import { decorateChecks } from '../lib/check';
 import { entryPath } from '../lib/entryTypes';
 import { requirementText } from '../lib/requirements';
 import type {
+  CreatureSummaryDetails,
   HeroicSkillDetails,
   ServiceDetails,
   SkillDetails,
   SpellDetails,
   TransportDetails,
 } from '../api/types';
+import { SPECIES_LABEL, isCreatureGroup, rankText } from '../lib/creatures';
 import {
   MEDIUM_LABEL,
   SERVICE_GROUP_LABEL,
@@ -76,6 +78,27 @@ function TransportFacts({ entry }: { entry: EntrySummary }) {
   );
 }
 
+/** The Creature Group of a member, plain text (the row is already a link). */
+function GroupName({ slug }: { slug: string }) {
+  const { bySlug } = useEntryIndex();
+  const entry = bySlug.get(slug);
+  return entry ? <span className="text-ink">Grupo {entry.name} · </span> : null;
+}
+
+/** "Nível 15 · Planta · Soldado · PV 90 · ": what a Creature is, at a glance. */
+function CreatureFacts({ entry }: { entry: EntrySummary }) {
+  if (isCreatureGroup(entry.details)) return <>Grupo de criaturas · </>;
+  const d = entry.details as CreatureSummaryDetails;
+  return (
+    <>
+      Nível {d.level} · {SPECIES_LABEL[d.species]} · {rankText(d)} · PV{' '}
+      <strong className="text-ink">{d.hp}</strong>
+      {' · '}
+      {d.groupSlug && <GroupName slug={d.groupSlug} />}
+    </>
+  );
+}
+
 /** The facts a Reader scans for, then where it is in the book. */
 function RowMeta({ entry }: { entry: EntrySummary }) {
   return (
@@ -92,6 +115,7 @@ function RowMeta({ entry }: { entry: EntrySummary }) {
           </span>
         </>
       )}
+      {entry.type === 'creature' && <CreatureFacts entry={entry} />}
       {entry.type === 'service' && <ServiceFacts entry={entry} />}
       {entry.type === 'transport' && <TransportFacts entry={entry} />}
       <PageRef page={entry.page} source={entry.source} />

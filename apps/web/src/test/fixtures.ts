@@ -1,5 +1,15 @@
 import { vi } from 'vitest';
-import type { Entry, EntryWithChildren } from '../api/types';
+import type {
+  CreatureDetails,
+  Entry,
+  EntryWithChildren,
+  Role,
+} from '../api/types';
+import { npcSpells } from '../../../api/src/database/seed-data/npc-spells-data';
+import {
+  quickAssemblyRoles,
+  quickAssemblyRules,
+} from '../../../api/src/database/seed-data/quick-assembly-data';
 
 const base = {
   createdAt: '',
@@ -137,9 +147,17 @@ const criar: Entry = {
   details: {
     order: 3,
     steps: [
-      { title: 'Identidade', intro: 'Crie uma frase curta.', entries: ['tracos'] },
+      {
+        title: 'Identidade',
+        intro: 'Crie uma frase curta.',
+        entries: ['tracos'],
+      },
       { title: 'Tema', intro: 'Crie um ideal.', entries: ['tracos'] },
-      { title: 'Classes', intro: 'Escolha duas ou três.', entries: ['elementalista'] },
+      {
+        title: 'Classes',
+        intro: 'Escolha duas ou três.',
+        entries: ['elementalista'],
+      },
     ],
   },
 };
@@ -245,6 +263,214 @@ const descansoVila: Entry = {
   details: { group: 'settlement', cost: 10 },
 };
 
+const cactonto: Entry = {
+  ...base,
+  id: '20',
+  slug: 'cactonto',
+  name: 'Cactonto',
+  type: 'creature',
+  summary: 'Cacto imponente do deserto que drena a água das vítimas.',
+  body: '',
+  tags: ['criatura'],
+  page: 352,
+  details: {
+    level: 15,
+    species: 'plant',
+    rank: 'soldier',
+    villain: false,
+    traits: ['assustador', 'enorme', 'sensível à água', 'territorial'],
+    attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+    hp: 90,
+    crisis: 45,
+    mp: 55,
+    initiative: 7,
+    defense: { value: 0, fixed: false },
+    magicDefense: 0,
+    hasSpells: true,
+    affinities: {
+      air: 'resistant',
+      earth: 'resistant',
+      fire: 'resistant',
+      ice: 'vulnerable',
+      light: 'resistant',
+    },
+    attacks: [
+      {
+        name: 'Abraço Perfurador',
+        range: 'melee',
+        accuracy: 'VIG + VIG',
+        accuracyBonus: 1,
+        damage: 10,
+        damageType: 'physical',
+      },
+      {
+        name: 'Barragem de Espinhos',
+        range: 'ranged',
+        accuracy: 'DES + VIG',
+        accuracyBonus: 1,
+        damage: 5,
+        damageType: 'physical',
+      },
+    ],
+    spells: [
+      {
+        name: 'Drenar Umidade',
+        mpCost: '10',
+        target: 'Uma criatura',
+        duration: 'Instantânea',
+        offensive: true,
+        accuracy: 'VIG + VON',
+        accuracyBonus: 1,
+        effect:
+          'Causa (RA + 15) de dano de veneno e recupera metade dos PV perdidos pelo alvo.',
+      },
+    ],
+    otherActions: [
+      {
+        name: 'Seiva de Cactonto',
+        effect:
+          'Se recupera de fraco e lento e ataca com Barragem de Espinhos.',
+      },
+    ],
+    specialRules: [
+      { name: 'Planta', effect: 'É imune a abalado, atordoado e enfurecido.' },
+    ],
+  },
+};
+
+/** A Creature Group of the Livro Básico shape, for `mockApi({ groups: true })`. */
+const ghost = (
+  id: string,
+  slug: string,
+  name: string,
+  level: number,
+  species: 'undead' | 'beast',
+  hp: number,
+): Entry => ({
+  ...cactonto,
+  id,
+  slug,
+  name,
+  summary: `${name} assombra as ruínas.`,
+  page: 340,
+  details: {
+    ...(cactonto.details as CreatureDetails),
+    level,
+    species,
+    hp,
+    crisis: Math.floor(hp / 2),
+    groupSlug: 'fantasmas',
+  },
+});
+
+const espectro = ghost('30', 'espectro', 'Espectro', 20, 'undead', 100);
+const aparicao = ghost('31', 'aparicao', 'Aparição', 25, 'undead', 130);
+
+const fantasmas: EntryWithChildren = {
+  ...base,
+  id: '32',
+  slug: 'fantasmas',
+  name: 'Fantasmas',
+  type: 'creature',
+  summary: 'Almas que não encontraram descanso.',
+  body: 'Os fantasmas **sempre** aparecem em bando. [[tracos]]',
+  tags: ['criatura'],
+  page: 340,
+  details: { group: true },
+  children: [espectro, aparicao],
+};
+
+/** A Bestiary Vol. I champion, for `mockApi({ vol1: true })`. */
+const dragaoArboreo: Entry = {
+  ...cactonto,
+  id: '40',
+  slug: 'dragao-arboreo',
+  name: 'Dragão Arbóreo',
+  source: 'bestiary-vol-1',
+  summary: 'Dragão ancestral cujas escamas seguem as estações.',
+  page: 95,
+  details: {
+    ...(cactonto.details as CreatureDetails),
+    level: 40,
+    rank: 'champion',
+    championX: 3,
+    role: 'support',
+    flags: ['solo', 'unique'],
+    villain: true,
+    originalName: 'Arboreal Dragon',
+    hp: 360,
+    crisis: 180,
+  },
+};
+
+const ROLE_SLUG: Record<Role, [string, string]> = {
+  brute: ['montagem-rapida-bruto', 'Montagem Rápida: Bruto'],
+  hunter: ['montagem-rapida-cacador', 'Montagem Rápida: Caçador'],
+  mage: ['montagem-rapida-mago', 'Montagem Rápida: Mago'],
+  saboteur: ['montagem-rapida-sabotador', 'Montagem Rápida: Sabotador'],
+  sentinel: ['montagem-rapida-sentinela', 'Montagem Rápida: Sentinela'],
+  support: ['montagem-rapida-apoio', 'Montagem Rápida: Apoio'],
+};
+
+const quickAssembly: Entry = {
+  ...base,
+  id: '30',
+  slug: 'montagem-rapida',
+  name: 'Montagem Rápida',
+  type: 'rule',
+  source: 'bestiary-vol-1',
+  summary: 'Método para montar um NPC depressa.',
+  body: 'Escolha uma função e copie o perfil.',
+  page: 25,
+  details: quickAssemblyRules,
+};
+
+const quickAssemblyRoleRules: Entry[] = (Object.keys(ROLE_SLUG) as Role[]).map(
+  (role, i) => ({
+    ...base,
+    id: String(31 + i),
+    slug: ROLE_SLUG[role][0],
+    name: ROLE_SLUG[role][1],
+    type: 'rule' as const,
+    source: 'bestiary-vol-1' as const,
+    summary: `Perfil da função ${role}.`,
+    body: '',
+    page: 30 + i * 4,
+    details: quickAssemblyRoles[role],
+  }),
+);
+
+const npcSpellsRule: Entry = {
+  ...base,
+  id: '40',
+  slug: 'feiticos-de-npc',
+  name: 'Feitiços de NPC',
+  type: 'rule',
+  summary: 'Os feitiços que um NPC pode aprender.',
+  body: '',
+  page: 310,
+  details: { forge: 'npc-spells', spells: npcSpells },
+};
+
+const fulgur: Entry = {
+  ...base,
+  id: '41',
+  slug: 'fulgur',
+  name: 'Fulgur',
+  type: 'spell',
+  summary:
+    'Uma onda elétrica: causa (RA + 15) pontos de dano a cada alvo atingido.',
+  body: '',
+  page: 188,
+  details: {
+    classSlug: 'elementalista',
+    mpCost: '10 × A',
+    target: 'Até três criaturas',
+    duration: 'Instantânea',
+    offensive: true,
+  },
+};
+
 const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   [
     tracos,
@@ -260,11 +486,16 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     veiculoPlanetario,
     viagemAerea,
     descansoVila,
+    cactonto,
+    quickAssembly,
+    ...quickAssemblyRoleRules,
+    npcSpellsRule,
+    fulgur,
     criar,
-  ].map(
-    (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],
-  ),
+  ].map((e) => [e.slug, 'children' in e ? e : { ...e, children: [] }]),
 );
+
+const HEAVY_FORGES = ['quick-assembly', 'quick-assembly-role', 'npc-spells'];
 
 const summaryOf = ({
   id,
@@ -285,26 +516,55 @@ const summaryOf = ({
   source,
   page,
   tags,
-  details,
+  // Like the API: the big assembler Rules reach the list as their marker only.
+  details: HEAVY_FORGES.includes((details as { forge?: string }).forge ?? '')
+    ? { forge: (details as { forge: string }).forge }
+    : details,
 });
 
 const fold = (s: string) =>
   s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
 /** Stubs fetch with the fixtures; returns the mock to assert on. */
-export function mockApi() {
+/**
+ * `stale`: serve the Quick Assembly Rules as an older seed wrote them (no Negative
+ * Skills), as a browser can when it holds a cached response from before a re-seed.
+ * `groups`: also serve the Creature Group "Fantasmas" and its two members.
+ */
+export function mockApi({
+  stale = false,
+  groups = false,
+  vol1 = false,
+}: { stale?: boolean; groups?: boolean; vol1?: boolean } = {}) {
+  const extra: Entry[] = [
+    ...(vol1 ? [dragaoArboreo] : []),
+    ...(groups ? [fantasmas, espectro, aparicao] : []),
+  ];
+  const table: Record<string, Entry | EntryWithChildren> = {
+    ...DETAILS,
+    ...Object.fromEntries(
+      extra.map((e) => [e.slug, 'children' in e ? e : { ...e, children: [] }]),
+    ),
+  };
+  const older = <T extends { slug: string; details: unknown }>(entry: T): T =>
+    stale && entry.slug === 'montagem-rapida'
+      ? {
+          ...entry,
+          details: { ...(entry.details as object), negativeSkills: undefined },
+        }
+      : entry;
   const fetchMock = vi.fn(async (input: string) => {
     const url = new URL(input, 'http://localhost');
     if (url.pathname === '/api/entries') {
       const q = fold(url.searchParams.get('search') ?? '');
-      const list = Object.values(DETAILS)
+      const list = Object.values(table)
         .filter((e) => fold(`${e.name} ${e.summary} ${e.body}`).includes(q))
         .map(summaryOf);
       return { ok: true, status: 200, json: async () => list };
     }
-    const entry = DETAILS[url.pathname.replace('/api/entries/', '')];
+    const entry = table[url.pathname.replace('/api/entries/', '')];
     return entry
-      ? { ok: true, status: 200, json: async () => entry }
+      ? { ok: true, status: 200, json: async () => older(entry) }
       : { ok: false, status: 404, json: async () => ({}) };
   });
   vi.stubGlobal('fetch', fetchMock);

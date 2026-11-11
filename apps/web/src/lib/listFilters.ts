@@ -1,4 +1,7 @@
 import type {
+  CreatureSummaryDetails,
+  DamageType,
+  Affinity,
   EntrySummary,
   EntryType,
   EquipmentDetails,
@@ -8,6 +11,17 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
+import {
+  AFFINITY_ORDER,
+  DAMAGE_ORDER,
+  RANK_LABEL,
+  RANK_ORDER,
+  ROLE_LABEL,
+  ROLE_ORDER,
+  SPECIES_LABEL,
+  affinityLabel,
+  isCreatureGroup,
+} from './creatures';
 import { EQUIPMENT_KIND_FILTERS, kindFromParam } from './equipmentKinds';
 import { isOpenToAll } from './requirements';
 import { SOURCE_LABEL } from './sources';
@@ -84,6 +98,22 @@ const mediumRow = (values: (e: EntrySummary) => string[]): RowSpec => ({
   order: MEDIUM_ORDER,
 });
 
+// Every level a Creature can have, so the options keep a numeric order.
+const LEVELS = [5, 10, 15, 20, 30, 40, 50, 60].map(String);
+// Damage type by Affinity, in the order the bestiary prints them.
+const AFFINITY_VALUES = AFFINITY_ORDER.flatMap((affinity) =>
+  DAMAGE_ORDER.map((damage) => `${damage}:${affinity}`),
+);
+
+const stats = (e: EntrySummary) => e.details as CreatureSummaryDetails;
+
+// A Creature Group has no stat block, so it has no value in the rows about stats
+// (only in "Livro"): any of those filters leaves it out, and keeps its members.
+const statRow = (spec: RowSpec): RowSpec => ({
+  ...spec,
+  values: (e) => (isCreatureGroup(e.details) ? [] : spec.values(e)),
+});
+
 const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
   class: [bookRow],
   skill: [
@@ -145,6 +175,69 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
       labelOf: (value) => (value === 'sim' ? 'Marcial' : 'Não marcial'),
       order: ['sim', 'nao'],
     },
+    bookRow,
+  ],
+  creature: [
+    statRow({
+      param: 'especie',
+      label: 'Espécie',
+      values: (e) => [stats(e).species],
+      labelOf: (value) =>
+        SPECIES_LABEL[value as keyof typeof SPECIES_LABEL] ?? value,
+    }),
+    statRow({
+      param: 'nivel',
+      label: 'Nível',
+      values: (e) => [String(stats(e).level)],
+      labelOf: (value) => `Nível ${value}`,
+      order: LEVELS,
+    }),
+    statRow({
+      param: 'afinidade',
+      label: 'Afinidade',
+      // "gelo:vulnerable": the damage type, then how the Creature fares against it.
+      values: (e) =>
+        Object.entries(stats(e).affinities).map(
+          ([damage, affinity]) => `${damage}:${affinity}`,
+        ),
+      labelOf: (value) => {
+        const [damage, affinity] = value.split(':');
+        return affinityLabel(damage as DamageType, affinity as Affinity);
+      },
+      order: AFFINITY_VALUES,
+    }),
+    statRow({
+      param: 'feiticos',
+      label: 'Feitiços',
+      values: (e) => [stats(e).hasSpells ? 'sim' : 'nao'],
+      labelOf: (value) => (value === 'sim' ? 'Lança feitiços' : 'Não lança feitiços'),
+      order: ['sim', 'nao'],
+    }),
+    statRow({
+      param: 'patente',
+      label: 'Patente',
+      values: (e) => [stats(e).rank],
+      labelOf: (value) => RANK_LABEL[value as keyof typeof RANK_LABEL] ?? value,
+      order: RANK_ORDER,
+    }),
+    statRow({
+      param: 'funcao',
+      label: 'Função',
+      // Only Quick Assembly (Bestiary Vol. I) Creatures have a Role.
+      values: (e) => {
+        const { role } = stats(e);
+        return role ? [role] : [];
+      },
+      labelOf: (value) => ROLE_LABEL[value as keyof typeof ROLE_LABEL] ?? value,
+      order: ROLE_ORDER,
+    }),
+    statRow({
+      param: 'vilao',
+      label: 'Vilão',
+      values: (e) => [stats(e).villain ? 'sim' : 'nao'],
+      labelOf: (value) => (value === 'sim' ? 'Vilão' : 'Não é vilão'),
+      order: ['sim', 'nao'],
+    }),
     bookRow,
   ],
   service: [

@@ -24,6 +24,8 @@ import { mercador } from './classes/natural-fantasy/mercador';
 import { esper } from './classes/techno-fantasy/esper';
 import { mutante } from './classes/techno-fantasy/mutante';
 import { piloto } from './classes/techno-fantasy/piloto';
+import { criaturasBestiaryVol1 } from './creatures/bestiary-vol-1';
+import { criaturasLivroBasico } from './creatures/livro-basico';
 import { armasBasicas } from './equipment/armas-basicas';
 import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
 import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
@@ -39,6 +41,8 @@ import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
 import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
 import { poderesHeroicosTechnoFantasy } from './heroic-skills/techno-fantasy';
 import { inBook } from './helpers';
+import { npcSpellsRule } from './npc-spells';
+import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
 import { weaponForgeRules } from './weapon-forge';
 import { SeedEntry } from './types';
@@ -64,6 +68,10 @@ export const seedEntries: SeedEntry[] = [
   ...orador,
   ...quimerista,
   ...armasBasicas,
+  ...criaturasLivroBasico,
+  ...criaturasBestiaryVol1,
+  npcSpellsRule,
+  ...quickAssemblySeed,
   ...weaponForgeRules,
   ...servicesAndTransport,
   ...poderesHeroicosLivroBasico,

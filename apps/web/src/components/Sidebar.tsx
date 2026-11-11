@@ -9,6 +9,7 @@ import {
   GiCharacter,
   GiCheckedShield,
   GiCrown,
+  GiDragonHead,
   GiHelmet,
   GiHouse,
   GiMagicSwirl,
@@ -26,6 +27,7 @@ import {
   equipmentPath,
   kindFromParam,
 } from '../lib/equipmentKinds';
+import { LAB_PATH } from '../lib/laboratory';
 import { sortedGuides } from '../lib/guides';
 import {
   TRAVEL_TYPES,
@@ -74,6 +76,8 @@ interface MenuItem {
   types: readonly EntryType[];
   /** Equipment Kind this item filters by; `null` is "all equipment". */
   kind?: string | null;
+  /** A tool page of its own (not an Entry Type list): current by its path, no count. */
+  page?: boolean;
 }
 
 interface MenuGroup {
@@ -85,6 +89,26 @@ interface MenuGroup {
 
 // Alphabetical (PT-BR), as in the Archives of Nethys; "all" always leads.
 const GROUPS: MenuGroup[] = [
+  {
+    id: 'bestiario',
+    title: 'Bestiário',
+    icon: GiDragonHead,
+    items: [
+      {
+        label: 'Criaturas',
+        icon: GiDragonHead,
+        to: typePath('creature'),
+        types: ['creature'],
+      },
+      {
+        label: 'Laboratório Oroboros',
+        icon: GiMagicSwirl,
+        to: LAB_PATH,
+        types: [],
+        page: true,
+      },
+    ],
+  },
   {
     id: 'criacao',
     title: 'Criação de Personagem',
@@ -155,6 +179,7 @@ export function Sidebar({ open, onClose }: Props) {
   }
 
   const isActive = (item: MenuItem) => {
+    if (item.page) return pathname === item.to;
     if (!currentType || !item.types.includes(currentType)) return false;
     if (item.kind === undefined) return true;
     if (item.kind === null) return onList && currentKind === null;
@@ -256,7 +281,7 @@ export function Sidebar({ open, onClose }: Props) {
                           >
                             <span className="flex items-center justify-between gap-2">
                               <MenuLabel icon={item.icon}>{item.label}</MenuLabel>
-                              {!isLoading && (
+                              {!isLoading && !item.page && (
                                 <span
                                   className={`text-[15px] font-normal ${
                                     active ? 'text-accent-ink' : 'text-muted'

@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { NotFoundState } from './components/States';
+import { CreatureLab } from './pages/CreatureLab';
 import { EntryPage } from './pages/EntryPage';
 import { GuidePage } from './pages/GuidePage';
 import { Home } from './pages/Home';
@@ -14,6 +15,7 @@ export function App() {
         <Route index element={<Home />} />
         <Route path="buscar" element={<Search />} />
         <Route path="guias/:slug" element={<GuidePage />} />
+        <Route path="laboratorio-oroboros" element={<CreatureLab />} />
         <Route path=":tipo" element={<TypeList />} />
         <Route path=":tipo/:slug" element={<EntryPage />} />
         <Route path="*" element={<NotFoundState />} />

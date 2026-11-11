@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type {
+  CreatureDetails,
   EquipmentDetails,
   HeroicSkillDetails,
   Entry,
@@ -13,6 +14,13 @@ import type {
 import { BoltIcon } from '../components/Icons';
 import { Requirements } from '../components/Requirements';
 import { decorateChecks } from './check';
+import {
+  FLAG_LABEL,
+  rankText,
+  ROLE_LABEL,
+  SPECIES_LABEL,
+  isCreatureGroup,
+} from './creatures';
 import { entryPath } from './entryTypes';
 import {
   MEDIUM_LABEL,
@@ -135,6 +143,25 @@ export function statCells(
         value: d.cost === null ? '—' : `${d.cost.toLocaleString('pt-BR')}z`,
       });
       if (d.martial) cells.push({ label: 'Marcial', value: 'Sim' });
+      return cells;
+    }
+    case 'creature': {
+      if (isCreatureGroup(entry.details)) return [];
+      const d = entry.details as CreatureDetails;
+      const cells: Cell[] = [
+        { label: 'Nível', value: d.level },
+        { label: 'Espécie', value: SPECIES_LABEL[d.species] },
+        { label: 'Patente', value: rankText(d) },
+      ];
+      if (d.role) cells.push({ label: 'Função', value: ROLE_LABEL[d.role] });
+      if (d.flags && d.flags.length > 0)
+        cells.push({
+          label: 'Marcas',
+          value: d.flags.map((f) => FLAG_LABEL[f]).join(', '),
+        });
+      if (d.villain) cells.push({ label: 'Vilão', value: 'Sim' });
+      if (d.originalName)
+        cells.push({ label: 'Nome original', value: d.originalName });
       return cells;
     }
     case 'service': {

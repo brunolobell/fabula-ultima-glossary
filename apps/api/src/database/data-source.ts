@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { config } from 'dotenv';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { CreatureStats } from '../entries/entities/creature-stats.entity';
 import { Entry } from '../entries/entities/entry.entity';
 
 // Load .env for standalone usage (TypeORM CLI, seed script).
@@ -22,7 +23,7 @@ const connection: Partial<PostgresConnectionOptions> = process.env.DATABASE_URL
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   ...connection,
-  entities: [Entry],
+  entities: [Entry, CreatureStats],
   migrations: ['dist/database/migrations/*.js'],
   // Dev convenience. Prefer migrations in production.
   synchronize: process.env.DB_SYNC === 'true',
