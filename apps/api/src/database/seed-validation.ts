@@ -629,8 +629,6 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         if (!RANKS.includes(rank)) fail(`unknown details.rank "${rank}"`);
         if (entry.source === 'bestiary-vol-1' && !entry.details.originalName)
           fail('a Bestiary Vol. I Creature needs details.originalName');
-        if (entry.source === 'bestiary-vol-1' && !entry.details.role)
-          fail('a Bestiary Vol. I Creature needs details.role');
         const { championX, flags } = entry.details;
         if (rank === 'champion' && entry.source === 'bestiary-vol-1') {
           if (championX === undefined)

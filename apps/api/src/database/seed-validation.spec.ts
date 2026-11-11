@@ -614,10 +614,8 @@ describe('validateSeed', () => {
           { source: 'bestiary-vol-1', page: 120, ...entry },
         );
 
-      it('needs a Role', () => {
-        expect(validateSeed([volumeOne({ role: undefined })])).toEqual([
-          'cactonto: a Bestiary Vol. I Creature needs details.role',
-        ]);
+      it('may have no Role (the final boss and its worlds have none)', () => {
+        expect(validateSeed([volumeOne({ role: undefined })])).toEqual([]);
       });
 
       it('gives a champion the number of soldiers it replaces, from 1 to 6, and nobody else', () => {
