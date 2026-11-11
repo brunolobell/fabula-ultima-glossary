@@ -8,4 +8,6 @@ import { criaturasVol1D } from './d';
 export const criaturasBestiaryVol1: SeedEntry[] = [
   ...criaturasVol1A,
   ...criaturasVol1B,
+  ...criaturasVol1C,
+  ...criaturasVol1D,
 ];
