@@ -22,6 +22,7 @@ import {
   MEDIUMS,
   SERVICE_GROUPS,
   TRANSPORT_CLASSES,
+  isCreatureGroup,
 } from '../entries/entry-types';
 import { SeedEntry } from './seed-data/types';
 
@@ -449,6 +450,16 @@ export function validateSeed(entries: SeedEntry[]): string[] {
     typeBySlug.set(slug, entry.type);
   }
 
+  // Creature Groups: stat-less Creature Entries that the other Creatures point to.
+  const groupSlugs = new Set<string>();
+  const groupsWithMembers = new Set<string>();
+  for (const entry of entries) {
+    if (entry.type !== 'creature') continue;
+    if (isCreatureGroup(entry.details)) groupSlugs.add(resolveSlug(entry));
+    else if (entry.details.groupSlug)
+      groupsWithMembers.add(entry.details.groupSlug);
+  }
+
   const expectType = (from: string, slug: string, type: EntryType) => {
     if (typeBySlug.get(slug) !== type) {
       errors.push(`${from}: "${slug}" is not a ${type} entry`);
@@ -603,6 +614,13 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         break;
       }
       case 'creature': {
+        if (isCreatureGroup(entry.details)) {
+          if (!groupsWithMembers.has(slug))
+            fail('a creature group needs at least one member');
+          break;
+        }
+        if (entry.details.groupSlug && !groupSlugs.has(entry.details.groupSlug))
+          fail(`"${entry.details.groupSlug}" is not a creature group`);
         const { level, hp, crisis, attributes, species, rank, affinities } =
           entry.details;
         if (!SPECIES.includes(species))

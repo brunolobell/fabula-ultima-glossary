@@ -1,4 +1,9 @@
-import { statsFromCreatureDetails } from './creature-stats.mapper';
+import {
+  creatureDetailsFromStats,
+  creatureSummaryFromStats,
+  statsFromCreatureDetails,
+} from './creature-stats.mapper';
+import { CreatureStats } from './entities/creature-stats.entity';
 import { CreatureDetails } from './entry-types';
 
 const details: CreatureDetails = {
@@ -39,6 +44,8 @@ describe('statsFromCreatureDetails', () => {
       role: null,
       villain: false,
       originalName: null,
+      groupSlug: null,
+      groupOrder: null,
       traits: ['assustador'],
       des: 8,
       ast: 6,
@@ -72,5 +79,38 @@ describe('statsFromCreatureDetails', () => {
       originalName: 'Cactoid',
       hasSpells: false,
     });
+  });
+
+  it('keeps the Creature Group and the place in it', () => {
+    const row = statsFromCreatureDetails(
+      { ...details, groupSlug: 'fantasmas' },
+      2,
+    );
+    expect(row).toMatchObject({ groupSlug: 'fantasmas', groupOrder: 2 });
+  });
+});
+
+describe('creature summaries and details', () => {
+  const row = {
+    ...statsFromCreatureDetails({ ...details, groupSlug: 'fantasmas' }, 1),
+    entryId: 'e1',
+  } as CreatureStats;
+
+  it('tells the Group of a member in the list and in the entry', () => {
+    expect(creatureSummaryFromStats(row)).toMatchObject({
+      groupSlug: 'fantasmas',
+    });
+    expect(creatureDetailsFromStats(row)).toMatchObject({
+      groupSlug: 'fantasmas',
+    });
+  });
+
+  it('leaves groupSlug out for a Creature with no Group', () => {
+    const alone = {
+      ...row,
+      groupSlug: null,
+      groupOrder: null,
+    } as CreatureStats;
+    expect(creatureSummaryFromStats(alone)).not.toHaveProperty('groupSlug');
   });
 });

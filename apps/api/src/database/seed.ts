@@ -3,6 +3,7 @@ import { creatureSearchTerms } from '../entries/creature-search';
 import { statsFromCreatureDetails } from '../entries/creature-stats.mapper';
 import { CreatureStats } from '../entries/entities/creature-stats.entity';
 import { Entry } from '../entries/entities/entry.entity';
+import { isCreatureGroup } from '../entries/entry-types';
 import dataSource from './data-source';
 import { seedEntries } from './seed-data';
 import { resolveSlug, validateSeed } from './seed-validation';
@@ -25,6 +26,8 @@ async function run() {
   const statsRepo = dataSource.getRepository(CreatureStats);
 
   const slugs: string[] = [];
+  // Members of a Creature Group keep the order of the seed file.
+  const membersSeen = new Map<string, number>();
   for (const { slug: _slug, ...data } of seedEntries) {
     const slug = resolveSlug({ name: data.name, slug: _slug });
     slugs.push(slug);
@@ -35,23 +38,31 @@ async function run() {
       source: data.source ?? 'livro-basico',
       body: data.body ?? '',
       tags: data.tags ?? [],
-      // The stat block lives in `creature_stats`, not in the Entry.
-      details: data.type === 'creature' ? {} : data.details,
+      // The stat block lives in `creature_stats`, not in the Entry; a Creature
+      // Group has none, so its marker stays in the Entry.
+      details:
+        data.type === 'creature' && !isCreatureGroup(data.details)
+          ? {}
+          : data.details,
     };
     const existing = await repo.findOne({ where: { slug } });
     const entry = existing
       ? repo.merge(existing, fields as Partial<Entry>)
       : repo.create(fields as Partial<Entry>);
-    if (data.type === 'creature') {
-      entry.searchTerms = creatureSearchTerms(data.details);
-    }
+    const stats =
+      data.type === 'creature' && !isCreatureGroup(data.details)
+        ? data.details
+        : null;
+    if (stats) entry.searchTerms = creatureSearchTerms(stats);
     const saved = await repo.save(entry);
 
-    if (data.type === 'creature') {
+    if (stats) {
+      const order = membersSeen.get(stats.groupSlug ?? '') ?? 0;
+      if (stats.groupSlug) membersSeen.set(stats.groupSlug, order + 1);
       await statsRepo.save(
         statsRepo.create({
           entryId: saved.id,
-          ...statsFromCreatureDetails(data.details),
+          ...statsFromCreatureDetails(stats, order),
         }),
       );
     }

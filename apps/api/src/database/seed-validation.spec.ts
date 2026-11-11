@@ -1,4 +1,4 @@
-import { CreatureDetails } from '../entries/entry-types';
+import { CreatureDetails, isCreatureGroup } from '../entries/entry-types';
 import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
@@ -393,9 +393,13 @@ describe('validateSeed', () => {
         ...entry,
       }) as SeedEntry;
 
+    // Creatures with a stat block (Creature Groups have none).
     const bestiary = seedEntries.filter(
-      (e): e is Extract<SeedEntry, { type: 'creature' }> =>
-        e.type === 'creature',
+      (
+        e,
+      ): e is Extract<SeedEntry, { type: 'creature' }> & {
+        details: CreatureDetails;
+      } => e.type === 'creature' && !isCreatureGroup(e.details),
     );
     const ofSpecies = (species: string) =>
       bestiary.filter((e) => e.details.species === species);
@@ -507,6 +511,64 @@ describe('validateSeed', () => {
       expect(spells).toMatchObject([
         { name: 'Drenar Umidade', mpCost: '10', offensive: true },
       ]);
+    });
+
+    describe('Creature Groups', () => {
+      // A Group is a Creature Entry with no stat block; its members point to it.
+      const group = (name = 'Fantasmas'): SeedEntry =>
+        ({
+          type: 'creature',
+          name,
+          page: 330,
+          summary: 'Almas que não encontraram descanso.',
+          details: { group: true },
+        }) as SeedEntry;
+      const member = (name: string, groupSlug: string): SeedEntry =>
+        creature({ groupSlug }, { name });
+
+      it('accepts a Group whose members point to it', () => {
+        expect(
+          validateSeed([
+            group(),
+            member('Espectro', 'fantasmas'),
+            member('Aparição', 'fantasmas'),
+          ]),
+        ).toEqual([]);
+      });
+
+      it('rejects a member of a Group that does not exist', () => {
+        expect(validateSeed([member('Espectro', 'fantasmas')])).toEqual([
+          'espectro: "fantasmas" is not a creature group',
+        ]);
+      });
+
+      it('rejects a member of an Entry that is not a Creature', () => {
+        const rule = {
+          type: 'rule',
+          name: 'Fantasmas',
+          page: 10,
+          summary: 'Regra.',
+          details: {},
+        } as SeedEntry;
+        expect(validateSeed([rule, member('Espectro', 'fantasmas')])).toEqual([
+          'espectro: "fantasmas" is not a creature group',
+        ]);
+      });
+
+      it('rejects a member of a Creature that has a stat block of its own', () => {
+        expect(
+          validateSeed([
+            creature({}, { name: 'Chefe' }),
+            member('Espectro', 'chefe'),
+          ]),
+        ).toEqual(['espectro: "chefe" is not a creature group']);
+      });
+
+      it('rejects a Group with no members', () => {
+        expect(validateSeed([group()])).toEqual([
+          'fantasmas: a creature group needs at least one member',
+        ]);
+      });
     });
 
     it('accepts a valid Livro Básico Creature', () => {

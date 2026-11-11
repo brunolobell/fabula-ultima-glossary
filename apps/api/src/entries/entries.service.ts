@@ -7,7 +7,7 @@ import {
 } from './creature-stats.mapper';
 import { CreatureStats } from './entities/creature-stats.entity';
 import { Entry } from './entities/entry.entity';
-import { EntryType } from './entry-types';
+import { EntryType, isCreatureGroup } from './entry-types';
 import { normalizeText } from './slug';
 
 export type EntrySummary = Pick<
@@ -49,6 +49,7 @@ const CREATURE_SUMMARY_COLUMNS: (keyof CreatureStats)[] = [
   'role',
   'villain',
   'originalName',
+  'groupSlug',
   'traits',
   'des',
   'ast',
@@ -131,15 +132,30 @@ export class EntriesService {
     if (!entry) {
       throw new NotFoundException(`Entry "${slug}" not found`);
     }
-    const children =
-      entry.type === 'class' ? await this.findClassChildren(entry.slug) : [];
-    if (entry.type === 'creature') {
+    let children: Entry[] = [];
+    if (entry.type === 'class') {
+      children = await this.findClassChildren(entry.slug);
+    } else if (entry.type === 'creature' && isCreatureGroup(entry.details)) {
+      children = await this.findGroupMembers(entry.slug);
+    } else if (entry.type === 'creature') {
       const row = await this.creatureStats.findOne({
         where: { entryId: entry.id },
       });
       if (row) entry.details = creatureDetailsFromStats(row);
     }
     return Object.assign(entry, { children });
+  }
+
+  /** The members of a Creature Group, each with its whole stat block as `details`. */
+  private async findGroupMembers(groupSlug: string): Promise<Entry[]> {
+    const rows = await this.creatureStats.find({
+      where: { groupSlug },
+      relations: { entry: true },
+      order: { groupOrder: 'ASC' },
+    });
+    return rows.map((row) =>
+      Object.assign(row.entry, { details: creatureDetailsFromStats(row) }),
+    );
   }
 
   private findClassChildren(classSlug: string): Promise<Entry[]> {

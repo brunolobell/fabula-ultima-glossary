@@ -261,6 +261,8 @@ export interface CreatureDetails {
   villain: boolean;
   /** The English name, kept (and searchable) for Entries from the Bestiary Vol. I. */
   originalName?: string;
+  /** Slug of the Creature Group this Creature belongs to (a stat-less Creature Entry). */
+  groupSlug?: string;
   /** "Traços típicos". */
   traits: string[];
   attributes: Record<AttributeCode, Die>;
@@ -279,6 +281,19 @@ export interface CreatureDetails {
   otherActions: CreatureAbility[];
   specialRules: CreatureAbility[];
 }
+
+/**
+ * A Creature Group ("grupo de criaturas"): a Creature Entry with no stat block that
+ * gathers the Creatures pointing to it by `groupSlug`. Stored in `entries.details`.
+ */
+export interface CreatureGroupDetails {
+  group: true;
+}
+
+export const isCreatureGroup = (
+  details: object,
+): details is CreatureGroupDetails =>
+  (details as { group?: unknown }).group === true;
 
 /** The stat block without its abilities, plus `hasSpells`: what the list endpoint sends. */
 export type ServedCreatureSummary = Omit<
@@ -667,7 +682,7 @@ export interface DetailsByType {
   'heroic-skill': HeroicSkillDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
-  creature: CreatureDetails;
+  creature: CreatureDetails | CreatureGroupDetails;
   service: ServiceDetails;
   transport: TransportDetails;
   guide: GuideDetails;

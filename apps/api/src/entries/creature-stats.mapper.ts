@@ -10,6 +10,8 @@ export type CreatureStatsColumns = Omit<CreatureStats, 'entryId' | 'entry'>;
 
 export function statsFromCreatureDetails(
   details: CreatureDetails,
+  /** Place among the members of its Creature Group. */
+  groupOrder?: number,
 ): CreatureStatsColumns {
   return {
     level: details.level,
@@ -18,6 +20,8 @@ export function statsFromCreatureDetails(
     role: details.role ?? null,
     villain: details.villain,
     originalName: details.originalName ?? null,
+    groupSlug: details.groupSlug ?? null,
+    groupOrder: details.groupSlug ? (groupOrder ?? 0) : null,
     traits: details.traits,
     des: details.attributes.DES,
     ast: details.attributes.AST,
@@ -50,6 +54,7 @@ export function creatureSummaryFromStats(
     ...(row.role ? { role: row.role } : {}),
     villain: row.villain,
     ...(row.originalName ? { originalName: row.originalName } : {}),
+    ...(row.groupSlug ? { groupSlug: row.groupSlug } : {}),
     traits: row.traits,
     attributes: { DES: row.des, AST: row.ast, VIG: row.vig, VON: row.von },
     hp: row.hp,

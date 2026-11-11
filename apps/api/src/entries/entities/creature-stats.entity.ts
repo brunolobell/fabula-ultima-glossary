@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import {
   Affinity,
   CreatureAbility,
@@ -48,6 +55,15 @@ export class CreatureStats {
   /** English name of a Bestiary Vol. I Creature. */
   @Column({ type: 'text', nullable: true })
   originalName: string | null;
+
+  /** Slug of the Creature Group this Creature belongs to; null when it has none. */
+  @Index('IDX_creature_stats_groupSlug')
+  @Column({ type: 'text', nullable: true })
+  groupSlug: string | null;
+
+  /** Place among the members of its Group (the order of the seed file). */
+  @Column({ type: 'int', nullable: true })
+  groupOrder: number | null;
 
   @Column('text', { array: true, default: () => "'{}'" })
   traits: string[];

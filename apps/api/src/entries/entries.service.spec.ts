@@ -133,6 +133,69 @@ describe('EntriesService', () => {
     expect(list[1].details).toEqual({});
   });
 
+  describe('Creature Groups', () => {
+    const member = (id: string, order: number, name: string) => ({
+      ...cactontoRow,
+      entryId: id,
+      groupSlug: 'fantasmas',
+      groupOrder: order,
+      entry: { id, slug: name, name, type: 'creature', details: {} },
+    });
+
+    it('serves a Group with its members, stat blocks in full, in their order', async () => {
+      repo.findOne.mockResolvedValue({
+        id: 'g1',
+        slug: 'fantasmas',
+        type: 'creature',
+        details: { group: true },
+      });
+      stats.find.mockResolvedValue([
+        member('m1', 0, 'espectro'),
+        member('m2', 1, 'aparicao'),
+      ]);
+
+      const result = await service.findOne('fantasmas');
+
+      expect(stats.find).toHaveBeenCalledWith({
+        where: { groupSlug: 'fantasmas' },
+        relations: { entry: true },
+        order: { groupOrder: 'ASC' },
+      });
+      expect(stats.findOne).not.toHaveBeenCalled();
+      expect(result.details).toEqual({ group: true });
+      expect(result.children.map((c) => c.slug)).toEqual([
+        'espectro',
+        'aparicao',
+      ]);
+      expect(result.children[0].details).toMatchObject({
+        level: 15,
+        groupSlug: 'fantasmas',
+        attacks: cactontoRow.attacks,
+      });
+    });
+
+    it('lists a member with its Group', async () => {
+      repo.createQueryBuilder.mockReturnValue(
+        queryBuilder([
+          { id: 'm1', slug: 'espectro', type: 'creature', details: {} },
+          {
+            id: 'g1',
+            slug: 'fantasmas',
+            type: 'creature',
+            details: { group: true },
+          },
+        ]),
+      );
+      stats.find.mockResolvedValue([member('m1', 0, 'espectro')]);
+
+      const list = await service.findAll(undefined, 'creature');
+
+      expect(list[0].details).toMatchObject({ groupSlug: 'fantasmas' });
+      // The Group has no stats row: its details stay as stored.
+      expect(list[1].details).toEqual({ group: true });
+    });
+  });
+
   it('does not touch the stats table when the list has no Creature', async () => {
     repo.createQueryBuilder.mockReturnValue(
       queryBuilder([{ id: 'e2', slug: 'crise', type: 'rule', details: {} }]),
