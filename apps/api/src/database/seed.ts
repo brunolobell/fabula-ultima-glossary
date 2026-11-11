@@ -23,7 +23,6 @@ async function run() {
 
   await dataSource.initialize();
   const repo = dataSource.getRepository(Entry);
-  const statsRepo = dataSource.getRepository(CreatureStats);
 
   const slugs: string[] = [];
   // Members of a Creature Group keep the order of the seed file.
@@ -53,19 +52,29 @@ async function run() {
       data.type === 'creature' && !isCreatureGroup(data.details)
         ? data.details
         : null;
-    if (stats) entry.searchTerms = creatureSearchTerms(stats);
-    const saved = await repo.save(entry);
-
     if (stats) {
-      const order = membersSeen.get(stats.groupSlug ?? '') ?? 0;
-      if (stats.groupSlug) membersSeen.set(stats.groupSlug, order + 1);
-      await statsRepo.save(
-        statsRepo.create({
+      entry.searchTerms = creatureSearchTerms(stats);
+      // The terms are not a column, so a stats-only change would not fire
+      // @BeforeUpdate and `searchText` would go stale.
+      entry.buildSearchColumns();
+    }
+
+    if (!stats) {
+      await repo.save(entry);
+      continue;
+    }
+    const order = membersSeen.get(stats.groupSlug ?? '') ?? 0;
+    if (stats.groupSlug) membersSeen.set(stats.groupSlug, order + 1);
+    // One transaction: an Entry without its stats would be served with `details: {}`.
+    await dataSource.transaction(async (manager) => {
+      const saved = await manager.save(entry);
+      await manager.save(
+        manager.create(CreatureStats, {
           entryId: saved.id,
           ...statsFromCreatureDetails(stats, order),
         }),
       );
-    }
+    });
   }
 
   const removed = await repo.delete({ slug: Not(In(slugs)) });

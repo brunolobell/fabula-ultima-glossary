@@ -208,6 +208,37 @@ describe('EntriesService', () => {
     expect(stats.find).not.toHaveBeenCalled();
   });
 
+  it('lists the assembler Rules as their marker only, keeping other Rules whole', async () => {
+    repo.createQueryBuilder.mockReturnValue(
+      queryBuilder([
+        {
+          id: 'r1',
+          slug: 'montagem-rapida',
+          type: 'rule',
+          details: { forge: 'quick-assembly', levels: [5, 10], species: [] },
+        },
+        {
+          id: 'r2',
+          slug: 'feiticos-de-npc',
+          type: 'rule',
+          details: { forge: 'npc-spells', spells: [{ id: 'x' }] },
+        },
+        {
+          id: 'r3',
+          slug: 'armas-personalizadas',
+          type: 'rule',
+          details: { forge: 'custom-weapon', slots: [] },
+        },
+      ]),
+    );
+
+    const list = await service.findAll();
+
+    expect(list[0].details).toEqual({ forge: 'quick-assembly' });
+    expect(list[1].details).toEqual({ forge: 'npc-spells' });
+    expect(list[2].details).toEqual({ forge: 'custom-weapon', slots: [] });
+  });
+
   it('throws NotFoundException for a missing entry', async () => {
     repo.findOne.mockResolvedValue(null);
     await expect(service.findOne('missing')).rejects.toBeInstanceOf(

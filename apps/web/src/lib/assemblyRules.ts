@@ -1,5 +1,4 @@
 import type {
-  EntrySummary,
   NpcSpellsRuleDetails,
   QuickAssemblyRoleDetails,
   QuickAssemblyRuleDetails,
@@ -19,24 +18,31 @@ export interface AssemblyRules {
   npcSpells?: NpcSpellsRuleDetails;
 }
 
+/** The Rules the Assembler reads. The list sends only their marker, so each is fetched by slug. */
+export const ASSEMBLY_RULE_SLUGS = [
+  QUICK_ASSEMBLY_SLUG,
+  NPC_SPELLS_SLUG,
+  ...ROLE_ORDER.map((role) => ROLE_RULE_SLUG[role]),
+];
+
 /**
- * The Quick Assembly Rules out of the entry index, or `null` while they are
+ * The Quick Assembly Rules out of their fetched `details`, or `null` while they are
  * missing or incomplete (an older cached response can lack parts of them).
  */
 export function readAssemblyRules(
-  bySlug: ReadonlyMap<string, EntrySummary>,
+  detailsBySlug: ReadonlyMap<string, unknown>,
 ): AssemblyRules | null {
-  const rules = bySlug.get(QUICK_ASSEMBLY_SLUG)?.details as
+  const rules = detailsBySlug.get(QUICK_ASSEMBLY_SLUG) as
     QuickAssemblyRuleDetails | undefined;
   if (!rules) return null;
   const roles = Object.fromEntries(
-    ROLE_ORDER.map((role) => [role, bySlug.get(ROLE_RULE_SLUG[role])?.details]),
+    ROLE_ORDER.map((role) => [role, detailsBySlug.get(ROLE_RULE_SLUG[role])]),
   ) as Record<Role, QuickAssemblyRoleDetails>;
   if (!assemblyRulesComplete(rules, roles)) return null;
   return {
     rules,
     roles,
-    npcSpells: bySlug.get(NPC_SPELLS_SLUG)?.details as
+    npcSpells: detailsBySlug.get(NPC_SPELLS_SLUG) as
       NpcSpellsRuleDetails | undefined,
   };
 }

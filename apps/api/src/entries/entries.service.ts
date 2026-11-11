@@ -7,21 +7,22 @@ import {
 } from './creature-stats.mapper';
 import { CreatureStats } from './entities/creature-stats.entity';
 import { Entry } from './entities/entry.entity';
-import { EntryType, isCreatureGroup } from './entry-types';
+import {
+  EntryType,
+  HeavyRuleMarker,
+  ServedCreatureSummary,
+  isCreatureGroup,
+  isHeavyRule,
+} from './entry-types';
 import { normalizeText } from './slug';
 
 export type EntrySummary = Pick<
   Entry,
-  | 'id'
-  | 'slug'
-  | 'name'
-  | 'type'
-  | 'summary'
-  | 'source'
-  | 'page'
-  | 'tags'
-  | 'details'
->;
+  'id' | 'slug' | 'name' | 'type' | 'summary' | 'source' | 'page' | 'tags'
+> & {
+  /** What the list sends: the stored `details`, a Creature's scalar stats or a heavy Rule's marker. */
+  details: Entry['details'] | ServedCreatureSummary | HeavyRuleMarker;
+};
 
 export type EntryWithChildren = Entry & {
   /** For a Class: its Skills then its Spells, in full. Empty otherwise. */
@@ -103,7 +104,14 @@ export class EntriesService {
       qb.orderBy('entry.name');
     }
 
-    return this.withCreatureSummaries(await qb.getMany());
+    const entries: EntrySummary[] = await qb.getMany();
+    for (const entry of entries) {
+      // The assembler Rules are big and only the lab page reads them, by slug.
+      if (entry.type === 'rule' && isHeavyRule(entry.details)) {
+        entry.details = { forge: entry.details.forge };
+      }
+    }
+    return this.withCreatureSummaries(entries);
   }
 
   /** Replaces the details of each listed Creature with its scalar stats (no abilities). */
@@ -120,11 +128,7 @@ export class EntriesService {
     const byEntry = new Map(rows.map((row) => [row.entryId, row]));
     for (const entry of entries) {
       const row = byEntry.get(entry.id);
-      // The summary is a subset of the stat block; the web types it separately.
-      if (row)
-        entry.details = creatureSummaryFromStats(
-          row,
-        ) as unknown as EntrySummary['details'];
+      if (row) entry.details = creatureSummaryFromStats(row);
     }
     return entries;
   }

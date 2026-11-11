@@ -1,5 +1,4 @@
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
-import { readAssemblyRules } from '../lib/assemblyRules';
 import { WeaponForge } from '../components/forge/WeaponForge';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
@@ -27,6 +26,7 @@ import {
   LEGACY_ASSEMBLER_VALUE,
 } from '../lib/laboratory';
 import { FORGE_PARAM, forgeTabFromParam, type ForgeTab } from '../lib/forgeTab';
+import { QUICK_ASSEMBLY_SLUG } from '../lib/creatures';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import type {
   CustomWeaponRuleDetails,
@@ -95,8 +95,9 @@ export function TypeList() {
     );
 
   // The Laboratório Oroboros (the Creature Assembler) is a page of its own, linked
-  // from the Creatures list once the Quick Assembly Rules are loaded and complete.
-  const assembler = type === 'creature' && readAssemblyRules(bySlug) !== null;
+  // from the Creatures list once the Quick Assembly Rule is in the index. The page
+  // fetches the Rules and says so when they are incomplete.
+  const assembler = type === 'creature' && bySlug.has(QUICK_ASSEMBLY_SLUG);
 
   return (
     <div>

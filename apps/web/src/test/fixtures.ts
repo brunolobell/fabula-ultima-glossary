@@ -495,6 +495,8 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
   ].map((e) => [e.slug, 'children' in e ? e : { ...e, children: [] }]),
 );
 
+const HEAVY_FORGES = ['quick-assembly', 'quick-assembly-role', 'npc-spells'];
+
 const summaryOf = ({
   id,
   slug,
@@ -514,7 +516,10 @@ const summaryOf = ({
   source,
   page,
   tags,
-  details,
+  // Like the API: the big assembler Rules reach the list as their marker only.
+  details: HEAVY_FORGES.includes((details as { forge?: string }).forge ?? '')
+    ? { forge: (details as { forge: string }).forge }
+    : details,
 });
 
 const fold = (s: string) =>
@@ -554,8 +559,7 @@ export function mockApi({
       const q = fold(url.searchParams.get('search') ?? '');
       const list = Object.values(table)
         .filter((e) => fold(`${e.name} ${e.summary} ${e.body}`).includes(q))
-        .map(summaryOf)
-        .map(older);
+        .map(summaryOf);
       return { ok: true, status: 200, json: async () => list };
     }
     const entry = table[url.pathname.replace('/api/entries/', '')];

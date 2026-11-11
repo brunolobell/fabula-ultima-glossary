@@ -343,7 +343,7 @@ export interface SpeciesOption {
   label: string;
   kind: 'hp' | 'spell' | 'rule' | 'role-skill' | 'resistances' | 'absorb';
   max?: number;
-  /** `hp`: how many Hit Points it adds. */
+  /** `hp`: how many Hit Points it adds. `resistances`: how many Resistances it buys. */
   amount?: number;
   rule?: { name: string; text: string };
   spells?: SpellGrant;

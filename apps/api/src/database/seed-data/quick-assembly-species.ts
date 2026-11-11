@@ -70,6 +70,7 @@ const resistances: SpeciesOption = {
   id: 'resistances',
   label: 'Resistência a dois tipos de dano (exceto físico)',
   kind: 'resistances',
+  amount: 2,
 };
 
 const opposed = (context: string): SpeciesOption => ({

@@ -105,6 +105,15 @@ const AFFINITY_VALUES = AFFINITY_ORDER.flatMap((affinity) =>
   DAMAGE_ORDER.map((damage) => `${damage}:${affinity}`),
 );
 
+const stats = (e: EntrySummary) => e.details as CreatureSummaryDetails;
+
+// A Creature Group has no stat block, so it has no value in the rows about stats
+// (only in "Livro"): any of those filters leaves it out, and keeps its members.
+const statRow = (spec: RowSpec): RowSpec => ({
+  ...spec,
+  values: (e) => (isCreatureGroup(e.details) ? [] : spec.values(e)),
+});
+
 const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
   class: [bookRow],
   skill: [
@@ -169,26 +178,26 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     bookRow,
   ],
   creature: [
-    {
+    statRow({
       param: 'especie',
       label: 'Espécie',
-      values: (e) => [(e.details as CreatureSummaryDetails).species],
+      values: (e) => [stats(e).species],
       labelOf: (value) =>
         SPECIES_LABEL[value as keyof typeof SPECIES_LABEL] ?? value,
-    },
-    {
+    }),
+    statRow({
       param: 'nivel',
       label: 'Nível',
-      values: (e) => [String((e.details as CreatureSummaryDetails).level)],
+      values: (e) => [String(stats(e).level)],
       labelOf: (value) => `Nível ${value}`,
       order: LEVELS,
-    },
-    {
+    }),
+    statRow({
       param: 'afinidade',
       label: 'Afinidade',
       // "gelo:vulnerable": the damage type, then how the Creature fares against it.
       values: (e) =>
-        Object.entries((e.details as CreatureSummaryDetails).affinities).map(
+        Object.entries(stats(e).affinities).map(
           ([damage, affinity]) => `${damage}:${affinity}`,
         ),
       labelOf: (value) => {
@@ -196,39 +205,39 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
         return affinityLabel(damage as DamageType, affinity as Affinity);
       },
       order: AFFINITY_VALUES,
-    },
-    {
+    }),
+    statRow({
       param: 'feiticos',
       label: 'Feitiços',
-      values: (e) => [(e.details as CreatureSummaryDetails).hasSpells ? 'sim' : 'nao'],
+      values: (e) => [stats(e).hasSpells ? 'sim' : 'nao'],
       labelOf: (value) => (value === 'sim' ? 'Lança feitiços' : 'Não lança feitiços'),
       order: ['sim', 'nao'],
-    },
-    {
+    }),
+    statRow({
       param: 'patente',
       label: 'Patente',
-      values: (e) => [(e.details as CreatureSummaryDetails).rank],
+      values: (e) => [stats(e).rank],
       labelOf: (value) => RANK_LABEL[value as keyof typeof RANK_LABEL] ?? value,
       order: RANK_ORDER,
-    },
-    {
+    }),
+    statRow({
       param: 'funcao',
       label: 'Função',
       // Only Quick Assembly (Bestiary Vol. I) Creatures have a Role.
       values: (e) => {
-        const { role } = e.details as CreatureSummaryDetails;
+        const { role } = stats(e);
         return role ? [role] : [];
       },
       labelOf: (value) => ROLE_LABEL[value as keyof typeof ROLE_LABEL] ?? value,
       order: ROLE_ORDER,
-    },
-    {
+    }),
+    statRow({
       param: 'vilao',
       label: 'Vilão',
-      values: (e) => [(e.details as CreatureSummaryDetails).villain ? 'sim' : 'nao'],
+      values: (e) => [stats(e).villain ? 'sim' : 'nao'],
       labelOf: (value) => (value === 'sim' ? 'Vilão' : 'Não é vilão'),
       order: ['sim', 'nao'],
-    },
+    }),
     bookRow,
   ],
   service: [
@@ -260,18 +269,6 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     bookRow,
   ],
 };
-
-// A Creature Group has no stat block, so it has no value in the rows about stats
-// (only in "Livro"): any of those filters leaves it out, and keeps its members.
-ROWS.creature = (ROWS.creature ?? []).map((spec) =>
-  spec === bookRow
-    ? spec
-    : {
-        ...spec,
-        values: (e: EntrySummary) =>
-          isCreatureGroup(e.details) ? [] : spec.values(e),
-      },
-);
 
 const specsOf = (type: EntryType) => ROWS[type] ?? [];
 

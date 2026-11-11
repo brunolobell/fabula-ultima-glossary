@@ -874,6 +874,7 @@ describe('validateSeed', () => {
         label: string;
         kind: string;
         max?: number;
+        amount?: number;
         spells?: { from: { name: string }[]; options: { mp: number }[] };
         swaps?: string;
         swapType?: string;
@@ -1160,6 +1161,28 @@ describe('validateSeed', () => {
           r.pop();
         });
         expect(errors).toEqual([expect.stringContaining('species')]);
+      });
+
+      it('says how many Resistances the Resistances option buys, and rejects it without a count', () => {
+        const amounts = all()
+          .flatMap((rule) => rule.options)
+          .filter((o) => o.kind === 'resistances')
+          .map((o) => o.amount);
+        expect(amounts.length).toBeGreaterThan(0);
+        expect(new Set(amounts)).toEqual(new Set([2]));
+        const errors = withSpecies((r) => {
+          const option = r
+            .flatMap((rule) => rule.options)
+            .find((o) => o.kind === 'resistances')!;
+          delete option.amount;
+        });
+        // The option object is shared by the Species that offer it.
+        expect(errors.length).toBeGreaterThan(0);
+        for (const error of errors) {
+          expect(error).toContain(
+            'option "resistances" needs a positive amount',
+          );
+        }
       });
 
       it('rejects a Species option whose text names a choice it does not offer', () => {

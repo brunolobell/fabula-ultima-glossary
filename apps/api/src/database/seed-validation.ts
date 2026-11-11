@@ -276,6 +276,11 @@ function validateSpecies(
       )
         fail(`${at} max must be 2 or more`);
       if (option.kind === 'absorb' && !option.swaps) fail(`${at} needs swaps`);
+      if (
+        (option.kind === 'hp' || option.kind === 'resistances') &&
+        !(Number.isInteger(option.amount) && (option.amount ?? 0) >= 1)
+      )
+        fail(`${at} needs a positive amount`);
       if (option.kind === 'spell' && !option.spells) fail(`${at} needs spells`);
       if (option.kind === 'rule' && !option.rule) fail(`${at} needs a rule`);
       if (option.spells)

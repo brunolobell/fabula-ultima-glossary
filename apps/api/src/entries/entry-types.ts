@@ -457,7 +457,7 @@ export interface SpeciesOption {
   kind: 'hp' | 'spell' | 'rule' | 'role-skill' | 'resistances' | 'absorb';
   /** How many times it may be taken; once when absent. */
   max?: number;
-  /** `hp`: how many Hit Points it adds. */
+  /** `hp`: how many Hit Points it adds. `resistances`: how many Resistances it buys. */
   amount?: number;
   /** A special rule the option adds (flying, thorns, a bonus, an immunity). */
   rule?: { name: string; text: string };
@@ -682,6 +682,20 @@ export type RuleDetails =
   | QuickAssemblyRuleDetails
   | QuickAssemblyRoleDetails
   | NpcSpellsRuleDetails;
+
+/** Rules whose `details` are too big for the list: it sends only `{ forge }`. */
+export const HEAVY_FORGES = [
+  'quick-assembly',
+  'quick-assembly-role',
+  'npc-spells',
+] as const;
+export interface HeavyRuleMarker {
+  forge: (typeof HEAVY_FORGES)[number];
+}
+export const isHeavyRule = (
+  details: object,
+): details is { forge: HeavyRuleMarker['forge'] } =>
+  HEAVY_FORGES.includes((details as HeavyRuleMarker).forge);
 
 export interface DetailsByType {
   rule: RuleDetails;
