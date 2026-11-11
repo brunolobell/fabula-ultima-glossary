@@ -469,7 +469,7 @@ export const criaturasVol1H: SeedEntry[] = inBook('bestiary-vol-1', [
       {
         name: 'Esporos Necromânticos',
         effect:
-          'A pollendina pode usar uma ação e gastar 20 PM para fazer um morto-vivo soldado de nível 10 entrar na batalha no fim da rodada, com PV atuais iguais ao valor de Crise dele. Criaturas recomendadas: o draugr, o shamblebones e o soldado esquelético (veja o Livro Básico).',
+          'A pollendina pode usar uma ação e gastar 20 PM para fazer um morto-vivo soldado de nível 10 entrar na batalha no fim da rodada, com PV atuais iguais ao valor de Crise dele. Criaturas recomendadas: o draugr, a ossada trôpega e o soldado esquelético (veja o Livro Básico).',
       },
     ],
     specialRules: [
