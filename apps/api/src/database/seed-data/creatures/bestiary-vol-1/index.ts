@@ -6,6 +6,7 @@ import { criaturasVol1D } from './d';
 import { criaturasVol1E } from './e';
 import { criaturasVol1F } from './f';
 import { criaturasVol1G } from './g';
+import { criaturasVol1H } from './h';
 
 /** The Bestiary Vol. I Compendium (printed p. 80-326), translated; unofficial (ADR 0004). */
 export const criaturasBestiaryVol1: SeedEntry[] = [
@@ -16,4 +17,5 @@ export const criaturasBestiaryVol1: SeedEntry[] = [
   ...criaturasVol1E,
   ...criaturasVol1F,
   ...criaturasVol1G,
+  ...criaturasVol1H,
 ];
