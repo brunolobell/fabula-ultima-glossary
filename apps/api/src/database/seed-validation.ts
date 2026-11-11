@@ -637,11 +637,11 @@ export function validateSeed(entries: SeedEntry[]): string[] {
             fail('a champion needs details.championX');
           else if (
             !Number.isInteger(championX) ||
-            championX < 2 ||
+            championX < 1 ||
             championX > 6
           )
             fail(
-              `details.championX (${championX}) must be an integer from 2 to 6`,
+              `details.championX (${championX}) must be an integer from 1 to 6`,
             );
         } else if (rank !== 'champion' && championX !== undefined) {
           fail('only a champion has details.championX');

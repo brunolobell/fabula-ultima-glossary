@@ -620,7 +620,7 @@ describe('validateSeed', () => {
         ]);
       });
 
-      it('gives a champion the number of soldiers it replaces, from 2 to 6, and nobody else', () => {
+      it('gives a champion the number of soldiers it replaces, from 1 to 6, and nobody else', () => {
         const champion = (championX?: number) =>
           volumeOne({ rank: 'champion', championX });
         expect(validateSeed([champion(4)])).toEqual([]);
@@ -628,7 +628,7 @@ describe('validateSeed', () => {
           'cactonto: a champion needs details.championX',
         ]);
         expect(validateSeed([champion(7)])).toEqual([
-          'cactonto: details.championX (7) must be an integer from 2 to 6',
+          'cactonto: details.championX (7) must be an integer from 1 to 6',
         ]);
         expect(validateSeed([volumeOne({ championX: 3 })])).toEqual([
           'cactonto: only a champion has details.championX',
