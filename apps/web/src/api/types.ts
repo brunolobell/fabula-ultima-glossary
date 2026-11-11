@@ -181,12 +181,18 @@ export interface CreatureAbility {
   effect: string;
 }
 
+export type CreatureFlag = 'solo' | 'unique' | 'part';
+
 /** What the list endpoint sends for a Creature: the scalar stats, no abilities. */
 export interface CreatureSummaryDetails {
   level: number;
   species: Species;
   rank: Rank;
   role?: Role;
+  /** A champion replaces this many soldiers; Bestiary Vol. I only. */
+  championX?: number;
+  /** Solo, Unique, Part (Bestiary Vol. I only). */
+  flags?: CreatureFlag[];
   villain: boolean;
   /** English name of a Bestiary Vol. I Creature. */
   originalName?: string;

@@ -29,7 +29,7 @@ import {
   typeFromSlug,
   typePath,
 } from '../lib/entryTypes';
-import { RANK_LABEL, SPECIES_LABEL, isCreatureGroup } from '../lib/creatures';
+import { SPECIES_LABEL, isCreatureGroup, rankText } from '../lib/creatures';
 import { extractLinkedSlugs } from '../lib/links';
 import { rememberEntry } from '../lib/recent';
 import { statBlockTexts } from '../lib/statBlock';
@@ -130,7 +130,7 @@ function GroupMembers({ members }: { members: Entry[] }) {
               {member.name}
             </h2>
             <p className="text-[15px] text-muted">
-              Nível {d.level} · {SPECIES_LABEL[d.species]} · {RANK_LABEL[d.rank]}
+              Nível {d.level} · {SPECIES_LABEL[d.species]} · {rankText(d)}
               {' · '}
               <PageRef page={member.page} source={member.source} /> ·{' '}
               <Link to={entryPath(member)}>Abrir página</Link>

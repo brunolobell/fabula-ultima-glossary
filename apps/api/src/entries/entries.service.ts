@@ -47,6 +47,8 @@ const CREATURE_SUMMARY_COLUMNS: (keyof CreatureStats)[] = [
   'species',
   'rank',
   'role',
+  'championX',
+  'flags',
   'villain',
   'originalName',
   'groupSlug',

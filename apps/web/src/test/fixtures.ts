@@ -147,9 +147,17 @@ const criar: Entry = {
   details: {
     order: 3,
     steps: [
-      { title: 'Identidade', intro: 'Crie uma frase curta.', entries: ['tracos'] },
+      {
+        title: 'Identidade',
+        intro: 'Crie uma frase curta.',
+        entries: ['tracos'],
+      },
       { title: 'Tema', intro: 'Crie um ideal.', entries: ['tracos'] },
-      { title: 'Classes', intro: 'Escolha duas ou três.', entries: ['elementalista'] },
+      {
+        title: 'Classes',
+        intro: 'Escolha duas ou três.',
+        entries: ['elementalista'],
+      },
     ],
   },
 };
@@ -313,13 +321,20 @@ const cactonto: Entry = {
         offensive: true,
         accuracy: 'VIG + VON',
         accuracyBonus: 1,
-        effect: 'Causa (RA + 15) de dano de veneno e recupera metade dos PV perdidos pelo alvo.',
+        effect:
+          'Causa (RA + 15) de dano de veneno e recupera metade dos PV perdidos pelo alvo.',
       },
     ],
     otherActions: [
-      { name: 'Seiva de Cactonto', effect: 'Se recupera de fraco e lento e ataca com Barragem de Espinhos.' },
+      {
+        name: 'Seiva de Cactonto',
+        effect:
+          'Se recupera de fraco e lento e ataca com Barragem de Espinhos.',
+      },
     ],
-    specialRules: [{ name: 'Planta', effect: 'É imune a abalado, atordoado e enfurecido.' }],
+    specialRules: [
+      { name: 'Planta', effect: 'É imune a abalado, atordoado e enfurecido.' },
+    ],
   },
 };
 
@@ -363,6 +378,29 @@ const fantasmas: EntryWithChildren = {
   page: 340,
   details: { group: true },
   children: [espectro, aparicao],
+};
+
+/** A Bestiary Vol. I champion, for `mockApi({ vol1: true })`. */
+const dragaoArboreo: Entry = {
+  ...cactonto,
+  id: '40',
+  slug: 'dragao-arboreo',
+  name: 'Dragão Arbóreo',
+  source: 'bestiary-vol-1',
+  summary: 'Dragão ancestral cujas escamas seguem as estações.',
+  page: 95,
+  details: {
+    ...(cactonto.details as CreatureDetails),
+    level: 40,
+    rank: 'champion',
+    championX: 3,
+    role: 'support',
+    flags: ['solo', 'unique'],
+    villain: true,
+    originalName: 'Arboreal Dragon',
+    hp: 360,
+    crisis: 180,
+  },
 };
 
 const ROLE_SLUG: Record<Role, [string, string]> = {
@@ -454,9 +492,7 @@ const DETAILS: Record<string, Entry | EntryWithChildren> = Object.fromEntries(
     npcSpellsRule,
     fulgur,
     criar,
-  ].map(
-    (e) => [e.slug, 'children' in e ? e : { ...e, children: [] }],
-  ),
+  ].map((e) => [e.slug, 'children' in e ? e : { ...e, children: [] }]),
 );
 
 const summaryOf = ({
@@ -493,17 +529,18 @@ const fold = (s: string) =>
 export function mockApi({
   stale = false,
   groups = false,
-}: { stale?: boolean; groups?: boolean } = {}) {
-  const table = groups
-    ? {
-        ...DETAILS,
-        ...Object.fromEntries(
-          [fantasmas, { ...espectro, children: [] }, { ...aparicao, children: [] }].map(
-            (e) => [e.slug, e],
-          ),
-        ),
-      }
-    : DETAILS;
+  vol1 = false,
+}: { stale?: boolean; groups?: boolean; vol1?: boolean } = {}) {
+  const extra: Entry[] = [
+    ...(vol1 ? [dragaoArboreo] : []),
+    ...(groups ? [fantasmas, espectro, aparicao] : []),
+  ];
+  const table: Record<string, Entry | EntryWithChildren> = {
+    ...DETAILS,
+    ...Object.fromEntries(
+      extra.map((e) => [e.slug, 'children' in e ? e : { ...e, children: [] }]),
+    ),
+  };
   const older = <T extends { slug: string; details: unknown }>(entry: T): T =>
     stale && entry.slug === 'montagem-rapida'
       ? {

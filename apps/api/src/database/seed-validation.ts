@@ -23,6 +23,7 @@ import {
   SERVICE_GROUPS,
   TRANSPORT_CLASSES,
   isCreatureGroup,
+  CREATURE_FLAGS,
 } from '../entries/entry-types';
 import { SeedEntry } from './seed-data/types';
 
@@ -628,6 +629,29 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         if (!RANKS.includes(rank)) fail(`unknown details.rank "${rank}"`);
         if (entry.source === 'bestiary-vol-1' && !entry.details.originalName)
           fail('a Bestiary Vol. I Creature needs details.originalName');
+        if (entry.source === 'bestiary-vol-1' && !entry.details.role)
+          fail('a Bestiary Vol. I Creature needs details.role');
+        const { championX, flags } = entry.details;
+        if (rank === 'champion' && entry.source === 'bestiary-vol-1') {
+          if (championX === undefined)
+            fail('a champion needs details.championX');
+          else if (
+            !Number.isInteger(championX) ||
+            championX < 2 ||
+            championX > 6
+          )
+            fail(
+              `details.championX (${championX}) must be an integer from 2 to 6`,
+            );
+        } else if (rank !== 'champion' && championX !== undefined) {
+          fail('only a champion has details.championX');
+        }
+        for (const flag of flags ?? []) {
+          if (!CREATURE_FLAGS.includes(flag))
+            fail(`unknown details.flags "${flag}"`);
+        }
+        if (flags?.includes('part') && !entry.details.groupSlug)
+          fail('a Part must belong to a creature group');
         if ((entry.source ?? 'livro-basico') === 'livro-basico') {
           if (entry.details.role) fail('only the Bestiary Vol. I has a role');
           if (rank === 'champion')

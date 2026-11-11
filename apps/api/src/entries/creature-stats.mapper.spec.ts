@@ -46,6 +46,8 @@ describe('statsFromCreatureDetails', () => {
       originalName: null,
       groupSlug: null,
       groupOrder: null,
+      championX: null,
+      flags: [],
       traits: ['assustador'],
       des: 8,
       ast: 6,
@@ -87,6 +89,39 @@ describe('statsFromCreatureDetails', () => {
       2,
     );
     expect(row).toMatchObject({ groupSlug: 'fantasmas', groupOrder: 2 });
+  });
+});
+
+describe('Bestiary Vol. I extras', () => {
+  it('keeps how many soldiers a champion replaces and the Solo, Unique and Part marks', () => {
+    const row = statsFromCreatureDetails({
+      ...details,
+      rank: 'champion',
+      championX: 4,
+      flags: ['solo', 'unique'],
+    });
+    expect(row).toMatchObject({
+      championX: 4,
+      flags: ['solo', 'unique'],
+    });
+  });
+
+  it('serves them in the list and in the entry, and leaves them out when there are none', () => {
+    const base = {
+      ...statsFromCreatureDetails(details),
+      entryId: 'e1',
+    } as CreatureStats;
+    expect(creatureSummaryFromStats(base)).not.toHaveProperty('championX');
+    expect(creatureSummaryFromStats(base)).not.toHaveProperty('flags');
+    const marked = { ...base, championX: 3, flags: ['part'] } as CreatureStats;
+    expect(creatureSummaryFromStats(marked)).toMatchObject({
+      championX: 3,
+      flags: ['part'],
+    });
+    expect(creatureDetailsFromStats(marked)).toMatchObject({
+      championX: 3,
+      flags: ['part'],
+    });
   });
 });
 

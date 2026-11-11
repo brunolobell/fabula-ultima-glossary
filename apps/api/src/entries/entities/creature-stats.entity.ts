@@ -10,6 +10,7 @@ import {
   Affinity,
   CreatureAbility,
   CreatureAttack,
+  CreatureFlag,
   CreatureSpell,
   DamageType,
   Die,
@@ -48,6 +49,14 @@ export class CreatureStats {
   /** Quick Assembly Role; null for the Livro Básico Creatures. */
   @Column({ type: 'enum', enum: ROLES, nullable: true })
   role: Role | null;
+
+  /** How many soldiers a champion replaces; null for anything else. */
+  @Column({ type: 'smallint', nullable: true })
+  championX: number | null;
+
+  /** Solo, Unique and Part marks of a Bestiary Vol. I Creature. */
+  @Column('text', { array: true, default: () => "'{}'" })
+  flags: CreatureFlag[];
 
   @Column({ type: 'boolean', default: false })
   villain: boolean;

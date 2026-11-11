@@ -15,7 +15,8 @@ import { BoltIcon } from '../components/Icons';
 import { Requirements } from '../components/Requirements';
 import { decorateChecks } from './check';
 import {
-  RANK_LABEL,
+  FLAG_LABEL,
+  rankText,
   ROLE_LABEL,
   SPECIES_LABEL,
   isCreatureGroup,
@@ -150,9 +151,14 @@ export function statCells(
       const cells: Cell[] = [
         { label: 'Nível', value: d.level },
         { label: 'Espécie', value: SPECIES_LABEL[d.species] },
-        { label: 'Patente', value: RANK_LABEL[d.rank] },
+        { label: 'Patente', value: rankText(d) },
       ];
       if (d.role) cells.push({ label: 'Função', value: ROLE_LABEL[d.role] });
+      if (d.flags && d.flags.length > 0)
+        cells.push({
+          label: 'Marcas',
+          value: d.flags.map((f) => FLAG_LABEL[f]).join(', '),
+        });
       if (d.villain) cells.push({ label: 'Vilão', value: 'Sim' });
       if (d.originalName)
         cells.push({ label: 'Nome original', value: d.originalName });

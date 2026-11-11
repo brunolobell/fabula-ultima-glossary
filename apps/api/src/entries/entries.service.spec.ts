@@ -28,6 +28,8 @@ const cactontoRow = {
   species: 'plant',
   rank: 'soldier',
   role: null,
+  championX: null,
+  flags: [],
   villain: false,
   originalName: null,
   traits: ['assustador', 'territorial'],

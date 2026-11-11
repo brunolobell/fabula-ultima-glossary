@@ -213,6 +213,10 @@ export const ROLES = [
 ] as const;
 export type Role = (typeof ROLES)[number];
 
+/** The marks of a Bestiary Vol. I Creature: fights alone, one of a kind, part of a bigger creature. */
+export const CREATURE_FLAGS = ['solo', 'unique', 'part'] as const;
+export type CreatureFlag = (typeof CREATURE_FLAGS)[number];
+
 /** An Attribute die as its number of sides, d6 to d12. */
 export type Die = 6 | 8 | 10 | 12;
 export const DICE: readonly Die[] = [6, 8, 10, 12];
@@ -257,6 +261,10 @@ export interface CreatureDetails {
   rank: Rank;
   /** Quick Assembly Role; Bestiary Vol. I only. */
   role?: Role;
+  /** A champion replaces this many soldiers ("Campeão 3"); Bestiary Vol. I only. */
+  championX?: number;
+  /** "Solitário", "Único", "Parte"; Bestiary Vol. I only. */
+  flags?: CreatureFlag[];
   /** Marked as a Villain; the Villain Tier is the Game Master's choice and is never stored. */
   villain: boolean;
   /** The English name, kept (and searchable) for Entries from the Bestiary Vol. I. */

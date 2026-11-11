@@ -1,5 +1,6 @@
 import type {
   Affinity,
+  CreatureFlag,
   DamageType,
   Rank,
   Role,
@@ -163,3 +164,13 @@ export function speciesAlways(rule: SpeciesRule): string {
 /** A Creature Group has no stat block, only `{ group: true }`. */
 export const isCreatureGroup = (details: unknown): boolean =>
   (details as { group?: unknown } | null)?.group === true;
+
+export const FLAG_LABEL: Record<CreatureFlag, string> = {
+  solo: 'Solitário',
+  unique: 'Único',
+  part: 'Parte',
+};
+
+/** "Soldado", "Elite", or "Campeão 3" (a champion replaces that many soldiers). */
+export const rankText = (d: { rank: Rank; championX?: number }) =>
+  d.championX ? `${RANK_LABEL[d.rank]} ${d.championX}` : RANK_LABEL[d.rank];

@@ -601,10 +601,54 @@ describe('validateSeed', () => {
       ]);
     });
 
+    describe('Bestiary Vol. I extras', () => {
+      const volumeOne = (
+        details: Partial<CreatureDetails> = {},
+        entry: Partial<SeedEntry> = {},
+      ) =>
+        creature(
+          { role: 'brute', originalName: 'Cactus Brute', ...details },
+          { source: 'bestiary-vol-1', page: 120, ...entry },
+        );
+
+      it('needs a Role', () => {
+        expect(validateSeed([volumeOne({ role: undefined })])).toEqual([
+          'cactonto: a Bestiary Vol. I Creature needs details.role',
+        ]);
+      });
+
+      it('gives a champion the number of soldiers it replaces, from 2 to 6, and nobody else', () => {
+        const champion = (championX?: number) =>
+          volumeOne({ rank: 'champion', championX });
+        expect(validateSeed([champion(4)])).toEqual([]);
+        expect(validateSeed([champion()])).toEqual([
+          'cactonto: a champion needs details.championX',
+        ]);
+        expect(validateSeed([champion(7)])).toEqual([
+          'cactonto: details.championX (7) must be an integer from 2 to 6',
+        ]);
+        expect(validateSeed([volumeOne({ championX: 3 })])).toEqual([
+          'cactonto: only a champion has details.championX',
+        ]);
+      });
+
+      it('accepts the Solo, Unique and Part marks, and Part needs a Group', () => {
+        expect(
+          validateSeed([volumeOne({ flags: ['solo', 'unique'] })]),
+        ).toEqual([]);
+        expect(validateSeed([volumeOne({ flags: ['huge' as never] })])).toEqual(
+          ['cactonto: unknown details.flags "huge"'],
+        );
+        expect(validateSeed([volumeOne({ flags: ['part'] })])).toEqual([
+          'cactonto: a Part must belong to a creature group',
+        ]);
+      });
+    });
+
     it('requires the English name of a Bestiary Vol. I Creature', () => {
       const volumeOne = (details: Partial<CreatureDetails> = {}) =>
         creature(
-          { role: 'brute', rank: 'champion', ...details },
+          { role: 'brute', rank: 'champion', championX: 3, ...details },
           { source: 'bestiary-vol-1', page: 120 },
         );
       expect(validateSeed([volumeOne()])).toEqual([

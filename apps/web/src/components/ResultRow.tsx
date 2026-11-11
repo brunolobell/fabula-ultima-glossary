@@ -12,7 +12,7 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
-import { RANK_LABEL, SPECIES_LABEL, isCreatureGroup } from '../lib/creatures';
+import { SPECIES_LABEL, isCreatureGroup, rankText } from '../lib/creatures';
 import {
   MEDIUM_LABEL,
   SERVICE_GROUP_LABEL,
@@ -91,7 +91,7 @@ function CreatureFacts({ entry }: { entry: EntrySummary }) {
   const d = entry.details as CreatureSummaryDetails;
   return (
     <>
-      Nível {d.level} · {SPECIES_LABEL[d.species]} · {RANK_LABEL[d.rank]} · PV{' '}
+      Nível {d.level} · {SPECIES_LABEL[d.species]} · {rankText(d)} · PV{' '}
       <strong className="text-ink">{d.hp}</strong>
       {' · '}
       {d.groupSlug && <GroupName slug={d.groupSlug} />}
