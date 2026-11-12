@@ -276,6 +276,36 @@ describe('Creature Assembler: copying', () => {
     expect(text).toContain('**PV** 70 (Crise 35)');
     expect(await dialog.findByText('Ficha copiada.')).toBeInTheDocument();
   });
+
+  it('copies the Creature as a Foundry (Fultimator) NPC and says so', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', {
+      value: { writeText },
+      configurable: true,
+    });
+    const dialog = await openDialog();
+    fireEvent.change(dialog.getByLabelText('Nome'), {
+      target: { value: 'Juggernaut' },
+    });
+    fireEvent.click(
+      dialog.getByRole('button', { name: 'Copiar JSON do Foundry' }),
+    );
+    await waitFor(() => expect(writeText).toHaveBeenCalledTimes(1));
+    const npc = JSON.parse(writeText.mock.calls[0][0] as string);
+    expect(npc).toMatchObject({
+      dataType: 'npc',
+      name: 'Juggernaut',
+      lvl: 5,
+      rank: 'soldier',
+      species: 'Monster',
+    });
+    expect(
+      await dialog.findByText(/JSON para o Foundry copiado\./),
+    ).toBeInTheDocument();
+    expect(
+      dialog.getByRole('button', { name: 'Baixar JSON do Foundry' }),
+    ).toBeInTheDocument();
+  });
 });
 
 describe('Creature Assembler: Skills and customization', () => {

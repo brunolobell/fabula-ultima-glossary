@@ -28,6 +28,7 @@ import {
   type Choices,
   type SpellCatalog,
 } from '../../lib/creatureAssembly';
+import { creatureToFoundry } from '../../lib/creatureFoundry';
 import { creatureToMarkdown } from '../../lib/creatureMarkdown';
 import {
   capitalize,
@@ -285,6 +286,48 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
     } catch {
       setCopied('Não foi possível copiar. Selecione e copie o texto da ficha.');
     }
+  };
+
+  const foundryJson = () => {
+    const { npc, warnings } = creatureToFoundry(
+      result.name.trim() || 'Criatura sem nome',
+      result.details,
+      {
+        championX: input.championX,
+        tier: input.tier,
+        statusImmunities: speciesRule?.statusImmunities ?? [],
+      },
+    );
+    return { text: JSON.stringify(npc, null, 2), npc, warnings };
+  };
+  const foundryNote = (done: string, warnings: string[]) =>
+    warnings.length > 0 ? `${done} Atenção: ${warnings.join(' ')}` : done;
+  const copyFoundry = async () => {
+    const { text, warnings } = foundryJson();
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(foundryNote('JSON para o Foundry copiado.', warnings));
+    } catch {
+      setCopied('Não foi possível copiar. Use "Baixar JSON do Foundry".');
+    }
+  };
+  const downloadFoundry = () => {
+    const { text, npc, warnings } = foundryJson();
+    const url = URL.createObjectURL(
+      new Blob([text], { type: 'application/json' }),
+    );
+    const link = document.createElement('a');
+    link.href = url;
+    const file = npc.name
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+    link.download = `${file || 'criatura'}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setCopied(foundryNote('JSON para o Foundry baixado.', warnings));
   };
 
   const { required } = result;
@@ -750,6 +793,20 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
               <p className="mt-3">
                 <button type="button" className="btn-primary" onClick={copy}>
                   Copiar ficha
+                </button>{' '}
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={copyFoundry}
+                >
+                  Copiar JSON do Foundry
+                </button>{' '}
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={downloadFoundry}
+                >
+                  Baixar JSON do Foundry
                 </button>{' '}
                 <span role="status" className="text-meta text-muted">
                   {copied}
