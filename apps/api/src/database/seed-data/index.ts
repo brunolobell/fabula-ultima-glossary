@@ -27,6 +27,7 @@ import { piloto } from './classes/techno-fantasy/piloto';
 import { criaturasBestiaryVol1 } from './creatures/bestiary-vol-1';
 import { criaturasLivroBasico } from './creatures/livro-basico';
 import { armasBasicas } from './equipment/armas-basicas';
+import { armadurasEscudosBasicos } from './equipment/armaduras-escudos-basicos';
 import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
 import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
 import { itensRarosTechnoFantasy } from './equipment/techno-fantasy/itens-raros';
@@ -70,6 +71,7 @@ export const seedEntries: SeedEntry[] = [
   ...orador,
   ...quimerista,
   ...armasBasicas,
+  ...armadurasEscudosBasicos,
   ...criaturasLivroBasico,
   ...criaturasBestiaryVol1,
   npcSpellsRule,
