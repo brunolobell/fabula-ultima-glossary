@@ -6,6 +6,7 @@ import { entryPath } from '../lib/entryTypes';
 import { requirementText } from '../lib/requirements';
 import type {
   CreatureSummaryDetails,
+  EquipmentDetails,
   HeroicSkillDetails,
   ServiceDetails,
   SkillDetails,
@@ -19,6 +20,7 @@ import {
   TRANSPORT_CLASS_LABEL,
   costLabel,
 } from '../lib/travel';
+import { equipmentPrice } from '../lib/statCells';
 import { PageRef } from './PageRef';
 import { TypeBadge } from './TypeBadge';
 
@@ -136,6 +138,16 @@ export function ResultRow({
       <Link to={entryPath(entry)} className="result-row">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="result-name">{entry.name}</span>
+          {entry.type === 'equipment' && (
+            <>
+              <span aria-hidden className="text-muted">
+                ·
+              </span>
+              <strong className="text-ink">
+                {equipmentPrice(entry.details as EquipmentDetails)}
+              </strong>
+            </>
+          )}
           {showType && <TypeBadge type={entry.type} />}
         </div>
         <p className="mt-1 line-clamp-2">{decorateChecks(entry.summary)}</p>

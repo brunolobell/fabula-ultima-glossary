@@ -50,6 +50,11 @@ function classLink(slug: string, index: ReadonlyMap<string, EntrySummary>) {
   return entry ? <Link to={entryPath(entry)}>{entry.name}</Link> : slug;
 }
 
+/** An equipment price as shown beside the page title ("1.200z"), or "—" when it has none. */
+export function equipmentPrice(d: EquipmentDetails): string {
+  return d.cost === null ? '—' : `${d.cost.toLocaleString('pt-BR')}z`;
+}
+
 /** The labelled facts shown in an entry's stat bar, by Entry Type. */
 export function statCells(
   entry: Entry,
@@ -143,10 +148,6 @@ export function statCells(
           cells.push({ label: 'Iniciativa', value: String(d.initiative) });
         }
       }
-      cells.push({
-        label: 'Custo',
-        value: d.cost === null ? '—' : `${d.cost.toLocaleString('pt-BR')}z`,
-      });
       if (d.martial) cells.push({ label: 'Marcial', value: 'Sim' });
       return cells;
     }

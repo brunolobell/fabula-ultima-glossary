@@ -3,6 +3,7 @@ import { Link, Navigate, useParams } from 'react-router-dom';
 import { ApiError } from '../api/client';
 import type {
   ClassDetails,
+  EquipmentDetails,
   CreatureDetails,
   Entry,
   EntrySummary,
@@ -33,7 +34,7 @@ import { SPECIES_LABEL, isCreatureGroup, rankText } from '../lib/creatures';
 import { extractLinkedSlugs } from '../lib/links';
 import { rememberEntry } from '../lib/recent';
 import { statBlockTexts } from '../lib/statBlock';
-import { statCells } from '../lib/statCells';
+import { equipmentPrice, statCells } from '../lib/statCells';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 
 type Index = ReadonlyMap<string, EntrySummary>;
@@ -300,7 +301,19 @@ export function EntryPage() {
         </ol>
       </nav>
 
-      <h1 className="h-main mt-3">{entry.name}</h1>
+      {entry.type === 'equipment' ? (
+        <div className="mt-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+          <h1 className="h-main">{entry.name}</h1>
+          <p
+            className="font-semibold text-ink text-[1.375rem]"
+            aria-label={`Custo ${equipmentPrice(entry.details as EquipmentDetails)}`}
+          >
+            {equipmentPrice(entry.details as EquipmentDetails)}
+          </p>
+        </div>
+      ) : (
+        <h1 className="h-main mt-3">{entry.name}</h1>
+      )}
       <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
         <TypeBadge type={entry.type} />
         <PageRef page={entry.page} source={entry.source} />
