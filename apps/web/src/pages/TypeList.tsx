@@ -4,6 +4,7 @@ import { WeaponForge } from '../components/forge/WeaponForge';
 import { EquipmentOrder } from '../components/EquipmentOrder';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
+import { RulesOverview } from '../components/RulesOverview';
 import { TravelTabs } from '../components/TravelTabs';
 import { ErrorState, ListSkeleton, NotFoundState } from '../components/States';
 import { useEntryIndex } from '../hooks/useEntryIndex';
@@ -158,6 +159,8 @@ export function TypeList() {
       <h1 className="h-main">{title}</h1>
       {TRAVEL_TYPES.includes(type) && <TravelTabs />}
       <p className="mt-4">{TYPE_INFO[type].description}</p>
+
+      {type === 'rule' && <RulesOverview bySlug={bySlug} />}
 
       {forge && (
         <>

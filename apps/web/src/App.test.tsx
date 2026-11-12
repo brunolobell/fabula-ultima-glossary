@@ -562,8 +562,21 @@ describe('Skill and Spell rows show what identifies them', () => {
   it('leaves other types with just the book reference', async () => {
     mockApi();
     renderAt('/regras');
-    const row = (await screen.findByRole('link', { name: /traços/i })).closest('a')!;
+    const row = (await screen.findAllByRole('link', { name: /traços/i })).find((a) =>
+      a.classList.contains('result-row'),
+    )!;
     expect(row).not.toHaveTextContent('·');
+  });
+
+  it('puts an overview of the Rules above the /regras list, linking each Rule', async () => {
+    mockApi();
+    renderAt('/regras');
+    const overview = await screen.findByRole('region', { name: /Visão geral das regras/ });
+    expect(within(overview).getByRole('heading', { name: 'Semáforo' })).toBeInTheDocument();
+    expect(within(overview).getByRole('link', { name: 'Traços' })).toHaveAttribute(
+      'href',
+      '/regras/tracos',
+    );
   });
 });
 
