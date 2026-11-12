@@ -104,6 +104,28 @@ export const heroicSkill = ({
   ...rest,
 });
 
+export interface PeculiarityInput {
+  name: string;
+  /** Set it only to resolve a slug collision with the same Peculiarity in another Atlas. */
+  slug?: string;
+  page: number;
+  summary: string;
+  body: string;
+  /** What a character needs to take it, in our own words. */
+  requirement?: string;
+}
+
+/** A Peculiarity ("Peculiaridade"): one option of the optional Atlas rule, one per character. */
+export const peculiarity = ({
+  requirement,
+  ...rest
+}: PeculiarityInput): Of<'peculiarity'> => ({
+  type: 'peculiarity',
+  tags: ['peculiaridade'],
+  details: { requirement: requirement ?? null },
+  ...rest,
+});
+
 export interface SpellInput {
   name: string;
   page: number;

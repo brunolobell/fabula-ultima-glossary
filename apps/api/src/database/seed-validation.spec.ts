@@ -5,6 +5,7 @@ import {
   classEntry,
   creatureGroup,
   heroicSkill,
+  peculiarity,
   rule,
   skill,
   spell,
@@ -1986,5 +1987,91 @@ describe('validateSeed', () => {
         ]),
       ).toEqual([expect.stringContaining('distance.planetary')]);
     });
+  });
+  describe('peculiarities', () => {
+    const all = seedEntries.filter((e) => e.type === 'peculiarity');
+    const inBookOf = (source: string) => all.filter((e) => e.source === source);
+    const bySlug = (slug: string) => all.find((e) => resolveSlug(e) === slug);
+
+    it('seeds the 46 Peculiarities of the three Atlases, each in its own book', () => {
+      expect(inBookOf('high-fantasy')).toHaveLength(15);
+      expect(inBookOf('natural-fantasy')).toHaveLength(15);
+      expect(inBookOf('techno-fantasy')).toHaveLength(16);
+      expect(all).toHaveLength(46);
+    });
+
+    it('keeps the book page of each one, inside the Peculiarities chapter', () => {
+      const pages = (source: string) => inBookOf(source).map((e) => e.page);
+      expect(Math.min(...(pages('high-fantasy') as number[]))).toBe(114);
+      expect(Math.max(...(pages('high-fantasy') as number[]))).toBe(122);
+      expect(Math.min(...(pages('natural-fantasy') as number[]))).toBe(120);
+      expect(Math.max(...(pages('natural-fantasy') as number[]))).toBe(128);
+      expect(Math.min(...(pages('techno-fantasy') as number[]))).toBe(120);
+      expect(Math.max(...(pages('techno-fantasy') as number[]))).toBe(128);
+    });
+
+    it('gives a repeated name its own Entry, the earliest book keeping the plain slug', () => {
+      expect(bySlug('robo')?.source).toBe('high-fantasy');
+      expect(bySlug('robo-natural-fantasy')?.source).toBe('natural-fantasy');
+      expect(bySlug('robo-techno-fantasy')?.source).toBe('techno-fantasy');
+      expect(bySlug('fera-falante')?.source).toBe('natural-fantasy');
+      expect(bySlug('fera-falante-techno-fantasy')?.source).toBe(
+        'techno-fantasy',
+      );
+      expect(bySlug('voo-natural-fantasy')?.page).toBe(128);
+    });
+
+    it('points each repeated Peculiarity to its other versions', () => {
+      expect(bySlug('robo')?.body).toContain('[[robo-natural-fantasy]]');
+      expect(bySlug('robo')?.body).toContain('[[robo-techno-fantasy]]');
+      expect(bySlug('robo-techno-fantasy')?.body).toContain('[[robo]]');
+      expect(bySlug('fera-falante')?.body).toContain(
+        '[[fera-falante-techno-fantasy]]',
+      );
+      expect(bySlug('almas-entrelacadas')?.body).not.toContain('Também em');
+    });
+
+    it('records the requirement of the three that restrict who can take them', () => {
+      const required = all.filter(
+        (e) => e.type === 'peculiarity' && e.details.requirement,
+      );
+      expect(required.map(resolveSlug).sort()).toEqual([
+        'grilhoes-do-coracao',
+        'oficial-arrependido',
+        'oficina-itinerante',
+      ]);
+    });
+
+    it('seeds the optional rule once and links the Guide to it', () => {
+      const rules = seedEntries.filter(
+        (e) => resolveSlug(e) === 'peculiaridades',
+      );
+      expect(rules).toHaveLength(1);
+      expect(rules[0]).toMatchObject({
+        type: 'rule',
+        page: 113,
+        source: 'high-fantasy',
+      });
+      const guide = seedEntries.find(
+        (e) => e.type === 'guide' && e.name === 'Criar um personagem',
+      );
+      const last = guide?.type === 'guide' ? guide.details.steps.at(-1) : null;
+      expect(last?.title).toBe('Descrição e nome');
+      expect(last?.entries).toContain('peculiaridades');
+    });
+
+    it('rejects a requirement that is empty text', () => {
+      expect(
+        validateSeed([peculiarity({ ...base, requirement: '  ' })]),
+      ).toEqual([expect.stringContaining('details.requirement')]);
+      expect(validateSeed([peculiarity(base)])).toEqual([]);
+    });
+
+    const base = {
+      name: 'Voo de Teste',
+      page: 10,
+      summary: 'Voa.',
+      body: 'Você voa.',
+    };
   });
 });

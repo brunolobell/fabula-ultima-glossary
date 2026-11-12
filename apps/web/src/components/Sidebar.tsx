@@ -16,6 +16,7 @@ import {
   GiOpenTreasureChest,
   GiRelicBlade,
   GiRing,
+  GiSparkles,
   GiSpellBook,
   GiStarsStack,
 } from 'react-icons/gi';
@@ -116,6 +117,12 @@ const GROUPS: MenuGroup[] = [
     items: [
       { label: 'Classes', icon: GiHelmet, to: typePath('class'), types: ['class'] },
       { label: 'Feitiços', icon: GiMagicSwirl, to: typePath('spell'), types: ['spell'] },
+      {
+        label: 'Peculiaridades',
+        icon: GiSparkles,
+        to: typePath('peculiarity'),
+        types: ['peculiarity'],
+      },
       { label: 'Poderes', icon: GiStarsStack, to: typePath('skill'), types: ['skill'] },
       {
         label: 'Poderes Heroicos',

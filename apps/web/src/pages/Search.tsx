@@ -11,6 +11,7 @@ const FILTERS: EntryType[] = [
   'class',
   'skill',
   'heroic-skill',
+  'peculiarity',
   'spell',
   'equipment',
   'service',

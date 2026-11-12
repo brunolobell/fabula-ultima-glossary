@@ -197,6 +197,34 @@ const pvExtras: Entry = {
   },
 };
 
+const grilhoes: Entry = {
+  ...base,
+  id: '50',
+  slug: 'grilhoes-do-coracao',
+  name: 'Grilhões do Coração',
+  type: 'peculiarity',
+  source: 'high-fantasy',
+  summary: 'Você segue os mandamentos de uma instituição que começa a questionar.',
+  body: 'Crie um [[lacos]] com a instituição e **três mandamentos**.',
+  page: 118,
+  details: {
+    requirement: 'Só com o Tema Dúvida; o Tema não pode mudar.',
+  },
+};
+
+const voo: Entry = {
+  ...base,
+  id: '51',
+  slug: 'voo',
+  name: 'Voo',
+  type: 'peculiarity',
+  source: 'natural-fantasy',
+  summary: 'Você sabe voar ou levitar.',
+  body: 'Você sabe voar.',
+  page: 122,
+  details: { requirement: null },
+};
+
 const montariaTerrestre: Entry = {
   ...base,
   id: '30',
@@ -535,8 +563,15 @@ export function mockApi({
   stale = false,
   groups = false,
   vol1 = false,
-}: { stale?: boolean; groups?: boolean; vol1?: boolean } = {}) {
+  peculiarities = false,
+}: {
+  stale?: boolean;
+  groups?: boolean;
+  vol1?: boolean;
+  peculiarities?: boolean;
+} = {}) {
   const extra: Entry[] = [
+    ...(peculiarities ? [grilhoes, voo] : []),
     ...(vol1 ? [dragaoArboreo] : []),
     ...(groups ? [fantasmas, espectro, aparicao] : []),
   ];

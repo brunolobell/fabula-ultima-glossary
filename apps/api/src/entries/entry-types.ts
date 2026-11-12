@@ -3,6 +3,7 @@ export const ENTRY_TYPES = [
   'class',
   'skill',
   'heroic-skill',
+  'peculiarity',
   'spell',
   'equipment',
   'creature',
@@ -66,6 +67,11 @@ export interface HeroicSkillDetails {
   requirements: HeroicSkillRequirements;
   /** Whether the same Heroic Skill can be taken more than once. */
   repeatable: boolean;
+}
+
+export interface PeculiarityDetails {
+  /** What a character needs to take it ("Tema Dúvida"), in our own words; null when open to all. */
+  requirement: string | null;
 }
 
 export interface SpellDetails {
@@ -702,6 +708,7 @@ export interface DetailsByType {
   class: ClassDetails;
   skill: SkillDetails;
   'heroic-skill': HeroicSkillDetails;
+  peculiarity: PeculiarityDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
   creature: CreatureDetails | CreatureGroupDetails;

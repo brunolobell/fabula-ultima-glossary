@@ -6,6 +6,7 @@ export type EntryType =
   | 'class'
   | 'skill'
   | 'heroic-skill'
+  | 'peculiarity'
   | 'spell'
   | 'equipment'
   | 'creature'
@@ -51,6 +52,11 @@ export interface HeroicSkillRequirements {
 export interface HeroicSkillDetails {
   requirements: HeroicSkillRequirements;
   repeatable: boolean;
+}
+
+export interface PeculiarityDetails {
+  /** What a character needs to take it, in our own words; null when open to all. */
+  requirement: string | null;
 }
 
 export interface SpellDetails {
@@ -523,6 +529,7 @@ export interface DetailsByType {
   class: ClassDetails;
   skill: SkillDetails;
   'heroic-skill': HeroicSkillDetails;
+  peculiarity: PeculiarityDetails;
   spell: SpellDetails;
   equipment: EquipmentDetails;
   creature: CreatureDetails | CreatureGroupDetails;

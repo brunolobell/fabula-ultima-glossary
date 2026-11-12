@@ -208,8 +208,9 @@ Os passos lembram os da criação de mundo, mas **não precisam seguir uma ordem
       },
       {
         title: 'Descrição e nome',
-        intro: 'Descreva o personagem e escolha seu nome e pronomes.',
-        entries: [],
+        intro:
+          'Descreva o personagem e escolha seu nome e pronomes. Se a mesa usar a regra opcional dos Atlas, é aqui também que cada PJ pode escolher uma peculiaridade.',
+        entries: ['peculiaridades'],
       },
     ],
   }),

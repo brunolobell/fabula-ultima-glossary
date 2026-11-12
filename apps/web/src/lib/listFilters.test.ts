@@ -96,6 +96,18 @@ describe('applyFilters', () => {
     expect(pick('requisito=livres&classe=entropista')).toEqual([]);
   });
 
+  it('filters Peculiarities by book only', () => {
+    const list = [
+      entry('voo', 'peculiarity', { requirement: null }, 'high-fantasy'),
+      entry('voo-natural-fantasy', 'peculiarity', { requirement: null }, 'natural-fantasy'),
+      entry('agitador', 'peculiarity', { requirement: null }, 'techno-fantasy'),
+    ];
+    expect(buildRows('peculiarity', list, index).map((r) => r.param)).toEqual(['livro']);
+    expect(
+      slugs(applyFilters('peculiarity', list, readSelection('peculiarity', new URLSearchParams('livro=high-fantasy,techno-fantasy')))),
+    ).toEqual(['voo', 'agitador']);
+  });
+
   it('filters equipment by kind, rarity and martial', () => {
     const item = (slug: string, kind: string, rarity: string, martial: boolean) =>
       entry(slug, 'equipment', { kind, rarity, martial, cost: null });

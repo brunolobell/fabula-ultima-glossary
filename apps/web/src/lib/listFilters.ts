@@ -139,6 +139,7 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     ),
     bookRow,
   ],
+  peculiarity: [bookRow],
   spell: [
     classRow('Classe', (e) => [(e.details as SpellDetails).classSlug]),
     {

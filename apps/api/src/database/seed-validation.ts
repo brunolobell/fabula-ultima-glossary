@@ -574,6 +574,12 @@ export function validateSeed(entries: SeedEntry[]): string[] {
           fail('details.repeatable must be a boolean');
         break;
       }
+      case 'peculiarity': {
+        const { requirement } = entry.details;
+        if (requirement !== null && !requirement?.trim())
+          fail('details.requirement must be text or null');
+        break;
+      }
       case 'spell': {
         const { classSlug, mpCost, target, duration, offensive } =
           entry.details;

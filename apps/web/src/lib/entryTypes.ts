@@ -34,6 +34,13 @@ export const TYPE_INFO: Record<EntryType, TypeInfo> = {
     description:
       'Poderes que se adquirem ao dominar uma classe, alguns com requisitos.',
   },
+  peculiarity: {
+    slug: 'peculiaridades',
+    label: 'Peculiaridade',
+    plural: 'Peculiaridades',
+    description:
+      'Regra opcional dos Atlas: uma marca única para cada personagem, como uma maldição, uma profecia ou o voo.',
+  },
   spell: {
     slug: 'feiticos',
     label: 'Feitiço',
@@ -80,6 +87,7 @@ export const BROWSE_TYPES: EntryType[] = [
   'class',
   'skill',
   'heroic-skill',
+  'peculiarity',
   'spell',
   'equipment',
   'creature',

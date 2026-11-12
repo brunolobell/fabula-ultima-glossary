@@ -251,10 +251,12 @@ describe('Sidebar groups', () => {
     expect(links.map((l) => l.textContent)).toEqual([
       'Classes1',
       'Feitiços2',
+      'Peculiaridades0',
       'Poderes1',
       'Poderes Heroicos2',
     ]);
-    expect(links[3]).toHaveAttribute('href', '/poderes-heroicos');
+    expect(links[2]).toHaveAttribute('href', '/peculiaridades');
+    expect(links[4]).toHaveAttribute('href', '/poderes-heroicos');
   });
 
   it('keeps every group closed on load, even on a page inside one', async () => {
@@ -419,6 +421,40 @@ describe('Heroic Skills', () => {
       '/poderes-heroicos/feitico-poderoso',
     );
     expect(within(section).queryByText('PV Extras')).toBeNull();
+  });
+});
+
+describe('Peculiarities', () => {
+  it('lists them in the Criação de Personagem menu and filters the list by book', async () => {
+    mockApi({ peculiarities: true });
+    renderAt('/peculiaridades');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByText('Grilhões do Coração')).toBeInTheDocument();
+    expect(main.getByText('Voo')).toBeInTheDocument();
+    expect(main.getByRole('button', { name: /^Livro/ })).toBeInTheDocument();
+    expect(main.queryByRole('button', { name: /^Classe/ })).toBeNull();
+    const nav = within(menu());
+    fireEvent.click(nav.getByRole('button', { name: 'Criação de Personagem' }));
+    expect(nav.getByRole('link', { name: /^Peculiaridades/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+  });
+
+  it('shows the requirement on the entry page', async () => {
+    mockApi({ peculiarities: true });
+    renderAt('/peculiaridades/grilhoes-do-coracao');
+    const main = within(screen.getByRole('main'));
+    const stat = (await main.findByText('Requisito')).closest('div') as HTMLElement;
+    expect(within(stat).getByText('Só com o Tema Dúvida; o Tema não pode mudar.')).toBeInTheDocument();
+  });
+
+  it('shows no requirement for a Peculiarity open to everyone', async () => {
+    mockApi({ peculiarities: true });
+    renderAt('/peculiaridades/voo');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByRole('heading', { name: 'Voo' })).toBeInTheDocument();
+    expect(main.queryByText('Requisito')).toBeNull();
   });
 });
 

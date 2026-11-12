@@ -42,6 +42,7 @@ import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
 import { poderesHeroicosTechnoFantasy } from './heroic-skills/techno-fantasy';
 import { inBook } from './helpers';
 import { npcSpellsRule } from './npc-spells';
+import { peculiarities, peculiaritiesRule } from './peculiarities';
 import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
 import { weaponForgeRules } from './weapon-forge';
@@ -51,6 +52,7 @@ export const seedEntries: SeedEntry[] = [
   ...guides,
   ...rules,
   ...gameSetupRules,
+  ...inBook('high-fantasy', [peculiaritiesRule]),
   // The 15 classes, in the book's (alphabetical) order.
   ...andarilho,
   ...arcanista,
@@ -75,6 +77,8 @@ export const seedEntries: SeedEntry[] = [
   ...weaponForgeRules,
   ...servicesAndTransport,
   ...poderesHeroicosLivroBasico,
+  // Peculiaridades dos três Atlas (cada livro com seu `source`)
+  ...peculiarities,
   // Atlas High Fantasy
   ...inBook('high-fantasy', [
     ...comandante,

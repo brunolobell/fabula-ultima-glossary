@@ -5,6 +5,7 @@ import type {
   EquipmentDetails,
   HeroicSkillDetails,
   Entry,
+  PeculiarityDetails,
   EntrySummary,
   ServiceDetails,
   SkillDetails,
@@ -72,6 +73,10 @@ export function statCells(
       ];
       if (d.repeatable) cells.push({ label: 'Repetível', value: 'Sim' });
       return cells;
+    }
+    case 'peculiarity': {
+      const { requirement } = entry.details as PeculiarityDetails;
+      return requirement ? [{ label: 'Requisito', value: requirement }] : [];
     }
     case 'spell': {
       const d = entry.details as SpellDetails;
