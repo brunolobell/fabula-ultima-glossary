@@ -1,6 +1,4 @@
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
-import { ArmorForge } from '../components/forge/ArmorForge';
-import { WeaponForge } from '../components/forge/WeaponForge';
 import { EquipmentOrder } from '../components/EquipmentOrder';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
@@ -38,7 +36,12 @@ import {
   LEGACY_ASSEMBLER_PARAM,
   LEGACY_ASSEMBLER_VALUE,
 } from '../lib/laboratory';
-import { FORGE_PARAM, forgeTabFromParam, type ForgeTab } from '../lib/forgeTab';
+import { FORGE_PARAM } from '../lib/forgeTab';
+import {
+  ARMOR_FORGE_PATH,
+  WEAPON_FORGE_PATH,
+  legacyForgePath,
+} from '../lib/tools';
 import { QUICK_ASSEMBLY_SLUG } from '../lib/creatures';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import type {
@@ -47,7 +50,7 @@ import type {
   RareWeaponRuleDetails,
 } from '../api/types';
 
-/** Slugs of the two Rules whose `details` feed the Weapon Forge. */
+/** Slugs of the Rules whose `details` feed the forges (the lists link to them only once these are in the index). */
 const CUSTOM_WEAPON_RULE = 'armas-personalizadas';
 const RARE_WEAPON_RULE = 'criar-armas-raras';
 const RARE_ARMOR_RULE = 'criar-armaduras-e-escudos-raros';
@@ -82,15 +85,24 @@ export function TypeList() {
 
   const toggle = (param: string, value: string) =>
     setParams((prev) => toggleValue(prev, param, value), { replace: true });
-  const clear = () =>
+  // The kind of equipment (`item`) is where the Reader is: the menu offers it
+  // from `lg`, so the bar's "Limpar filtros" leaves it alone. The empty-state
+  // link clears everything, so a kind with no entries can still be left.
+  const clear = (keepKind = false) =>
     setParams(
       (prev) => {
         const next = clearFilters(type, prev);
         next.delete(MAX_PRICE_PARAM);
+        const kind = prev.get('item');
+        if (keepKind && isEquipment && kind) next.set('item', kind);
         return next;
       },
       { replace: true },
     );
+  const clearable =
+    hasActiveFilters(
+      isEquipment ? { ...selection, item: [] } : selection,
+    ) || maxPrice !== null;
   const setQuery = (param: string, value: string | null) =>
     setParams(
       (prev) => {
@@ -110,49 +122,41 @@ export function TypeList() {
   const kind = type === 'equipment' && items.length === 1 ? kindFromParam(items[0]) : undefined;
   const title = kind ? kind.label : TYPE_INFO[type].plural;
 
-  // The Weapon Forge is offered on the weapons list only. Its open tab is in
-  // the URL (so the Rules can link to it and Back closes it); what the Reader
-  // builds is not.
-  const customRules = bySlug.get(CUSTOM_WEAPON_RULE)?.details as
-    | CustomWeaponRuleDetails
-    | undefined;
-  const rareRules = bySlug.get(RARE_WEAPON_RULE)?.details as
-    | RareWeaponRuleDetails
-    | undefined;
-  const forge =
-    kind?.kind === 'weapon' &&
-    customRules?.forge === 'custom-weapon' &&
-    rareRules?.forge === 'rare-weapon'
-      ? { customRules, rareRules }
-      : null;
-  const forgeTab = forge ? forgeTabFromParam(params.get(FORGE_PARAM)) : null;
-  // The Armor Forge is offered on the armors and shields lists. It reuses
-  // `forja=rara`: the list decides which modal that opens.
-  const rareArmorRules = bySlug.get(RARE_ARMOR_RULE)?.details as
-    | RareArmorRuleDetails
-    | undefined;
-  const armorForge =
-    (kind?.kind === 'armor' || kind?.kind === 'shield') &&
-    rareArmorRules?.forge === 'rare-armor'
-      ? rareArmorRules
-      : null;
-  const armorForgeOpen =
-    armorForge !== null && forgeTabFromParam(params.get(FORGE_PARAM)) === 'rara';
-  const setForgeTab = (next: ForgeTab | null, replace: boolean) =>
-    setParams(
-      (prev) => {
-        const copy = new URLSearchParams(prev);
-        if (next) copy.set(FORGE_PARAM, next);
-        else copy.delete(FORGE_PARAM);
-        return copy;
-      },
-      { replace },
-    );
+  // The forges are pages of their own (`/forja-de-armas`, `/forja-de-armaduras`);
+  // the lists link to them. The old modal links (`?forja=`) go to the pages.
+  const legacyForge = legacyForgePath(
+    items[0] ?? null,
+    params.get(FORGE_PARAM),
+  );
+  if (type === 'equipment' && items.length === 1 && legacyForge) {
+    return <Navigate to={legacyForge} replace />;
+  }
+  const weaponRulesReady =
+    (bySlug.get(CUSTOM_WEAPON_RULE)?.details as CustomWeaponRuleDetails | undefined)
+      ?.forge === 'custom-weapon' &&
+    (bySlug.get(RARE_WEAPON_RULE)?.details as RareWeaponRuleDetails | undefined)
+      ?.forge === 'rare-weapon';
+  const armorRulesReady =
+    (bySlug.get(RARE_ARMOR_RULE)?.details as RareArmorRuleDetails | undefined)
+      ?.forge === 'rare-armor';
+  const forgeLink =
+    kind?.kind === 'weapon' && weaponRulesReady
+      ? { to: WEAPON_FORGE_PATH, label: 'Forjar arma' }
+      : (kind?.kind === 'armor' || kind?.kind === 'shield') && armorRulesReady
+        ? { to: ARMOR_FORGE_PATH, label: 'Forjar armadura ou escudo' }
+        : null;
 
   // The Laboratório Oroboros (the Creature Assembler) is a page of its own, linked
   // from the Creatures list once the Quick Assembly Rule is in the index. The page
   // fetches the Rules and says so when they are incomplete.
   const assembler = type === 'creature' && bySlug.has(QUICK_ASSEMBLY_SLUG);
+  const tool = forgeLink
+    ? forgeLink
+    : assembler
+      ? { to: LAB_PATH, label: 'Laboratório Oroboros' }
+      : null;
+  // Filters of the "Ordenar e preço" button that are not at their default.
+  const sortCount = (order !== DEFAULT_ORDER ? 1 : 0) + (maxPrice !== null ? 1 : 0);
 
   return (
     <div>
@@ -162,81 +166,47 @@ export function TypeList() {
 
       {type === 'rule' && <RulesOverview bySlug={bySlug} />}
 
-      {forge && (
-        <>
-          <p className="mt-4">
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => setForgeTab('personalizada', false)}
-            >
-              Forjar arma
-            </button>{' '}
-            <span className="text-[15px] text-muted">
-              Monte uma arma personalizada ou rara. Nada é salvo.
-            </span>
-          </p>
-          <WeaponForge
-            customRules={forge.customRules}
-            rareRules={forge.rareRules}
-            equipment={ofType}
-            tab={forgeTab}
-            onTab={(next) => setForgeTab(next, true)}
-            onClose={() => setForgeTab(null, true)}
-          />
-        </>
-      )}
-
-      {armorForge && (
-        <>
-          <p className="mt-4">
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => setForgeTab('rara', false)}
-            >
-              Forjar armadura ou escudo
-            </button>{' '}
-            <span className="text-[15px] text-muted">
-              Monte uma armadura ou um escudo raro. Nada é salvo.
-            </span>
-          </p>
-          <ArmorForge
-            rules={armorForge}
-            equipment={ofType}
-            open={armorForgeOpen}
-            onClose={() => setForgeTab(null, true)}
-          />
-        </>
-      )}
-
-      {assembler && (
-        <p className="mt-4">
-          <Link to={LAB_PATH} className="btn-primary">
-            Laboratório Oroboros
-          </Link>{' '}
-          <span className="text-[15px] text-muted">
-            Monte uma criatura pela Montagem Rápida. Nada é salvo.
-          </span>
-        </p>
-      )}
-
       <ListFilters
         key={type}
         rows={rows}
         selection={selection}
         onToggle={toggle}
-        onClear={filtering && (isLoading || shown.length > 0) ? clear : undefined}
+        onClear={
+          clearable && (isLoading || shown.length > 0)
+            ? () => clear(true)
+            : undefined
+        }
+        extraPanel={
+          isEquipment
+            ? {
+                label: `Ordenar e preço${sortCount > 0 ? `: ${sortCount}` : ''}`,
+                active: sortCount > 0,
+                content: (
+                  <EquipmentOrder
+                    order={order}
+                    onOrder={setOrder}
+                    maxPrice={maxPrice}
+                    onMaxPrice={setMaxPrice}
+                  />
+                ),
+              }
+            : undefined
+        }
       />
 
-      {isEquipment && (
-        <EquipmentOrder
-          order={order}
-          onOrder={setOrder}
-          maxPrice={maxPrice}
-          onMaxPrice={setMaxPrice}
-        />
-      )}
+      {/* The count, with the tool that builds one of these at the other end. */}
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <p className="text-muted">
+          {!isError && !isLoading && shown.length > 0
+            ? countLabel(shown.length)
+            : null}
+        </p>
+        {tool && (
+          <Link to={tool.to} className="btn-primary ml-auto">
+            {tool.label}
+          </Link>
+        )}
+      </div>
 
       {isError ? (
         <div className="mt-6">
@@ -249,7 +219,11 @@ export function TypeList() {
           {filtering ? (
             <>
               Nenhuma entrada com esses filtros.{' '}
-              <button type="button" className="underline text-primary" onClick={clear}>
+              <button
+                type="button"
+                className="underline text-primary"
+                onClick={() => clear()}
+              >
                 Limpar filtros
               </button>
             </>
@@ -258,14 +232,11 @@ export function TypeList() {
           )}
         </p>
       ) : (
-        <>
-          <p className="mt-6 text-muted">{countLabel(shown.length)}</p>
-          <ul className="mt-2">
-            {shown.map((entry) => (
-              <ResultRow key={entry.id} entry={entry} showType={false} />
-            ))}
-          </ul>
-        </>
+        <ul className="mt-2">
+          {shown.map((entry) => (
+            <ResultRow key={entry.id} entry={entry} showType={false} />
+          ))}
+        </ul>
       )}
     </div>
   );

@@ -255,7 +255,7 @@ export function CustomTab({
           onChange={(form) => onChange([forms[0], form])}
         />
       )}
-      <ul className="bullets mt-6 text-[15px]">
+      <ul className="bullets mt-6 text-meta">
         {rules.notes.map((note) => (
           <li key={note}>{note}</li>
         ))}

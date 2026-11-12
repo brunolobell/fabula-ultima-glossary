@@ -3,7 +3,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
   within,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -64,13 +63,10 @@ function renderAt(path: string) {
   );
 }
 
-const openForge = async (path = '/equipamento?item=armas') => {
+const openForge = async (path = '/forja-de-armas') => {
   renderAt(path);
-  // A deep link opens the Forge by itself; otherwise the Reader clicks the button.
-  if (!path.includes('forja=')) {
-    fireEvent.click(await screen.findByRole('button', { name: 'Forjar arma' }));
-  }
-  return screen.findByRole('dialog', { name: 'Forja de Armas' });
+  await screen.findByRole('heading', { level: 1, name: 'Forja de Armas' });
+  return screen.getByRole('main');
 };
 
 const total = (dialog: HTMLElement) =>
@@ -79,60 +75,92 @@ const total = (dialog: HTMLElement) =>
       .parentElement as HTMLElement,
   ).getByText('Custo total').parentElement;
 
-describe('Weapon Forge launcher', () => {
-  it('is offered on the weapons list only, closed until asked', async () => {
+describe('Weapon Forge page', () => {
+  it('is linked from the weapons list only', async () => {
     renderAt('/equipamento?item=armas');
-    const button = await screen.findByRole('button', { name: 'Forjar arma' });
-    expect(screen.queryByRole('dialog')).toBeNull();
-    fireEvent.click(button);
-    expect(
-      await screen.findByRole('dialog', { name: 'Forja de Armas' }),
-    ).toBeInTheDocument();
+    const link = await screen.findByRole('link', { name: 'Forjar arma' });
+    expect(link).toHaveAttribute('href', '/forja-de-armas');
   });
 
   it('is absent from the full equipment list', async () => {
     renderAt('/equipamento');
     await screen.findByRole('link', { name: /Machado de guerra/ });
-    expect(screen.queryByRole('button', { name: 'Forjar arma' })).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Forjar arma' })).toBeNull();
   });
 
-  it('opens on the tab named in the URL', async () => {
-    renderAt('/equipamento?item=armas&forja=rara');
+  it('opens on the custom tab, or on the tab named in the URL', async () => {
+    const { unmount } = renderAt('/forja-de-armas');
+    expect(
+      await screen.findByRole('tab', { name: 'Arma personalizada', selected: true }),
+    ).toBeInTheDocument();
+    unmount();
+    renderAt('/forja-de-armas?forja=rara');
     expect(
       await screen.findByRole('tab', { name: 'Arma rara', selected: true }),
     ).toBeInTheDocument();
   });
 
-  it('closes on Fechar and on Esc, and keeps the draft when reopened', async () => {
-    const dialog = await openForge();
-    fireEvent.click(
-      within(dialog).getByRole('checkbox', { name: /^Certeira/ }),
-    );
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Fechar' }));
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
-
-    fireEvent.click(screen.getByRole('button', { name: 'Forjar arma' }));
-    const again = await screen.findByRole('dialog', { name: 'Forja de Armas' });
+  it('sends the old modal links to the page', async () => {
+    renderAt('/equipamento?item=armas&forja=rara');
     expect(
-      within(again).getByRole('checkbox', { name: /^Certeira/ }),
-    ).toBeChecked();
-
-    fireEvent(again, new Event('cancel', { cancelable: true }));
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+      await screen.findByRole('heading', { level: 1, name: 'Forja de Armas' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole('tab', { name: 'Arma rara', selected: true }),
+    ).toBeInTheDocument();
   });
 
-  it('says nothing is saved, and Recomeçar clears the draft', async () => {
-    const dialog = await openForge();
-    expect(
-      within(dialog).getByText(/Nada do que você montar aqui é salvo/),
-    ).toBeInTheDocument();
-    fireEvent.click(
-      within(dialog).getByRole('checkbox', { name: /^Certeira/ }),
+  it('is a tool in the menu, current on its page', async () => {
+    const page = await openForge();
+    const nav = within(screen.getByRole('navigation', { name: 'Navegação principal' }));
+    const link = nav.getByRole('link', { name: 'Forja de Armas' });
+    expect(link).toHaveAttribute('aria-current', 'page');
+    expect(nav.getByRole('button', { name: 'Ferramentas' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
     );
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Recomeçar' }));
+    expect(page).toBeInTheDocument();
+  });
+
+  it('keeps the draft when the Reader leaves the page and comes back', async () => {
+    const page = await openForge();
+    fireEvent.click(within(page).getByRole('checkbox', { name: /^Certeira/ }));
+    const nav = within(screen.getByRole('navigation', { name: 'Navegação principal' }));
+    fireEvent.click(nav.getByRole('link', { name: 'Início' }));
+    await screen.findByRole('heading', { level: 2, name: 'Ferramentas' });
+
+    fireEvent.click(
+      within(screen.getByRole('main')).getByRole('link', {
+        name: /^Forja de Armas/,
+      }),
+    );
+    await screen.findByRole('heading', { level: 1, name: 'Forja de Armas' });
     expect(
-      within(dialog).getByRole('checkbox', { name: /^Certeira/ }),
+      within(screen.getByRole('main')).getByRole('checkbox', {
+        name: /^Certeira/,
+      }),
+    ).toBeChecked();
+  });
+
+  it('says the draft is not saved, and Recomeçar clears it', async () => {
+    const page = await openForge();
+    expect(
+      within(page).getByText(/Nada é salvo; o rascunho some ao recarregar/),
+    ).toBeInTheDocument();
+    fireEvent.click(within(page).getByRole('checkbox', { name: /^Certeira/ }));
+    fireEvent.click(within(page).getByRole('button', { name: 'Recomeçar' }));
+    expect(
+      within(page).getByRole('checkbox', { name: /^Certeira/ }),
     ).not.toBeChecked();
+  });
+
+  it('folds the result into a one-line strip that opens on tap', async () => {
+    const page = await openForge();
+    const toggle = within(page).getByRole('button', { name: /^Resultado/ });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle).toHaveTextContent('300z');
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
   });
 });
 
@@ -188,7 +216,7 @@ describe('Custom Weapon tab', () => {
     expect(total(dialog)).toHaveTextContent('400z');
   });
 
-  it('filters the customizations inside the modal', async () => {
+  it('filters the customizations on the page', async () => {
     const dialog = await openForge();
     fireEvent.click(within(dialog).getByRole('button', { name: /^Marcial/ }));
     fireEvent.click(within(dialog).getByRole('checkbox', { name: /^Marcial/ }));
@@ -203,7 +231,7 @@ describe('Custom Weapon tab', () => {
 
 describe('Rare Weapon tab', () => {
   const openRare = async () => {
-    const dialog = await openForge('/equipamento?item=armas&forja=rara');
+    const dialog = await openForge('/forja-de-armas?forja=rara');
     return dialog;
   };
 
@@ -268,7 +296,7 @@ describe('Rare Weapon tab', () => {
     ).toBeNull();
   });
 
-  it('filters the base weapons and the features inside the modal', async () => {
+  it('filters the base weapons and the features on the page', async () => {
     const dialog = await openRare();
     fireEvent.click(within(dialog).getByRole('button', { name: /^Categoria/ }));
     fireEvent.click(

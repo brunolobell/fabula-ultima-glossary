@@ -11,6 +11,7 @@ import type {
   HeroicSkillDetails,
 } from '../api/types';
 import { EntryBody } from '../components/EntryBody';
+import { PageIndex, type PageLink } from '../components/PageIndex';
 import { PageRef } from '../components/PageRef';
 import { SiglasLegend } from '../components/SiglasLegend';
 import {
@@ -24,6 +25,7 @@ import { TypeBadge } from '../components/TypeBadge';
 import { useEntry } from '../hooks/useEntry';
 import { useEntryIndex } from '../hooks/useEntryIndex';
 import { decorateChecks } from '../lib/check';
+import { outline } from '../lib/headings';
 import {
   TYPE_INFO,
   entryPath,
@@ -39,41 +41,21 @@ import { useDocumentTitle } from '../lib/useDocumentTitle';
 
 type Index = ReadonlyMap<string, EntrySummary>;
 
-/** In-page jump links at the top of a Class page. */
-function ClassIndex({
-  links,
-}: {
-  links: { href: string; label: string; count?: number }[];
-}) {
-  return (
-    <nav aria-label="Nesta página" className="mt-6 border-b border-line pb-3">
-      <p className="font-heading text-[15px] uppercase tracking-wider text-muted">
-        Nesta página
-      </p>
-      <ul className="mt-1 flex flex-wrap gap-x-5">
-        {links.map((link) => (
-          <li key={link.href}>
-            <a
-              href={link.href}
-              className="inline-flex min-h-[44px] items-center gap-1.5"
-            >
-              {link.label}
-              {link.count !== undefined && (
-                <span className="text-[15px] text-muted">{link.count}</span>
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
+/**
+ * Entries that read as prose get a narrower column (title rule, headers and text
+ * share one edge); Classes, Creatures and bodies with a table keep the full one.
+ */
+const PROSE_COLUMN = 'max-w-[34rem]';
+const hasTable = (body: string) => /^\s*\|.+\|\s*$/m.test(body);
+
+/** Fewer sections than this read fine without an index. */
+const MIN_INDEXED_SECTIONS = 4;
 
 /** Names of the Skills or Spells below, as jump links under their header. */
 function ChildIndex({ items, label }: { items: Entry[]; label: string }) {
   return (
     <nav aria-label={label}>
-      <ul className="flex flex-wrap gap-x-4 text-[15px]">
+      <ul className="flex flex-wrap gap-x-4 text-meta">
         {items.map((child) => (
           <li key={child.slug}>
             <a href={`#${child.slug}`} className="jump-link">
@@ -95,7 +77,7 @@ function ChildSection({ child, index }: { child: Entry; index: Index }) {
       <h3 id={`${child.slug}-titulo`} className="h-tertiary">
         {child.name}
       </h3>
-      <p className={`text-[15px] text-muted ${inline ? 'mb-3' : ''}`}>
+      <p className={`text-meta text-muted ${inline ? 'mb-3' : ''}`}>
         {inline && (
           <>
             {inline.label} <strong className="text-ink">{inline.value}</strong>
@@ -103,7 +85,9 @@ function ChildSection({ child, index }: { child: Entry; index: Index }) {
           </>
         )}
         <PageRef page={child.page} source={child.source} /> ·{' '}
-        <Link to={entryPath(child)}>Abrir página</Link>
+        <Link to={entryPath(child)} className="tap">
+          Abrir página
+        </Link>
       </p>
       {!inline && <StatBar cells={cells} />}
       {child.body.trim() ? (
@@ -130,11 +114,13 @@ function GroupMembers({ members }: { members: Entry[] }) {
             <h2 id={`${member.slug}-titulo`} className="h-secondary">
               {member.name}
             </h2>
-            <p className="text-[15px] text-muted">
+            <p className="text-meta text-muted">
               Nível {d.level} · {SPECIES_LABEL[d.species]} · {rankText(d)}
               {' · '}
               <PageRef page={member.page} source={member.source} /> ·{' '}
-              <Link to={entryPath(member)}>Abrir página</Link>
+              <Link to={entryPath(member)} className="tap">
+                Abrir página
+              </Link>
             </p>
             <p>{decorateChecks(member.summary)}</p>
             <StatBlock details={d} idPrefix={`${member.slug}-`} nested />
@@ -145,38 +131,45 @@ function GroupMembers({ members }: { members: Entry[] }) {
   );
 }
 
-function ClassContent({ entry, index }: { entry: EntryWithChildren; index: Index }) {
-  const heroic = [...index.values()].filter(
+/** The Heroic Skills that name this Class among their requirements. */
+function heroicFor(entry: Entry, index: Index): EntrySummary[] {
+  return [...index.values()].filter(
     (e) =>
       e.type === 'heroic-skill' &&
-      (e.details as HeroicSkillDetails).requirements.classes.includes(entry.slug),
+      (e.details as HeroicSkillDetails).requirements.classes.includes(
+        entry.slug,
+      ),
   );
+}
+
+/** The sections of a Class page, for its "Nesta página" index. */
+function classSections(
+  entry: EntryWithChildren,
+  index: Index,
+): PageLink[] {
+  const skills = entry.children.filter((c) => c.type === 'skill').length;
+  const spells = entry.children.filter((c) => c.type === 'spell').length;
+  const heroic = heroicFor(entry, index).length;
+  return [
+    { href: '#beneficios', label: 'Benefícios iniciais' },
+    ...(skills > 0 ? [{ href: '#poderes', label: 'Poderes', count: skills }] : []),
+    ...(spells > 0
+      ? [{ href: '#feiticos', label: 'Feitiços', count: spells }]
+      : []),
+    ...(heroic > 0
+      ? [{ href: '#poderes-heroicos', label: 'Poderes Heroicos', count: heroic }]
+      : []),
+  ];
+}
+
+function ClassContent({ entry, index }: { entry: EntryWithChildren; index: Index }) {
+  const heroic = heroicFor(entry, index);
   const skills = entry.children.filter((c) => c.type === 'skill');
   const spells = entry.children.filter((c) => c.type === 'spell');
   const details = entry.details as ClassDetails;
 
-  const links = [
-    { href: '#beneficios', label: 'Benefícios iniciais' },
-    ...(skills.length > 0
-      ? [{ href: '#poderes', label: 'Poderes', count: skills.length }]
-      : []),
-    ...(spells.length > 0
-      ? [{ href: '#feiticos', label: 'Feitiços', count: spells.length }]
-      : []),
-    ...(heroic.length > 0
-      ? [
-          {
-            href: '#poderes-heroicos',
-            label: 'Poderes Heroicos',
-            count: heroic.length,
-          },
-        ]
-      : []),
-  ];
-
   return (
     <>
-      <ClassIndex links={links} />
       <h2 id="beneficios" className="h-secondary">
         Benefícios iniciais
       </h2>
@@ -223,7 +216,10 @@ function ClassContent({ entry, index }: { entry: EntryWithChildren; index: Index
           <ul className="bullets">
             {heroic.map((power) => (
               <li key={power.slug}>
-                <Link to={entryPath(power)}>{power.name}</Link>:{' '}
+                <Link to={entryPath(power)} className="tap">
+                  {power.name}
+                </Link>
+                :{' '}
                 {decorateChecks(power.summary)}
               </li>
             ))}
@@ -289,12 +285,33 @@ export function EntryPage() {
   const parentGroup = groupSlug ? bySlug.get(groupSlug) : undefined;
   const classDetails = isClass ? (entry.details as ClassDetails) : null;
 
+  // A long entry (a Rule with many sections, a Creature Group with its members)
+  // gets a "Nesta página" index. Classes have their own, at the top of the page.
+  const sections: PageLink[] = isClass
+    ? classSections(entry, bySlug)
+    : [
+        ...(entry.type === 'creature' && !isGroup
+          ? []
+          : outline(entry.body, bySlug).map((s) => ({
+              href: `#${s.id}`,
+              label: s.text,
+            }))),
+        ...(isGroup
+          ? entry.children.map((m) => ({ href: `#${m.slug}`, label: m.name }))
+          : []),
+      ];
+
+  const prose =
+    entry.type !== 'class' && entry.type !== 'creature' && !hasTable(entry.body);
+
   return (
-    <article>
-      <nav aria-label="Você está em" className="text-[15px] text-muted">
+    <article className={prose ? PROSE_COLUMN : undefined}>
+      <nav aria-label="Você está em" className="text-meta text-muted">
         <ol className="flex flex-wrap items-center gap-x-2">
           <li>
-            <Link to={typePath(entry.type)}>{TYPE_INFO[entry.type].plural}</Link>
+            <Link to={typePath(entry.type)} className="tap">
+              {TYPE_INFO[entry.type].plural}
+            </Link>
           </li>
           <li aria-hidden>›</li>
           <li aria-current="page">{entry.name}</li>
@@ -314,7 +331,7 @@ export function EntryPage() {
       ) : (
         <h1 className="h-main mt-3">{entry.name}</h1>
       )}
-      <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
+      <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-meta">
         <TypeBadge type={entry.type} />
         <PageRef page={entry.page} source={entry.source} />
       </p>
@@ -342,6 +359,7 @@ export function EntryPage() {
       </div>
 
       <StatBar cells={statCells(entry, bySlug)} />
+      {isClass && <PageIndex links={sections} />}
       <SiglasLegend
         texts={[
           entry.summary,
@@ -368,6 +386,9 @@ export function EntryPage() {
         <ClassContent entry={entry} index={bySlug} />
       ) : (
         <>
+          {sections.length >= MIN_INDEXED_SECTIONS && (
+            <PageIndex links={sections} />
+          )}
           {entry.type === 'creature' && !isGroup && (
             <StatBlock details={entry.details as CreatureDetails} />
           )}

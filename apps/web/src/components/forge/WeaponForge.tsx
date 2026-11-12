@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import type {
   CustomWeaponRuleDetails,
   EntrySummary,
@@ -6,6 +7,8 @@ import type {
   RareWeaponRuleDetails,
 } from '../../api/types';
 import { toggleSelection } from '../../lib/forgeFilters';
+import { useDraft } from '../../lib/forgeDraft';
+import { equipmentPath } from '../../lib/equipmentKinds';
 import type { ForgeTab } from '../../lib/forgeTab';
 import type { Selection } from '../../lib/listFilters';
 import {
@@ -19,10 +22,10 @@ import {
   type CustomForms,
   type RareChoice,
 } from '../../lib/weaponForge';
-import { Modal } from '../Modal';
 import { CustomTab } from './CustomTab';
 import { RareTab, type BaseKind, type RareFilterKey } from './RareTab';
 import { ResultCard } from './ResultCard';
+import { ResultPanel } from './ResultPanel';
 import { WeaponStatBlocks } from './WeaponStatBlocks';
 
 type FilterKey = 'custom' | RareFilterKey;
@@ -34,15 +37,15 @@ interface Props {
   rareRules: RareWeaponRuleDetails;
   /** Every Equipment entry; the basic weapons are picked out here. */
   equipment: EntrySummary[];
-  /** The open tab, or null while closed. */
-  tab: ForgeTab | null;
+  /** The open tab. */
+  tab: ForgeTab;
   onTab: (tab: ForgeTab) => void;
-  onClose: () => void;
 }
 
 /**
- * The Weapon Forge: builds a Custom Weapon or a Rare Weapon. The draft lives in
- * this component's state only: nothing is saved, and leaving the page discards it.
+ * The Weapon Forge page: builds a Custom Weapon or a Rare Weapon. The draft is
+ * kept in memory for the session (`useDraft`): nothing is saved, and a reload
+ * discards it.
  */
 export function WeaponForge({
   customRules,
@@ -50,15 +53,26 @@ export function WeaponForge({
   equipment,
   tab,
   onTab,
-  onClose,
 }: Props) {
-  const [forms, setForms] = useState<CustomForms>(() =>
+  const [forms, setForms] = useDraft<CustomForms>('weapon:forms', () =>
     emptyForms(customRules),
   );
-  const [baseKind, setBaseKind] = useState<BaseKind>('basic');
-  const [baseSlug, setBaseSlug] = useState<string | null>(null);
-  const [rawChoice, setRawChoice] = useState<RareChoice>(emptyRareChoice);
-  const [filters, setFilters] = useState<AllFilters>(NO_FILTERS);
+  const [baseKind, setBaseKind] = useDraft<BaseKind>(
+    'weapon:base-kind',
+    () => 'basic',
+  );
+  const [baseSlug, setBaseSlug] = useDraft<string | null>(
+    'weapon:base',
+    () => null,
+  );
+  const [rawChoice, setRawChoice] = useDraft<RareChoice>(
+    'weapon:choice',
+    emptyRareChoice,
+  );
+  const [filters, setFilters] = useDraft<AllFilters>(
+    'weapon:filters',
+    () => NO_FILTERS,
+  );
 
   const basics = useMemo(
     () =>
@@ -111,115 +125,106 @@ export function WeaponForge({
     { id: 'personalizada', label: 'Arma personalizada' },
     { id: 'rara', label: 'Arma rara' },
   ];
-  const active = tab ?? 'personalizada';
+  const active = tab;
+
+  const result = active === 'personalizada' ? custom : rare;
 
   return (
-    <Modal
-      open={tab !== null}
-      onClose={onClose}
-      title="Forja de Armas"
-      actions={
+    <div>
+      <h1 className="h-main">Forja de Armas</h1>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <Link to={equipmentPath('armas')} className="tap">← Armas</Link>
         <button type="button" className="chip" onClick={reset}>
           Recomeçar
         </button>
-      }
-    >
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-4 pt-3 sm:px-6">
-          <p className="text-[15px] text-muted">
-            Nada do que você montar aqui é salvo: ao recarregar ou sair da
-            página, tudo some.
-          </p>
-          <div
-            role="tablist"
-            aria-label="O que forjar"
-            className="mt-2 flex flex-wrap gap-2"
-          >
-            {tabs.map(({ id, label }) => (
-              <button
-                key={id}
-                type="button"
-                role="tab"
-                id={`forja-aba-${id}`}
-                aria-selected={active === id}
-                aria-controls={`forja-painel-${id}`}
-                className="chip"
-                onClick={() => onTab(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="grid gap-x-8 px-4 pb-4 sm:px-6 md:grid-cols-[minmax(0,1fr)_20rem]">
-          <div
-            role="tabpanel"
-            id={`forja-painel-${active}`}
-            aria-labelledby={`forja-aba-${active}`}
-            className="min-w-0 pt-3"
-          >
-            {active === 'personalizada' ? (
-              <CustomTab
-                rules={customRules}
-                forms={forms}
-                onChange={setForms}
-                filters={filters.custom}
-                onToggleFilter={toggleFilter('custom')}
-                onClearFilters={() => clearFilters('custom')}
-              />
-            ) : (
-              <RareTab
-                rules={rareRules}
-                basics={basics}
-                custom={custom}
-                baseKind={baseKind}
-                onBaseKind={setBaseKind}
-                baseSlug={baseSlug}
-                onBaseSlug={setBaseSlug}
-                base={base}
-                choice={choice}
-                onChoice={(patch) =>
-                  setRawChoice((prev) => ({ ...prev, ...patch }))
-                }
-                filters={{ bases: filters.bases, features: filters.features }}
-                onToggleFilter={(key, param, value) =>
-                  toggleFilter(key)(param, value)
-                }
-                onClearFilters={clearFilters}
-              />
-            )}
-          </div>
-          <div className="sticky bottom-0 z-10 bg-bg md:top-0 md:self-start md:pt-3">
-            {active === 'personalizada' ? (
-              <ResultCard
-                cost={custom.cost}
-                total={custom.total}
-                problems={custom.problems}
-                notes={custom.notes}
-              >
-                <WeaponStatBlocks kind="custom" forms={custom.forms} />
-              </ResultCard>
-            ) : rare ? (
-              <ResultCard
-                cost={rare.cost}
-                total={rare.total}
-                problems={rare.problems}
-                notes={[]}
-              >
-                <WeaponStatBlocks kind="rare" forms={rare.forms} />
-              </ResultCard>
-            ) : (
-              <div className="highlight-key">
-                <p>
-                  {baseKind === 'custom'
-                    ? 'Complete a arma personalizada para usá-la como base.'
-                    : 'Escolha uma arma básica para começar.'}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
-    </Modal>
+      <p className="mt-2 text-meta text-muted">
+        Nada é salvo; o rascunho some ao recarregar.
+      </p>
+      <div
+        role="tablist"
+        aria-label="O que forjar"
+        className="mt-3 flex flex-wrap gap-2"
+      >
+        {tabs.map(({ id, label }) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`forja-aba-${id}`}
+            aria-selected={active === id}
+            aria-controls={`forja-painel-${id}`}
+            className="chip"
+            onClick={() => onTab(id)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="grid gap-x-8 md:grid-cols-[minmax(0,1fr)_20rem]">
+        <div
+          role="tabpanel"
+          id={`forja-painel-${active}`}
+          aria-labelledby={`forja-aba-${active}`}
+          className="min-w-0 pt-3"
+        >
+          {active === 'personalizada' ? (
+            <CustomTab
+              rules={customRules}
+              forms={forms}
+              onChange={setForms}
+              filters={filters.custom}
+              onToggleFilter={toggleFilter('custom')}
+              onClearFilters={() => clearFilters('custom')}
+            />
+          ) : (
+            <RareTab
+              rules={rareRules}
+              basics={basics}
+              custom={custom}
+              baseKind={baseKind}
+              onBaseKind={setBaseKind}
+              baseSlug={baseSlug}
+              onBaseSlug={setBaseSlug}
+              base={base}
+              choice={choice}
+              onChoice={(patch) =>
+                setRawChoice((prev) => ({ ...prev, ...patch }))
+              }
+              filters={{ bases: filters.bases, features: filters.features }}
+              onToggleFilter={(key, param, value) =>
+                toggleFilter(key)(param, value)
+              }
+              onClearFilters={clearFilters}
+            />
+          )}
+        </div>
+        {result ? (
+          <ResultPanel total={result.total} problems={result.problems.length}>
+            <ResultCard
+              cost={result.cost}
+              total={result.total}
+              problems={result.problems}
+              notes={active === 'personalizada' ? custom.notes : []}
+            >
+              <WeaponStatBlocks
+                kind={active === 'personalizada' ? 'custom' : 'rare'}
+                forms={result.forms}
+              />
+            </ResultCard>
+          </ResultPanel>
+        ) : (
+          <div className="sticky bottom-0 z-10 bg-bg md:top-0 md:self-start md:pt-3">
+            <div className="highlight-key">
+              <p>
+                {baseKind === 'custom'
+                  ? 'Complete a arma personalizada para usá-la como base.'
+                  : 'Escolha uma arma básica para começar.'}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

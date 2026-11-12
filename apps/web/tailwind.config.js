@@ -20,6 +20,9 @@ export default {
       'tint-key': 'var(--tint-key)',
       'tint-example': 'var(--tint-example)',
       'accent-ink': 'var(--accent-ink)',
+      hp: 'var(--hp)',
+      mp: 'var(--mp)',
+      'on-stat': 'var(--on-stat)',
       scrim: 'var(--scrim)',
     },
     fontFamily: {
@@ -29,6 +32,10 @@ export default {
     },
     extend: {
       maxWidth: { reading: '44rem' },
+      // Two small steps, in rem so the Reader's font setting applies:
+      // `meta` for PT Sans Narrow (page references, captions, row facts),
+      // `label` for the uppercase Antonio labels.
+      fontSize: { meta: '1rem', label: '0.9375rem' },
     },
   },
   plugins: [],

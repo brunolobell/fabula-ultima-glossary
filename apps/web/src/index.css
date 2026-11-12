@@ -33,7 +33,15 @@
   --tint-example: #fceee2;
   --accent-ink: #8a4a1f;
   --accent: #c2661f;
+  --hp: #a83d4e;
+  --mp: #2f5f9e;
+  --on-stat: #ffffff;
   --scrim: rgba(20, 19, 28, 0.5);
+  /* Reading measure: about 82 characters of PT Sans Narrow at 18 px (measured;
+     the 44rem column holds about 110). Prose entries sit in a 34rem column
+     (EntryPage), so the title rule and the text end near the same edge; lists,
+     tables and stat blocks keep the wider column. */
+  --measure: 32rem;
 
   --grad-key: linear-gradient(90deg, var(--tint-key), transparent);
   --grad-example: linear-gradient(90deg, var(--tint-example), transparent);
@@ -55,6 +63,9 @@
   --tint-example: rgba(242, 167, 119, 0.14);
   --accent-ink: #f2b48a;
   --accent: #f2a777;
+  --hp: #e2788a;
+  --mp: #7ba6e6;
+  --on-stat: #14131c;
 }
 
 /* ---------- Base ---------- */
@@ -199,6 +210,17 @@
     padding: 0;
     margin: 12px 0;
   }
+  /* Prose and the lists that read like prose stop at the measure; their
+     gradients fade out anyway, so a shorter band looks the same. */
+  .entry-body p,
+  .entry-body ul,
+  .entry-body ol,
+  .entry-body blockquote,
+  .bullets,
+  .highlight-key,
+  .highlight-example {
+    max-width: var(--measure);
+  }
   .entry-body ul > li,
   .bullets > li {
     position: relative;
@@ -302,6 +324,27 @@
     margin: 0;
     font-variant-numeric: tabular-nums;
   }
+  /* PV and PM cells: a filled chip, so the two numbers a Game Master tracks
+     are found first (DESIGN.md 6.4). Text stays on the opaque colour. */
+  .stat-bar > [data-tone] {
+    justify-self: start;
+    min-width: 5rem;
+    /* The chip bleeds into the bar's gap so its text lines up with the cells
+       around it. */
+    margin: -4px 0 -4px -10px;
+    padding: 4px 10px;
+    border-radius: 2px;
+    color: var(--on-stat);
+  }
+  .stat-bar > [data-tone] dt {
+    color: inherit;
+  }
+  .stat-bar > [data-tone='hp'] {
+    background: var(--hp);
+  }
+  .stat-bar > [data-tone='mp'] {
+    background: var(--mp);
+  }
 
   /* ---------- Entry Type badge (§6.5) ---------- */
   .badge {
@@ -343,10 +386,10 @@
     border: 1px solid var(--line);
     background: transparent;
     color: var(--ink);
-    font-family: 'Antonio', sans-serif;
+    /* Controls are read, not scanned: the body face in bold, sentence case, so
+       a value such as "Guardião" keeps its capital. */
+    font-weight: 700;
     font-size: 1rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
     cursor: pointer;
   }
   .chip:hover {
@@ -420,27 +463,16 @@
     border: 1px solid var(--primary);
     background: var(--primary);
     color: var(--on-primary);
-    font-family: 'Antonio', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 1.125rem;
+    text-decoration: none;
     cursor: pointer;
   }
   .btn-primary:hover {
+    text-decoration: none;
     background: var(--primary-deep);
     border-color: var(--primary-deep);
     color: var(--on-bar);
-  }
-
-  /* Modal dialog (Weapon Forge): the native backdrop uses the scrim token. */
-  dialog.modal {
-    padding: 0;
-    color: var(--ink);
-    background: var(--bg);
-    border: 1px solid var(--line);
-  }
-  dialog.modal::backdrop {
-    background: var(--scrim);
   }
 
   .search-input {
@@ -537,14 +569,12 @@
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     color: var(--ink-muted);
   }
   .suggest-all {
     border-top: 1px solid var(--line);
-    font-family: 'Antonio', sans-serif;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-weight: 700;
     color: var(--primary);
   }
   .suggest-heading {
@@ -606,6 +636,16 @@
     clip-path: polygon(50% 0, 100% 28%, 100% 72%, 50% 100%, 0 72%, 0 28%);
   }
 
+  /* A standalone link (breadcrumb, back link, "Abrir página", a rule in a list):
+     a full 44 px target on touch, compact with a mouse. */
+  @media (pointer: coarse) {
+    .tap {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+  }
+
   /* Name index under a Class page's Poderes and Feitiços: compact with a mouse,
      a full 44 px row on touch. */
   .jump-link {
@@ -618,12 +658,13 @@
     }
   }
 
-  /* "Siglas nesta página": a quiet, closed disclosure under the stat bar. */
-  .siglas {
+  /* A quiet, closed disclosure under the stat bar: "Siglas nesta página" and the
+     "Nesta página" index of a long entry. */
+  .disclosure {
     margin: 12px 0;
-    font-size: 0.9375rem;
+    font-size: 1rem;
   }
-  .siglas > summary {
+  .disclosure > summary {
     display: flex;
     min-height: 44px;
     align-items: center;
@@ -632,12 +673,12 @@
     cursor: pointer;
     color: var(--primary);
   }
-  .siglas > summary::-webkit-details-marker {
+  .disclosure > summary::-webkit-details-marker {
     display: none;
   }
   /* A flex summary loses the native triangle, so draw one: points right when
      closed, down when open (no transition, per DESIGN.md §10). */
-  .siglas > summary::before {
+  .disclosure > summary::before {
     content: '';
     width: 7px;
     height: 7px;
@@ -646,32 +687,48 @@
     border-bottom: 2px solid currentColor;
     transform: rotate(-45deg);
   }
-  .siglas[open] > summary::before {
+  .disclosure[open] > summary::before {
     transform: rotate(45deg);
   }
-  .siglas > summary:hover {
+  .disclosure > summary:hover {
     text-decoration: underline;
   }
-  .siglas > summary > span {
+  .disclosure > summary > span {
     color: var(--ink-muted);
   }
-  .siglas dl {
+  .disclosure dl {
     display: grid;
     gap: 6px;
     margin: 0 0 8px;
   }
-  .siglas dl > div {
+  .disclosure dl > div {
     display: grid;
     grid-template-columns: 3.25rem 1fr;
     gap: 0 8px;
   }
-  .siglas dt {
+  .disclosure dt {
     font-family: 'Antonio', sans-serif;
     letter-spacing: 0.05em;
     color: var(--ink-muted);
   }
-  .siglas dd {
+  .disclosure dd {
     margin: 0;
+  }
+  .disclosure ul {
+    margin: 0 0 8px;
+    padding: 0;
+    list-style: none;
+  }
+  .disclosure ul a {
+    display: flex;
+    min-height: 44px;
+    align-items: center;
+  }
+  @media (min-width: 640px) {
+    .disclosure ul {
+      columns: 2;
+      column-gap: 24px;
+    }
   }
 
   .skip-link {

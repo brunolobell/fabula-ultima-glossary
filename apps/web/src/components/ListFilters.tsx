@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import type { FilterRow, Selection } from '../lib/listFilters';
 
 interface Props {
@@ -7,7 +7,15 @@ interface Props {
   onToggle: (param: string, value: string) => void;
   /** Shown only while some filter is active. */
   onClear?: () => void;
+  /**
+   * One more button on the bar that opens custom controls (sort, price) in the
+   * same panel as the filters, instead of a row of controls of its own.
+   */
+  extraPanel?: { label: string; active: boolean; content: ReactNode };
 }
+
+/** The `openParam` of the extra panel; filter params never start with an underscore. */
+const EXTRA = '_extra';
 
 /** "Classe", "Classe: Guardião" or "Classe: 3". */
 function buttonLabel(row: FilterRow, chosen: readonly string[]) {
@@ -25,11 +33,17 @@ function buttonLabel(row: FilterRow, chosen: readonly string[]) {
  * panel stays open while the Reader ticks options and closes on its button,
  * on Escape or when another filter opens.
  */
-export function ListFilters({ rows, selection, onToggle, onClear }: Props) {
+export function ListFilters({
+  rows,
+  selection,
+  onToggle,
+  onClear,
+  extraPanel,
+}: Props) {
   const baseId = useId();
   const [openParam, setOpenParam] = useState<string | null>(null);
 
-  if (rows.length === 0 && !onClear) return null;
+  if (rows.length === 0 && !onClear && !extraPanel) return null;
 
   const openRow = rows.find((row) => row.param === openParam);
   const panelId = (param: string) => `${baseId}-${param}`;
@@ -65,6 +79,19 @@ export function ListFilters({ rows, selection, onToggle, onClear }: Props) {
             </button>
           );
         })}
+        {extraPanel && (
+          <button
+            type="button"
+            className="chip"
+            data-active={extraPanel.active || undefined}
+            aria-expanded={openParam === EXTRA}
+            aria-controls={panelId(EXTRA)}
+            onClick={() => setOpenParam(openParam === EXTRA ? null : EXTRA)}
+          >
+            {extraPanel.label}
+            <span aria-hidden="true">{openParam === EXTRA ? '▴' : '▾'}</span>
+          </button>
+        )}
         {onClear && (
           <button
             type="button"
@@ -75,6 +102,16 @@ export function ListFilters({ rows, selection, onToggle, onClear }: Props) {
           </button>
         )}
       </div>
+      {extraPanel && openParam === EXTRA && (
+        <div
+          id={panelId(EXTRA)}
+          role="group"
+          aria-label={extraPanel.label}
+          className="mt-2 rounded border border-line px-3 py-3"
+        >
+          {extraPanel.content}
+        </div>
+      )}
       {openRow && (
         <div
           id={panelId(openRow.param)}

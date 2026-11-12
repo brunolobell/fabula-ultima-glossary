@@ -8,7 +8,7 @@ export const erudito: SeedEntry[] = [
     name: CLASS,
     page: 194,
     summary:
-      'Estudioso movido por uma fome insaciável de descobertas, convencido de que conhecimento é poder — e muitas vezes distraído demais para notar as consequências.',
+      'Estudioso movido por uma fome insaciável de descobertas, convencido de que conhecimento é poder, e muitas vezes distraído demais para notar as consequências.',
     body: `Eruditos são famosos pela fome insaciável por descobertas. Acreditam de verdade que conhecimento é poder e dariam todo o ouro do mundo pela chance de resolver um bom mistério.
 
 Infelizmente, muitos são desligados e se distraem com facilidade, pouco se preocupando com assuntos "pragmáticos", a ponto de não notarem as consequências sombrias das próprias descobertas.

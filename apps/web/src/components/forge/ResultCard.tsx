@@ -29,21 +29,21 @@ export function ResultCard({
     >
       <h3
         id="forge-result-title"
-        className="font-heading text-[21px] uppercase tracking-wider text-heading"
+        className="sr-only font-heading text-[1.3125rem] uppercase tracking-wider text-heading md:not-sr-only"
       >
         Resultado
       </h3>
       <div aria-live="polite">
         {children}
         {problems.length > 0 && (
-          <ul className="mt-2 text-[15px] text-accent-ink">
+          <ul className="mt-2 text-meta text-accent-ink">
             {problems.map((problem) => (
               <li key={problem}>{problem}</li>
             ))}
           </ul>
         )}
       </div>
-      <ul className="mt-3 text-[15px]">
+      <ul className="mt-3 text-meta">
         {cost.map((line, index) => (
           <li
             key={`${line.label}-${index}`}
@@ -59,7 +59,7 @@ export function ResultCard({
         <span className="tabular-nums">{formatZ(total)}</span>
       </p>
       {notes.map((note) => (
-        <p key={note} className="mt-2 text-[15px] text-muted">
+        <p key={note} className="mt-2 text-meta text-muted">
           {note}
         </p>
       ))}

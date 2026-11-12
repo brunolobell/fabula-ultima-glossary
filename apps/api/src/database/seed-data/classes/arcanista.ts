@@ -8,7 +8,7 @@ export const arcanista: SeedEntry[] = [
     name: CLASS,
     page: 178,
     summary:
-      'Entra em transe e projeta parte da própria alma para fora do corpo, fundindo-se a um Arcano — uma manifestação de almas ancestrais — para ganhar poderes sobrenaturais.',
+      'Entra em transe e projeta parte da própria alma para fora do corpo, fundindo-se a um Arcano (uma manifestação de almas ancestrais) para ganhar poderes sobrenaturais.',
     body: `Arcanistas podem entrar em um transe profundo e projetar temporariamente uma porção considerável da alma para fora do corpo, dando-lhe forma física. Envolto por essa névoa mágica, o Arcanista ganha várias habilidades sobrenaturais. Dizem que essas formas invocadas são manifestações das almas ancestrais de entidades mitológicas chamadas **Arcanos**. Em alguns mundos, os Arcanos são cultuados como divindades.
 
 ## Para pensar no personagem

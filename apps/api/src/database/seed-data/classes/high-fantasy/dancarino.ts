@@ -24,7 +24,7 @@ São combatentes surpreendentemente capazes, embora um pouco… dramáticos.
 
 Cada vez que adquire o Poder [[danca]], você aprende uma das danças abaixo (páginas 140 e 141 do Atlas). Uma dança **instantânea** é resolvida na hora; as demais duram até o início do seu próximo turno.
 
-As danças elementais (Anjo, Fênix, Golem, Grifo, Ieti, Mirmidão e Morcego) funcionam todas do mesmo jeito: **escolha um** — você fica Resistente ao tipo de dano indicado, **ou** todo dano de seus ataques e feitiços vira desse tipo.
+As danças elementais (Anjo, Fênix, Golem, Grifo, Ieti, Mirmidão e Morcego) funcionam todas do mesmo jeito: **escolha um**: você fica Resistente ao tipo de dano indicado, **ou** todo dano de seus ataques e feitiços vira desse tipo.
 
 | Dança | Duração | Efeito |
 | --- | --- | --- |

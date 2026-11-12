@@ -37,10 +37,12 @@ export function GuidePage() {
 
   return (
     <article>
-      <nav aria-label="Você está em" className="text-[15px] text-muted">
+      <nav aria-label="Você está em" className="text-meta text-muted">
         <ol className="flex flex-wrap items-center gap-x-2">
           <li>
-            <Link to={typePath('guide')}>Guias</Link>
+            <Link to={typePath('guide')} className="tap">
+              Guias
+            </Link>
           </li>
           <li aria-hidden>›</li>
           <li aria-current="page">{entry.name}</li>
@@ -48,7 +50,7 @@ export function GuidePage() {
       </nav>
 
       <h1 className="h-main mt-3">{entry.name}</h1>
-      <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[15px]">
+      <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-meta">
         <TypeBadge type="guide" />
         <PageRef page={entry.page} source={entry.source} />
       </p>
@@ -87,7 +89,7 @@ export function GuidePage() {
                 </ul>
               )}
               {again.length > 0 && (
-                <p className="mt-2 text-[15px]">
+                <p className="mt-2 text-meta">
                   <strong>Ver de novo:</strong>{' '}
                   {again.map((e, n) => (
                     <span key={e.slug}>

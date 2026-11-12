@@ -12,7 +12,7 @@ ${rareArmorRules.features
   .map((f) => `| **${f.name}** | +${z(f.cost)} | ${f.summary} |`)
   .join('\n')}`;
 
-const FORGE = '/equipamento?item=armaduras&forja=rara';
+const FORGE = '/forja-de-armaduras';
 
 /** Livro Básico p. 280, "Como criar armaduras e escudos raros". */
 export const rareArmorRule: SeedEntry = {

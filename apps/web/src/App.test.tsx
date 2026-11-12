@@ -58,6 +58,67 @@ describe('Home', () => {
 });
 
 describe('Entry page', () => {
+  it('indexes the sections of a long entry in a closed "Nesta página" disclosure', async () => {
+    mockApi();
+    renderAt('/regras/tracos');
+    const summary = await screen.findByText('Nesta página', { selector: 'summary' });
+    const details = summary.closest('details') as HTMLElement;
+    expect(details).not.toHaveAttribute('open');
+    expect(summary).toHaveTextContent('4 seções');
+    const links = within(details).getAllByRole('link', { hidden: true });
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '#os-tres-tracos',
+      '#identidade',
+      '#tema',
+      '#origem',
+    ]);
+    for (const link of links) {
+      const id = link.getAttribute('href')!.slice(1);
+      expect(document.getElementById(id)).toHaveProperty('tagName', 'H2');
+    }
+  });
+
+  it('indexes a Class page in the same closed disclosure, with counts, above the Siglas', async () => {
+    mockApi();
+    renderAt('/classes/elementalista');
+    const summary = await screen.findByText('Nesta página', { selector: 'summary' });
+    const details = summary.closest('details') as HTMLElement;
+    expect(details).not.toHaveAttribute('open');
+    const links = within(details).getAllByRole('link', { hidden: true });
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '#beneficios',
+      '#poderes',
+      '#feiticos',
+      '#poderes-heroicos',
+    ]);
+    expect(links[1]).toHaveTextContent('Poderes1');
+    const siglas = screen.queryByText(/^Siglas nesta página/, { selector: 'summary' });
+    if (siglas) {
+      expect(
+        details.compareDocumentPosition(siglas.closest('details') as HTMLElement) &
+          Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    }
+  });
+
+  it('narrows the column of a prose entry, and keeps the full one for a Class', async () => {
+    mockApi();
+    const { unmount } = renderAt('/regras/tracos');
+    const article = (await screen.findByRole('heading', { level: 1, name: 'Traços' })).closest('article')!;
+    expect(article.className).toContain('max-w-[34rem]');
+    unmount();
+    renderAt('/classes/elementalista');
+    const wide = (await screen.findByRole('heading', { level: 1, name: 'Elementalista' })).closest('article')!;
+    expect(wide.className).not.toContain('max-w-[34rem]');
+  });
+
+  it('does not index a short entry', async () => {
+    mockApi();
+    renderAt('/regras/como-lancar-um-feitico');
+    await screen.findByRole('heading', { level: 1 });
+    expect(screen.queryByText('Nesta página', { selector: 'summary' })).toBeNull();
+  });
+
   it('shows a Class with its benefits, Poderes and Feitiços inline', async () => {
     mockApi();
     renderAt('/classes/elementalista');
@@ -235,6 +296,7 @@ describe('Sidebar groups', () => {
       'Bestiário',
       'Criação de Personagem',
       'Equipamento',
+      'Ferramentas',
     ]);
     expect(nav.getByRole('link', { name: /^Regras/ })).toHaveAttribute('href', '/regras');
     expect(nav.queryByRole('link', { name: /^Classes/ })).toBeNull();
@@ -259,24 +321,44 @@ describe('Sidebar groups', () => {
     expect(links[4]).toHaveAttribute('href', '/poderes-heroicos');
   });
 
-  it('keeps every group closed on load, even on a page inside one', async () => {
+  it('opens only the group that holds the current page on load', async () => {
     mockApi();
     renderAt('/classes/elementalista');
     const nav = within(menu());
     const header = await nav.findByRole('button', { name: 'Criação de Personagem' });
-    expect(header).toHaveAttribute('aria-expanded', 'false');
+    expect(header).toHaveAttribute('aria-expanded', 'true');
     expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
       'aria-expanded',
       'false',
     );
-    expect(nav.queryByRole('link', { name: /^Classes/ })).toBeNull();
+    expect(nav.getByRole('button', { name: 'Bestiário' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(nav.getByRole('link', { name: /^Classes/ })).toHaveAttribute('aria-current', 'page');
+  });
+
+  it('lets the Reader close the current group, and opens the next group on arriving in it', async () => {
+    mockApi();
+    renderAt('/classes/elementalista');
+    const nav = within(menu());
+    const criacao = await nav.findByRole('button', { name: 'Criação de Personagem' });
+    fireEvent.click(criacao);
+    expect(criacao).toHaveAttribute('aria-expanded', 'false');
+
+    fireEvent.click(nav.getByRole('link', { name: /^Regras/ }));
+    expect(criacao).toHaveAttribute('aria-expanded', 'false');
+    expect(nav.getByRole('button', { name: 'Equipamento' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
   });
 
   it('keeps several groups open at once', async () => {
     mockApi();
     renderAt('/classes/elementalista');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Criação de Personagem' }));
+    await nav.findByRole('button', { name: 'Criação de Personagem' });
     fireEvent.click(nav.getByRole('button', { name: 'Equipamento' }));
     expect(nav.getByRole('button', { name: 'Criação de Personagem' })).toHaveAttribute(
       'aria-expanded',
@@ -292,7 +374,7 @@ describe('Sidebar groups', () => {
     mockApi();
     renderAt('/equipamento?item=armas');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
+    await nav.findByRole('link', { name: /^Armas/ });
     expect(nav.getByRole('link', { name: /^Armas/ })).toHaveAttribute('href', '/equipamento?item=armas');
     expect(nav.getByRole('link', { name: /^Armas/ })).toHaveAttribute('aria-current', 'page');
     expect(nav.getByRole('link', { name: /^Todo o equipamento/ })).not.toHaveAttribute('aria-current');
@@ -303,8 +385,7 @@ describe('Sidebar groups', () => {
     mockApi();
     renderAt('/equipamento');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
-    const all = nav.getByRole('link', { name: /^Todo o equipamento/ });
+    const all = await nav.findByRole('link', { name: /^Todo o equipamento/ });
     expect(all).toHaveAttribute('aria-current', 'page');
   });
 
@@ -312,9 +393,9 @@ describe('Sidebar groups', () => {
     mockApi();
     renderAt('/equipamento/katana');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
-    const armas = nav.getByRole('link', { name: /^Armas/ });
-    expect(armas).toHaveAttribute('aria-current', 'page');
+    const armas = await nav.findByRole('link', { name: /^Armas/ });
+    // The Kind of the entry is known once the index has loaded.
+    await waitFor(() => expect(armas).toHaveAttribute('aria-current', 'page'));
     expect(nav.getByRole('link', { name: /^Todo o equipamento/ })).not.toHaveAttribute('aria-current');
   });
 });
@@ -368,6 +449,24 @@ describe('Equipment list filter', () => {
     expect(await main.findByText('Katana')).toBeInTheDocument();
     expect(main.getByRole('button', { name: /^Tipo de item/ })).toHaveAttribute('aria-expanded', 'false');
     expect(main.queryAllByRole('checkbox')).toHaveLength(0);
+  });
+});
+
+describe('Per-target spell cost', () => {
+  it('says "por alvo" in text, on the list row and on the page, not in a hover title', async () => {
+    mockApi();
+    const { unmount } = renderAt('/feiticos');
+    const row = (await screen.findByRole('link', { name: /Fulgur/ })).closest('a')!;
+    expect(row).toHaveTextContent('PM 10 × A por alvo');
+    expect(row.querySelector('[title]')).toBeNull();
+    unmount();
+
+    renderAt('/feiticos/fulgur');
+    await screen.findByRole('heading', { level: 1, name: 'Fulgur' });
+    const bar = document.querySelector('.stat-bar') as HTMLElement;
+    expect(within(bar).getByText('PM').nextElementSibling).toHaveTextContent(
+      '10 × A por alvo',
+    );
   });
 });
 
@@ -434,7 +533,6 @@ describe('Peculiarities', () => {
     expect(main.getByRole('button', { name: /^Livro/ })).toBeInTheDocument();
     expect(main.queryByRole('button', { name: /^Classe/ })).toBeNull();
     const nav = within(menu());
-    fireEvent.click(nav.getByRole('button', { name: 'Criação de Personagem' }));
     expect(nav.getByRole('link', { name: /^Peculiaridades/ })).toHaveAttribute(
       'aria-current',
       'page',
@@ -515,10 +613,20 @@ describe('Equipment sort and maximum price', () => {
     await main.findByText('Katana');
     expect(order(main)).toEqual(['Anel ', 'Katan']);
 
+    // Sort and price share one button and one panel, closed until asked.
+    expect(main.queryByLabelText('Ordenar por')).toBeNull();
+    const button = main.getByRole('button', { name: /^Ordenar e preço/ });
+    expect(button).toHaveAttribute('aria-expanded', 'false');
+    fireEvent.click(button);
+    expect(button).toHaveAttribute('aria-expanded', 'true');
+
     fireEvent.change(main.getByLabelText('Ordenar por'), { target: { value: 'preco-desc' } });
     await waitFor(() => expect(order(main)).toEqual(['Katan', 'Anel ']));
+    expect(button).toHaveTextContent('Ordenar e preço: 1');
+    expect(button).toHaveAttribute('data-active', 'true');
     fireEvent.change(main.getByLabelText('Ordenar por'), { target: { value: 'nome-asc' } });
     await waitFor(() => expect(order(main)).toEqual(['Anel ', 'Katan']));
+    expect(button).not.toHaveTextContent(': 1');
   });
 
   it('hides what costs more than the maximum and clears with the filters', async () => {
@@ -527,11 +635,26 @@ describe('Equipment sort and maximum price', () => {
     const main = within(screen.getByRole('main'));
     expect(await main.findByText('Anel de Prata')).toBeInTheDocument();
     expect(main.queryByText('Katana')).toBeNull();
+    fireEvent.click(main.getByRole('button', { name: /^Ordenar e preço: 1/ }));
     expect(main.getByLabelText(/Preço máximo/)).toHaveValue(150);
 
     fireEvent.click(main.getByRole('button', { name: 'Limpar filtros' }));
     expect(await main.findByText('Katana')).toBeInTheDocument();
     expect(main.getByLabelText(/Preço máximo/)).toHaveValue(null);
+  });
+
+  it('does not offer "Limpar filtros" for the kind alone, and keeps the kind when clearing', async () => {
+    mockApi();
+    renderAt('/equipamento?item=armas');
+    const main = within(screen.getByRole('main'));
+    await main.findByText('Katana');
+    expect(main.queryByRole('button', { name: 'Limpar filtros' })).toBeNull();
+
+    fireEvent.click(main.getByRole('button', { name: /^Ordenar e preço/ }));
+    fireEvent.change(main.getByLabelText(/Preço máximo/), { target: { value: '99999' } });
+    fireEvent.click(await main.findByRole('button', { name: 'Limpar filtros' }));
+    expect(await main.findByText('Katana')).toBeInTheDocument();
+    expect(main.getByRole('heading', { level: 1, name: 'Armas' })).toBeInTheDocument();
   });
 
   it('is not offered on other lists', async () => {
@@ -540,6 +663,7 @@ describe('Equipment sort and maximum price', () => {
     const main = within(screen.getByRole('main'));
     await main.findByText(/Raio/);
     expect(main.queryByLabelText('Ordenar por')).toBeNull();
+    expect(main.queryByRole('button', { name: /^Ordenar e preço/ })).toBeNull();
   });
 });
 
@@ -586,8 +710,7 @@ describe('Services and transports', () => {
     mockApi();
     renderAt('/equipamento');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
-    const link = nav.getByRole('link', { name: /^Serviços e transporte/ });
+    const link = await nav.findByRole('link', { name: /^Serviços e transporte/ });
     expect(link).toHaveAttribute('href', '/servicos');
     await waitFor(() => expect(link).toHaveTextContent('4'));
     expect(link).not.toHaveAttribute('aria-current');
@@ -597,8 +720,7 @@ describe('Services and transports', () => {
     mockApi();
     renderAt('/transportes/montaria-terrestre');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Equipamento' }));
-    const link = nav.getByRole('link', { name: /^Serviços e transporte/ });
+    const link = await nav.findByRole('link', { name: /^Serviços e transporte/ });
     expect(link).toHaveAttribute('aria-current', 'page');
   });
 
@@ -757,11 +879,19 @@ describe('Creatures', () => {
     await waitFor(() => expect(link).toHaveTextContent('Criaturas1'));
   });
 
-  it('adds a "Laboratório Oroboros" menu link to its page, current only there', async () => {
+  it('lists the tools in a Ferramentas group, the lab among them, current only on its page', async () => {
     mockApi();
     renderAt('/criaturas');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
+    fireEvent.click(await nav.findByRole('button', { name: 'Ferramentas' }));
+    const tools = within(
+      nav.getByRole('button', { name: 'Ferramentas' }).nextElementSibling as HTMLElement,
+    ).getAllByRole('link');
+    expect(tools.map((l) => l.textContent)).toEqual([
+      'Forja de Armaduras e Escudos',
+      'Forja de Armas',
+      'Laboratório Oroboros',
+    ]);
     const shortcut = nav.getByRole('link', { name: 'Laboratório Oroboros' });
     expect(shortcut).toHaveAttribute('href', '/laboratorio-oroboros');
     expect(shortcut).not.toHaveAttribute('aria-current');
@@ -772,20 +902,37 @@ describe('Creatures', () => {
     mockApi();
     renderAt('/laboratorio-oroboros');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
-    expect(nav.getByRole('link', { name: 'Laboratório Oroboros' })).toHaveAttribute(
+    expect(await nav.findByRole('link', { name: 'Laboratório Oroboros' })).toHaveAttribute(
       'aria-current',
       'page',
     );
-    expect(nav.getByRole('link', { name: /^Criaturas/ })).not.toHaveAttribute('aria-current');
+    expect(nav.getByRole('button', { name: 'Bestiário' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+  });
+
+  it('shows the three tools on Home', async () => {
+    mockApi();
+    renderAt('/');
+    const main = within(screen.getByRole('main'));
+    const section = await main.findByRole('heading', { level: 2, name: 'Ferramentas' });
+    const links = within(section.parentElement as HTMLElement).getAllByRole('link');
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '/forja-de-armaduras',
+      '/forja-de-armas',
+      '/laboratorio-oroboros',
+    ]);
   });
 
   it('marks the Creatures link on the list and on a Creature page', async () => {
     mockApi();
     renderAt('/criaturas/cactonto');
     const nav = within(menu());
-    fireEvent.click(await nav.findByRole('button', { name: 'Bestiário' }));
-    expect(nav.getByRole('link', { name: /^Criaturas/ })).toHaveAttribute('aria-current', 'page');
+    expect(await nav.findByRole('link', { name: /^Criaturas/ })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
   });
 
   it('shows what identifies a Creature on its list row', async () => {

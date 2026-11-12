@@ -125,7 +125,7 @@ export function StatBlock({
                     </span>
                   )}
                 </p>
-                <p className="text-[15px] text-muted">
+                <p className="text-meta text-muted">
                   {spell.accuracy && (
                     <>
                       {decorateChecks(

@@ -212,7 +212,7 @@ export function RareTab({
             </select>
           </label>
           {typeReason && (
-            <p id={`${id}-type-reason`} className="text-[15px] text-accent-ink">
+            <p id={`${id}-type-reason`} className="text-meta text-accent-ink">
               {typeReason}
             </p>
           )}
@@ -375,7 +375,7 @@ export function RareTab({
         </>
       )}
 
-      <ul className="bullets mt-6 text-[15px]">
+      <ul className="bullets mt-6 text-meta">
         {rules.notes.map((note) => (
           <li key={note}>{note}</li>
         ))}

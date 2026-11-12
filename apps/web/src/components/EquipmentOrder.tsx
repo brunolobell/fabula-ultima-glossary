@@ -12,7 +12,7 @@ interface Props {
   onMaxPrice: (max: number | null) => void;
 }
 
-/** "Ordenar por" and "Preço máximo" of the equipment list. */
+/** "Ordenar por" and "Preço máximo" of the equipment list, for the panel of one button. */
 export function EquipmentOrder({ order, onOrder, maxPrice, onMaxPrice }: Props) {
   const orderId = useId();
   const priceId = useId();
@@ -25,8 +25,9 @@ export function EquipmentOrder({ order, onOrder, maxPrice, onMaxPrice }: Props) 
   const field =
     'min-h-[44px] rounded border border-line bg-bg px-3 text-ink';
 
+  // Shown in the panel of the "Ordenar e preço" button (`ListFilters` `extraPanel`).
   return (
-    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
       <label htmlFor={orderId} className="flex items-center gap-2">
         <span>Ordenar por</span>
         <select

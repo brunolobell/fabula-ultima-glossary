@@ -450,7 +450,7 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
                 />
                 {customization && (
                   <>
-                    <p className="mt-1 text-[15px] text-muted">
+                    <p className="mt-1 text-meta text-muted">
                       {skillPreview(customization)}
                     </p>
                     <div className="mt-2">
@@ -488,7 +488,7 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
               />
               {negativeSkill && (
                 <>
-                  <p className="mt-1 text-[15px] text-muted">
+                  <p className="mt-1 text-meta text-muted">
                     Pensado {negativeSkill.advice}. Dá um poder de função (ou de
                     chefe) a mais.
                   </p>
@@ -604,7 +604,7 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
                               )
                             </span>
                           )}
-                          <span className="block text-[15px] text-muted">
+                          <span className="block text-meta text-muted">
                             {skillPreview(skill)}
                           </span>
                         </span>
@@ -638,7 +638,7 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
                     <h4 className="mt-3 font-heading uppercase tracking-wider">
                       {group.name}
                     </h4>
-                    <p className="text-[15px] text-muted">{group.summary}</p>
+                    <p className="text-meta text-muted">{group.summary}</p>
                     <ul className="mt-1">
                       {rules.bossSkills
                         .filter((b) => b.group === group.id)
@@ -663,7 +663,7 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
                                       ({skill.advice})
                                     </span>
                                   )}
-                                  <span className="block text-[15px] text-muted">
+                                  <span className="block text-meta text-muted">
                                     {skillPreview(skill)}
                                   </span>
                                 </span>
@@ -751,7 +751,7 @@ export function CreatureAssembler({ rules, roles, npcSpells, entries }: Props) {
                 <button type="button" className="btn-primary" onClick={copy}>
                   Copiar ficha
                 </button>{' '}
-                <span role="status" className="text-[15px] text-muted">
+                <span role="status" className="text-meta text-muted">
                   {copied}
                 </span>
               </p>

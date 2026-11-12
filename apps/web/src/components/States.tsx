@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { AlertIcon } from './Icons';
 
 export function ListSkeleton({ rows = 5 }: { rows?: number }) {
   return (
@@ -30,7 +31,10 @@ export function PageSkeleton() {
 export function ErrorState({ onRetry }: { onRetry?: () => void }) {
   return (
     <div role="alert" className="highlight-key">
-      <p className="font-bold">Não foi possível carregar o conteúdo.</p>
+      <p className="flex items-center gap-2 font-bold text-accent-ink">
+        <AlertIcon className="shrink-0" />
+        Não foi possível carregar o conteúdo.
+      </p>
       <p className="mt-1">Verifique sua conexão e tente de novo.</p>
       {onRetry && (
         <button type="button" onClick={onRetry} className="chip mt-3">

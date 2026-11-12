@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { LAB_PATH } from '../lib/laboratory';
+import { WIDE_PATHS } from '../lib/tools';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import { ScrollToTop } from './ScrollToTop';
+import { SearchShortcut } from './SearchShortcut';
 import { Sidebar } from './Sidebar';
 
 export function Layout() {
@@ -30,13 +32,15 @@ export function Layout() {
         <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
         <main id="conteudo" className="min-w-0 flex-1 px-4 py-8 sm:px-6">
           <div
-            className={`mx-auto ${pathname === LAB_PATH ? 'max-w-5xl' : 'max-w-reading'}`}
+            className={`mx-auto ${WIDE_PATHS.includes(pathname) ? 'max-w-5xl' : 'max-w-reading'}`}
           >
             <Outlet />
           </div>
         </main>
       </div>
       <Footer />
+      <SearchShortcut />
+      <ScrollToTop />
     </div>
   );
 }

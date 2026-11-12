@@ -28,7 +28,7 @@ function HeroicRequirement({ entry }: { entry: EntrySummary }) {
   const { bySlug } = useEntryIndex();
   const { requirements } = entry.details as HeroicSkillDetails;
   return (
-    <p className="mt-1 text-[15px] text-muted">
+    <p className="mt-1 text-meta text-muted">
       {requirementText(requirements, bySlug)}
     </p>
   );
@@ -104,15 +104,16 @@ function CreatureFacts({ entry }: { entry: EntrySummary }) {
 /** The facts a Reader scans for, then where it is in the book. */
 function RowMeta({ entry }: { entry: EntrySummary }) {
   return (
-    <p className="mt-1 text-[15px] text-muted">
+    <p className="mt-1 text-meta text-muted">
       {entry.type === 'skill' && (
         <ClassName slug={(entry.details as SkillDetails).classSlug} />
       )}
       {entry.type === 'spell' && (
         <>
           <ClassName slug={(entry.details as SpellDetails).classSlug} />
-          <span title={(entry.details as SpellDetails).mpCost.includes('×') ? 'Custo por alvo' : undefined}>
+          <span>
             PM <strong className="text-ink">{(entry.details as SpellDetails).mpCost}</strong>
+            {(entry.details as SpellDetails).mpCost.includes('×') && ' por alvo'}
             {' · '}
           </span>
         </>

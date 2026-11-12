@@ -5,7 +5,7 @@ export const rules: SeedEntry[] = [
   rule(
     'Traços',
     34,
-    'Todo personagem tem três Traços — Identidade, Tema e Origem — que o definem na história e podem ser evocados para aumentar a chance de sucesso em um teste.',
+    'Todo personagem tem três Traços (Identidade, Tema e Origem) que o definem na história e podem ser evocados para aumentar a chance de sucesso em um teste.',
     `## Os três Traços
 
 - **Identidade.** Uma frase curta que resume o conceito do personagem, como "pirata celeste" ou "cavaleiro sem rainha". Pode ser trocada depois, se o personagem evoluir além dela.
@@ -149,7 +149,7 @@ A progressão completa está na página 226.`,
   rule(
     'Atributos',
     36,
-    'Quatro Atributos — Destreza, Vigor, Astúcia e Vontade — medem o treinamento do personagem, cada um representado por um dado de d6 a d12.',
+    'Quatro Atributos (Destreza, Vigor, Astúcia e Vontade) medem o treinamento do personagem, cada um representado por um dado de d6 a d12.',
     `## Os quatro Atributos
 
 - **Destreza (DES).** Precisão, coordenação, agilidade e reflexos. Usada para se mover com cuidado, defender-se de ataques, criar objetos e lutar com armas leves, arcos e armas de fogo.
@@ -341,7 +341,7 @@ O personagem fica mentalmente exausto, mas não sofre outra consequência além 
   rule(
     'Condições',
     94,
-    'Seis condições — Abalado, Atordoado, Enfurecido, Envenenado, Fraco e Lento — reduzem temporariamente um ou mais dados de Atributo.',
+    'Seis condições (Abalado, Atordoado, Enfurecido, Envenenado, Fraco e Lento) reduzem temporariamente um ou mais dados de Atributo.',
     `Personagens dos jogadores e NPCs podem sofrer condições, em geral como consequência de ataques e feitiços.
 
 | Condição | Efeito |
@@ -401,7 +401,7 @@ Para lançar um feitiço, o personagem precisa cumprir **todos** estes requisito
   rule(
     'Equipamento',
     126,
-    'Há quatro categorias de itens equipáveis — acessórios, armaduras, armas e escudos —, básicos ou raros; itens marciais só podem ser equipados por certas classes.',
+    'Há quatro categorias de itens equipáveis (acessórios, armaduras, armas e escudos), básicos ou raros; itens marciais só podem ser equipados por certas classes.',
     `## Categorias
 
 Os itens equipáveis são de quatro categorias: **acessórios**, **armaduras**, **armas** e **escudos**. Cada item pode ser **básico** ou **raro**, exceto os acessórios, que são **sempre raros**.

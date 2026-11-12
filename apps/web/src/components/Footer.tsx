@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="border-t border-line px-4 py-6 text-[15px] text-muted sm:px-6">
+    <footer className="border-t border-line px-4 py-6 text-meta text-muted sm:px-6">
       <div className="mx-auto max-w-reading">
         <p>
           Códice do Cristal é uma referência não oficial, feita por fãs e de uso

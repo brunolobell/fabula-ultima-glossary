@@ -25,7 +25,7 @@ const tracos: Entry = {
   name: 'Traços',
   type: 'rule',
   summary: 'Todo personagem tem três Traços.',
-  body: '## Os três Traços\n\n- **Identidade.** Uma frase curta.\n\nVeja [[como-lancar-um-feitico]].',
+  body: '## Os três Traços\n\n- **Identidade.** Uma frase curta.\n\nVeja [[como-lancar-um-feitico]].\n\n## Identidade\n\nTexto.\n\n## Tema\n\nTexto.\n\n## Origem\n\nTexto.',
   page: 34,
   details: {},
 };

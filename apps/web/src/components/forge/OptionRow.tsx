@@ -51,10 +51,10 @@ export function OptionRow({
           <span className="font-bold">{label}</span>
           {tag && <span className="ml-2 text-muted">{tag}</span>}
           {summary && (
-            <span className="block text-[15px] text-muted">{summary}</span>
+            <span className="block text-meta text-muted">{summary}</span>
           )}
           {reason && (
-            <span id={reasonId} className="block text-[15px] text-accent-ink">
+            <span id={reasonId} className="block text-meta text-accent-ink">
               {reason}
             </span>
           )}

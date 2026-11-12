@@ -11,9 +11,9 @@ export function numberCells(d: CreatureDetails): Cell[] {
     { label: 'AST', value: `d${AST}` },
     { label: 'VIG', value: `d${VIG}` },
     { label: 'VON', value: `d${VON}` },
-    { label: 'PV', value: d.hp },
+    { label: 'PV', value: d.hp, tone: 'hp' },
     { label: 'Crise', value: d.crisis },
-    { label: 'PM', value: d.mp },
+    { label: 'PM', value: d.mp, tone: 'mp' },
     { label: 'Inic.', value: d.initiative },
     {
       label: 'Defesa',

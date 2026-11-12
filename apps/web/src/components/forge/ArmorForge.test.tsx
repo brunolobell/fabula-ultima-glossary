@@ -3,7 +3,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
   within,
 } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -57,36 +56,26 @@ function renderAt(path: string) {
 
 const NAME = 'Forja de Armaduras e Escudos';
 
-const openForge = async (path = '/equipamento?item=armaduras') => {
+const openForge = async (path = '/forja-de-armaduras') => {
   renderAt(path);
-  if (!path.includes('forja=')) {
-    fireEvent.click(
-      await screen.findByRole('button', { name: 'Forjar armadura ou escudo' }),
-    );
-  }
-  return screen.findByRole('dialog', { name: NAME });
+  await screen.findByRole('heading', { level: 1, name: NAME });
+  return screen.getByRole('main');
 };
 
 const result = (dialog: HTMLElement) =>
   within(dialog).getByRole('region', { name: 'Resultado' });
 
-describe('Armor Forge launcher', () => {
-  it('is offered on the armors and shields lists, closed until asked', async () => {
-    renderAt('/equipamento?item=armaduras');
-    const button = await screen.findByRole('button', {
+describe('Armor Forge page', () => {
+  it('is linked from the armors and shields lists', async () => {
+    const { unmount } = renderAt('/equipamento?item=armaduras');
+    const link = await screen.findByRole('link', {
       name: 'Forjar armadura ou escudo',
     });
-    expect(screen.queryByRole('dialog')).toBeNull();
-    fireEvent.click(button);
+    expect(link).toHaveAttribute('href', '/forja-de-armaduras');
+    unmount();
+    renderAt('/equipamento?item=escudos');
     expect(
-      await screen.findByRole('dialog', { name: NAME }),
-    ).toBeInTheDocument();
-  });
-
-  it('is offered on the shields list too, and opens from the URL', async () => {
-    renderAt('/equipamento?item=escudos&forja=rara');
-    expect(
-      await screen.findByRole('dialog', { name: NAME }),
+      await screen.findByRole('link', { name: 'Forjar armadura ou escudo' }),
     ).toBeInTheDocument();
   });
 
@@ -94,40 +83,66 @@ describe('Armor Forge launcher', () => {
     const { unmount } = renderAt('/equipamento?item=armas');
     await screen.findByRole('link', { name: /Machado de guerra/ });
     expect(
-      screen.queryByRole('button', { name: 'Forjar armadura ou escudo' }),
+      screen.queryByRole('link', { name: 'Forjar armadura ou escudo' }),
     ).toBeNull();
     unmount();
     renderAt('/equipamento');
     await screen.findByRole('link', { name: /Machado de guerra/ });
     expect(
-      screen.queryByRole('button', { name: 'Forjar armadura ou escudo' }),
+      screen.queryByRole('link', { name: 'Forjar armadura ou escudo' }),
     ).toBeNull();
   });
 
-  it('does not open the weapon Forge on the armors list', async () => {
+  it('sends the old modal links to the page, for armors and shields', async () => {
+    const { unmount } = renderAt('/equipamento?item=escudos&forja=rara');
+    expect(
+      await screen.findByRole('heading', { level: 1, name: NAME }),
+    ).toBeInTheDocument();
+    unmount();
     renderAt('/equipamento?item=armaduras&forja=rara');
-    await screen.findByRole('dialog', { name: NAME });
-    expect(screen.queryByRole('dialog', { name: 'Forja de Armas' })).toBeNull();
+    expect(
+      await screen.findByRole('heading', { level: 1, name: NAME }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { level: 1, name: 'Forja de Armas' }),
+    ).toBeNull();
   });
 
-  it('closes, says nothing is saved, and Recomeçar clears the draft', async () => {
-    const dialog = await openForge();
+  it('says the draft is not saved, and Recomeçar clears it', async () => {
+    const page = await openForge();
     expect(
-      within(dialog).getByText(/Nada do que você montar aqui é salvo/),
+      within(page).getByText(/Nada é salvo; o rascunho some ao recarregar/),
     ).toBeInTheDocument();
-    fireEvent.click(within(dialog).getByRole('radio', { name: /^Brigantina/ }));
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Recomeçar' }));
+    fireEvent.click(within(page).getByRole('radio', { name: /^Brigantina/ }));
+    fireEvent.click(within(page).getByRole('button', { name: 'Recomeçar' }));
     expect(
-      within(dialog).getByRole('radio', { name: /^Brigantina/ }),
+      within(page).getByRole('radio', { name: /^Brigantina/ }),
     ).not.toBeChecked();
-    fireEvent.click(within(dialog).getByRole('button', { name: 'Fechar' }));
-    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+  });
+
+  it('keeps the draft when the Reader leaves the page and comes back', async () => {
+    const page = await openForge();
+    fireEvent.click(within(page).getByRole('radio', { name: /^Brigantina/ }));
+    const nav = within(screen.getByRole('navigation', { name: 'Navegação principal' }));
+    fireEvent.click(nav.getByRole('link', { name: 'Início' }));
+    await screen.findByRole('heading', { level: 2, name: 'Ferramentas' });
+    fireEvent.click(
+      within(screen.getByRole('main')).getByRole('link', {
+        name: /^Forja de Armaduras e Escudos/,
+      }),
+    );
+    await screen.findByRole('heading', { level: 1, name: NAME });
+    expect(
+      within(screen.getByRole('main')).getByRole('radio', {
+        name: /^Brigantina/,
+      }),
+    ).toBeChecked();
   });
 });
 
 describe('Armor Forge build', () => {
   it('lists armors and shields together and asks for a base first', async () => {
-    const dialog = await openForge('/equipamento?item=escudos');
+    const dialog = await openForge();
     expect(
       within(dialog).getByRole('radio', { name: /^Túnica de combate/ }),
     ).toBeInTheDocument();
@@ -161,7 +176,7 @@ describe('Armor Forge build', () => {
   });
 
   it('builds Égide, Ignis from a shield: 800z', async () => {
-    const dialog = await openForge('/equipamento?item=escudos');
+    const dialog = await openForge();
     fireEvent.click(
       within(dialog).getByRole('radio', { name: /^Escudo de bronze/ }),
     );

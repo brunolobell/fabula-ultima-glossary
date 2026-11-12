@@ -220,8 +220,8 @@ Os passos lembram os da criação de mundo, mas **não precisam seguir uma ordem
     order: 4,
     page: null,
     summary:
-      'Um roteiro do app pelas regras já resumidas aqui: a ficha, os recursos, o que acontece quando as coisas apertam e como funciona a magia.',
-    body: `Este roteiro é uma **seleção do app**, não uma sequência do livro. Ele junta as regras essenciais já resumidas aqui; cada página indica onde ler o texto completo no Livro Básico.`,
+      'Um roteiro pelas regras já resumidas aqui: a ficha, os recursos, o que acontece quando as coisas apertam e como funciona a magia.',
+    body: `Este roteiro é uma **seleção das regras resumidas aqui**, não uma sequência do livro. Ele junta as regras essenciais já resumidas aqui; cada página indica onde ler o texto completo no Livro Básico.`,
     steps: [
       {
         title: 'A ficha do personagem',

@@ -21,7 +21,7 @@ ${rareWeaponRules.features
   .map((f) => `| **${f.name}** | +${z(f.cost)} | ${f.summary} |`)
   .join('\n')}`;
 
-const FORGE = '/equipamento?item=armas&forja';
+const FORGE = '/forja-de-armas?forja';
 
 /**
  * Atlas High Fantasy p. 106-108. Natural Fantasy p. 112-114 and Techno Fantasy

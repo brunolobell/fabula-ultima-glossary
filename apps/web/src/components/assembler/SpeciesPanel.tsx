@@ -104,7 +104,7 @@ export function SpeciesPanel({
               {max > 1 ? (
                 <div className="sm:w-2/3">
                   <SelectField
-                    label={`${option.label} — quantidade`}
+                    label={`${option.label}: quantidade`}
                     value={String(times)}
                     onChange={(value) => setCount(option.id, Number(value))}
                     options={Array.from({ length: max + 1 }, (_, n) => ({

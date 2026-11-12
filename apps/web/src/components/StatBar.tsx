@@ -5,7 +5,7 @@ export function StatBar({ cells }: { cells: Cell[] }) {
   return (
     <dl className="stat-bar">
       {cells.map((cell) => (
-        <div key={cell.label}>
+        <div key={cell.label} data-tone={cell.tone}>
           <dt>{cell.label}</dt>
           <dd>{cell.value}</dd>
         </div>

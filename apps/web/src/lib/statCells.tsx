@@ -35,6 +35,8 @@ import {
 export interface Cell {
   label: string;
   value: ReactNode;
+  /** Pontos de Vida or Pontos de Mana: the cell is a filled chip (DESIGN.md 6.4). */
+  tone?: 'hp' | 'mp';
 }
 
 const KIND_LABEL = {
@@ -47,7 +49,13 @@ const KIND_LABEL = {
 
 function classLink(slug: string, index: ReadonlyMap<string, EntrySummary>) {
   const entry = index.get(slug);
-  return entry ? <Link to={entryPath(entry)}>{entry.name}</Link> : slug;
+  return entry ? (
+    <Link to={entryPath(entry)} className="tap">
+      {entry.name}
+    </Link>
+  ) : (
+    slug
+  );
 }
 
 /** An equipment price as shown beside the page title ("1.200z"), or "—" when it has none. */
@@ -89,9 +97,12 @@ export function statCells(
         {
           label: 'PM',
           value: (
-            <span title={d.mpCost.includes('×') ? 'Custo por alvo' : undefined}>
+            <>
               {d.mpCost}
-            </span>
+              {d.mpCost.includes('×') && (
+                <span className="font-normal text-muted"> por alvo</span>
+              )}
+            </>
           ),
         },
         { label: 'Alvo', value: d.target },

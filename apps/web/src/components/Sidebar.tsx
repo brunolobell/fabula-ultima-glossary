@@ -1,11 +1,14 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import type { IconType } from 'react-icons';
 import {
   GiBackpack,
   GiBookCover,
+  GiAnvil,
+  GiAnvilImpact,
   GiBroadsword,
   GiCaravan,
   GiChestArmor,
+  GiChemicalDrop,
   GiCharacter,
   GiCheckedShield,
   GiCrown,
@@ -17,8 +20,10 @@ import {
   GiRelicBlade,
   GiRing,
   GiSparkles,
+  GiSpikedDragonHead,
   GiSpellBook,
   GiStarsStack,
+  GiToolbox,
 } from 'react-icons/gi';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import type { EntryType, EquipmentDetails } from '../api/types';
@@ -28,7 +33,7 @@ import {
   equipmentPath,
   kindFromParam,
 } from '../lib/equipmentKinds';
-import { LAB_PATH } from '../lib/laboratory';
+import { TOOLS, type ToolId } from '../lib/tools';
 import { sortedGuides } from '../lib/guides';
 import {
   TRAVEL_TYPES,
@@ -49,7 +54,7 @@ const linkClass = ({ isActive }: { isActive: boolean }) => itemClass(isActive);
 // Group toggles are the only uppercase headings in the menu; everything that
 // is a page (Início, the guides, Regras) is a plain link.
 const headingClass =
-  'font-heading text-[17px] uppercase tracking-wide';
+  'font-heading text-[1.125rem] uppercase tracking-wide';
 
 /** Icon beside a menu label; decorative, the label carries the meaning. */
 function MenuLabel({ icon: Icon, children }: { icon: IconType; children: ReactNode }) {
@@ -67,6 +72,12 @@ const KIND_ICONS: Record<string, IconType> = {
   weapon: GiBroadsword,
   artifact: GiRelicBlade,
   shield: GiCheckedShield,
+};
+
+const TOOL_ICONS: Record<ToolId, IconType> = {
+  'armor-forge': GiAnvilImpact,
+  'weapon-forge': GiAnvil,
+  laboratory: GiChemicalDrop,
 };
 
 interface MenuItem {
@@ -93,20 +104,13 @@ const GROUPS: MenuGroup[] = [
   {
     id: 'bestiario',
     title: 'Bestiário',
-    icon: GiDragonHead,
+    icon: GiSpikedDragonHead,
     items: [
       {
         label: 'Criaturas',
         icon: GiDragonHead,
         to: typePath('creature'),
         types: ['creature'],
-      },
-      {
-        label: 'Laboratório Oroboros',
-        icon: GiMagicSwirl,
-        to: LAB_PATH,
-        types: [],
-        page: true,
       },
     ],
   },
@@ -161,6 +165,18 @@ const GROUPS: MenuGroup[] = [
       },
     ],
   },
+  {
+    id: 'ferramentas',
+    title: 'Ferramentas',
+    icon: GiToolbox,
+    items: TOOLS.map((tool): MenuItem => ({
+      label: tool.label,
+      icon: TOOL_ICONS[tool.id],
+      to: tool.path,
+      types: [],
+      page: true,
+    })),
+  },
 ];
 
 interface Props {
@@ -193,11 +209,29 @@ export function Sidebar({ open, onClose }: Props) {
     return item.kind === currentKind;
   };
 
-  // Every group starts closed, on any screen size and on any page: the Reader
-  // clicks to open one.
+  // The group that holds the current page. It is decided from the route alone
+  // (an Equipment entry's Kind is not known until the index loads), so the
+  // "you are here" crystal is never hidden inside a closed group.
+  const currentGroup = GROUPS.find((group) =>
+    group.items.some((item) =>
+      item.page
+        ? pathname === item.to
+        : currentType && item.types.includes(currentType),
+    ),
+  )?.id;
+
+  // Groups start closed, on any screen size, except the one holding the current
+  // page. Arriving in another group opens that one too; the Reader can close
+  // any group by hand, and moving inside a group never reopens it.
   const [openGroups, setOpenGroups] = useState<ReadonlySet<string>>(
-    () => new Set(),
+    () => new Set(currentGroup ? [currentGroup] : []),
   );
+  useEffect(() => {
+    if (!currentGroup) return;
+    setOpenGroups((prev) =>
+      prev.has(currentGroup) ? prev : new Set(prev).add(currentGroup),
+    );
+  }, [currentGroup]);
 
   const toggle = (id: string) =>
     setOpenGroups((prev) => {
@@ -290,7 +324,7 @@ export function Sidebar({ open, onClose }: Props) {
                               <MenuLabel icon={item.icon}>{item.label}</MenuLabel>
                               {!isLoading && !item.page && (
                                 <span
-                                  className={`text-[15px] font-normal ${
+                                  className={`text-meta font-normal ${
                                     active ? 'text-accent-ink' : 'text-muted'
                                   }`}
                                 >
@@ -316,7 +350,7 @@ export function Sidebar({ open, onClose }: Props) {
                   <MenuLabel icon={GiSpellBook}>{TYPE_INFO.rule.plural}</MenuLabel>
                   {!isLoading && (
                     <span
-                      className={`text-[15px] font-normal ${
+                      className={`text-meta font-normal ${
                         currentType === 'rule' ? 'text-accent-ink' : 'text-muted'
                       }`}
                     >

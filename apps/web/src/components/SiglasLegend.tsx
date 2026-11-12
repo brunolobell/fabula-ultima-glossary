@@ -9,7 +9,7 @@ export function SiglasLegend({ texts }: { texts: (string | undefined)[] }) {
   const used = abbreviationsIn(...texts);
   if (used.length === 0) return null;
   return (
-    <details className="siglas">
+    <details className="disclosure">
       <summary>
         Siglas nesta página{' '}
         <span className="text-muted">{used.map((a) => a.sigla).join(', ')}</span>

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { HomeRow } from '../components/HomeRow';
 import { SearchBox } from '../components/SearchBox';
 import { ErrorState, ListSkeleton } from '../components/States';
 import { useEntryIndex } from '../hooks/useEntryIndex';
@@ -9,7 +9,8 @@ import {
   entryPath,
   typePath,
 } from '../lib/entryTypes';
-import { sortedGuides } from '../lib/guides';
+import { guideBlurb, sortedGuides } from '../lib/guides';
+import { TOOLS } from '../lib/tools';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 
 export function Home() {
@@ -43,27 +44,33 @@ export function Home() {
           <h2 id="guias" className="h-tertiary" style={{ marginTop: 0 }}>
             Por onde começar
           </h2>
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid gap-x-6 sm:grid-cols-2">
             {guides.map((guide) => (
-              <li key={guide.slug}>
-                <Link
-                  to={entryPath(guide)}
-                  className="block h-full p-5 text-ink no-underline hover:no-underline"
-                  style={{ background: 'var(--grad-key)' }}
-                >
-                  <span className="block font-display text-2xl uppercase leading-tight text-heading">
-                    {guide.name}
-                  </span>
-                  <span className="mt-2 block">{guide.summary}</span>
-                  <span className="mt-3 block font-heading text-[15px] uppercase tracking-wider text-primary">
-                    Abrir o guia →
-                  </span>
-                </Link>
-              </li>
+              <HomeRow
+                key={guide.slug}
+                to={entryPath(guide)}
+                title={guide.name}
+                titleClass="font-display text-[1.375rem] uppercase"
+              >
+                {guideBlurb(guide.summary)}
+              </HomeRow>
             ))}
           </ul>
         </section>
       )}
+
+      <section aria-labelledby="ferramentas" className="mt-10">
+        <h2 id="ferramentas" className="h-tertiary" style={{ marginTop: 0 }}>
+          Ferramentas
+        </h2>
+        <ul className="grid gap-x-6 sm:grid-cols-2">
+          {TOOLS.map((tool) => (
+            <HomeRow key={tool.id} to={tool.path} title={tool.label}>
+              {tool.summary}
+            </HomeRow>
+          ))}
+        </ul>
+      </section>
 
       <section aria-labelledby="tipos" className="mt-10">
         <h2 id="tipos" className="h-tertiary" style={{ marginTop: 0 }}>
@@ -73,29 +80,18 @@ export function Home() {
           <ListSkeleton rows={3} />
         ) : (
           <ul className="grid gap-x-6 sm:grid-cols-2">
-            {BROWSE_TYPES.map((type) => {
-              const count = entries.filter((e) => e.type === type).length;
-              return (
-                <li key={type}>
-                  <Link
-                    to={typePath(type)}
-                    className="block border-b border-line py-4 text-ink no-underline hover:bg-tint-key hover:no-underline"
-                  >
-                    <span className="flex items-baseline justify-between gap-3">
-                      <span className="font-heading text-xl uppercase tracking-wide text-primary">
-                        {TYPE_INFO[type].plural}
-                      </span>
-                      <span className="text-[15px] text-muted">
-                        {countLabel(count)}
-                      </span>
-                    </span>
-                    <span className="mt-1 block">
-                      {TYPE_INFO[type].description}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
+            {BROWSE_TYPES.map((type) => (
+              <HomeRow
+                key={type}
+                to={typePath(type)}
+                title={TYPE_INFO[type].plural}
+                aside={countLabel(
+                  entries.filter((e) => e.type === type).length,
+                )}
+              >
+                {TYPE_INFO[type].description}
+              </HomeRow>
+            ))}
           </ul>
         )}
       </section>

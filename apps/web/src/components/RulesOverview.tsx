@@ -79,18 +79,20 @@ export function RulesOverview({ bySlug }: { bySlug: Map<string, EntrySummary> })
   if (groups.length === 0) return null;
 
   return (
-    <section aria-label="Visão geral das regras, piada interna (Sumário -> Semáforo)" className="highlight-key">
+    <section aria-label="Visão geral das regras, piada interna (Sumário -> Semáforo)" className="highlight-key max-w-none">
       <h2 className="font-bold">Semáforo</h2>
       <dl className="mt-2 grid gap-3 sm:grid-cols-2">
         {groups.map((group) => (
           <div key={group.title}>
             <dt className="font-bold">{group.title}</dt>
             <dd>
-              <span className="block text-[15px] text-muted">{group.text}</span>
+              <span className="block text-meta text-muted">{group.text}</span>
               {group.rules.map((rule, i) => (
                 <span key={rule.id}>
                   {i > 0 && ', '}
-                  <Link to={entryPath(rule)}>{rule.name}</Link>
+                  <Link to={entryPath(rule)} className="tap">
+                    {rule.name}
+                  </Link>
                 </span>
               ))}
             </dd>

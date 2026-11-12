@@ -21,7 +21,7 @@ export function WeaponStatBlocks({ kind, forms }: Props) {
           )}
           <p>{decorateChecks(statLine(stats, kind))}</p>
           {effectLines(stats).map((line) => (
-            <p key={line} className="text-[15px]">
+            <p key={line} className="text-meta">
               {decorateChecks(line)}
             </p>
           ))}

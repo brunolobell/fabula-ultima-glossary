@@ -810,7 +810,7 @@ describe('Creature Assembler: Species', () => {
     species(dialog, 'beast');
     const options = panel(dialog);
     const quantity = options.getByLabelText(
-      /Um poder de função a mais — quantidade/,
+      /Um poder de função a mais: quantidade/,
     );
     fireEvent.change(quantity, { target: { value: '2' } });
     expect(
