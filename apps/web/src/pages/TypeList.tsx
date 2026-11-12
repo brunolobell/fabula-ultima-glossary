@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'react-router-dom';
+import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { WeaponForge } from '../components/forge/WeaponForge';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
@@ -20,9 +20,18 @@ import {
   readSelection,
   toggleValue,
 } from '../lib/listFilters';
+import {
+  LAB_PATH,
+  LEGACY_ASSEMBLER_PARAM,
+  LEGACY_ASSEMBLER_VALUE,
+} from '../lib/laboratory';
 import { FORGE_PARAM, forgeTabFromParam, type ForgeTab } from '../lib/forgeTab';
+import { QUICK_ASSEMBLY_SLUG } from '../lib/creatures';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
-import type { CustomWeaponRuleDetails, RareWeaponRuleDetails } from '../api/types';
+import type {
+  CustomWeaponRuleDetails,
+  RareWeaponRuleDetails,
+} from '../api/types';
 
 /** Slugs of the two Rules whose `details` feed the Weapon Forge. */
 const CUSTOM_WEAPON_RULE = 'armas-personalizadas';
@@ -36,6 +45,12 @@ export function TypeList() {
 
   useDocumentTitle(type ? TYPE_INFO[type].plural : 'Não encontrado');
   if (!type) return <NotFoundState />;
+  // The old modal link (`/criaturas?montagem=rapida`) now goes to the page.
+  if (
+    type === 'creature' &&
+    params.get(LEGACY_ASSEMBLER_PARAM) === LEGACY_ASSEMBLER_VALUE
+  )
+    return <Navigate to={LAB_PATH} replace />;
 
   const ofType = entries.filter((e) => e.type === type);
   const selection = readSelection(type, params);
@@ -79,6 +94,11 @@ export function TypeList() {
       { replace },
     );
 
+  // The Laboratório Oroboros (the Creature Assembler) is a page of its own, linked
+  // from the Creatures list once the Quick Assembly Rule is in the index. The page
+  // fetches the Rules and says so when they are incomplete.
+  const assembler = type === 'creature' && bySlug.has(QUICK_ASSEMBLY_SLUG);
+
   return (
     <div>
       <h1 className="h-main">{title}</h1>
@@ -108,6 +128,17 @@ export function TypeList() {
             onClose={() => setForgeTab(null, true)}
           />
         </>
+      )}
+
+      {assembler && (
+        <p className="mt-4">
+          <Link to={LAB_PATH} className="btn-primary">
+            Laboratório Oroboros
+          </Link>{' '}
+          <span className="text-[15px] text-muted">
+            Monte uma criatura pela Montagem Rápida. Nada é salvo.
+          </span>
+        </p>
       )}
 
       <ListFilters

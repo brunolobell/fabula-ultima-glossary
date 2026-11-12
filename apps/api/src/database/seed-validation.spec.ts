@@ -1,7 +1,9 @@
+import { CreatureDetails, isCreatureGroup } from '../entries/entry-types';
 import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
   classEntry,
+  creatureGroup,
   heroicSkill,
   rule,
   skill,
@@ -356,6 +358,1460 @@ describe('validateSeed', () => {
       expect(errors).toEqual([
         expect.stringContaining('is not a skill or spell'),
       ]);
+    });
+  });
+  describe('creatures', () => {
+    // A small Livro Básico soldier, in the shape of a bestiary stat block (p. 320).
+    const creature = (
+      details: Partial<CreatureDetails> = {},
+      entry: Partial<SeedEntry> = {},
+    ): SeedEntry =>
+      ({
+        type: 'creature',
+        name: 'Cactonto',
+        page: 319,
+        summary: 'Cacto imponente que vaga pelas dunas.',
+        details: {
+          level: 15,
+          species: 'plant',
+          rank: 'soldier',
+          villain: false,
+          traits: ['assustador', 'territorial'],
+          attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+          hp: 90,
+          crisis: 45,
+          mp: 55,
+          initiative: 7,
+          defense: { value: 0, fixed: false },
+          magicDefense: 0,
+          affinities: { fire: 'resistant', ice: 'vulnerable' },
+          attacks: [],
+          spells: [],
+          otherActions: [],
+          specialRules: [],
+          ...details,
+        },
+        ...entry,
+      }) as SeedEntry;
+
+    // The Livro Básico Creatures with a stat block (Creature Groups have none).
+    const bestiary = seedEntries.filter(
+      (
+        e,
+      ): e is Extract<SeedEntry, { type: 'creature' }> & {
+        details: CreatureDetails;
+      } =>
+        e.type === 'creature' &&
+        (e.source ?? 'livro-basico') === 'livro-basico' &&
+        !isCreatureGroup(e.details),
+    );
+    const ofSpecies = (species: string) =>
+      bestiary.filter((e) => e.details.species === species);
+
+    it('seeds the 56 creatures of the Livro Básico Bestiário (p. 324-353)', () => {
+      expect(bestiary).toHaveLength(56);
+      expect(
+        Object.fromEntries(
+          [
+            'construct',
+            'demon',
+            'elemental',
+            'beast',
+            'humanoid',
+            'monster',
+            'undead',
+            'plant',
+          ].map((species) => [species, ofSpecies(species).length]),
+        ),
+      ).toEqual({
+        construct: 7,
+        demon: 4,
+        elemental: 7,
+        beast: 8,
+        humanoid: 8,
+        monster: 8,
+        undead: 8,
+        plant: 6,
+      });
+      for (const e of bestiary) {
+        expect(e.source ?? 'livro-basico').toBe('livro-basico');
+        expect(e.details.rank).toBe('soldier');
+        expect(e.page).toBeGreaterThanOrEqual(324);
+        expect(e.page).toBeLessThanOrEqual(353);
+        // "organizadas em aumentos de cinco em cinco níveis" (p. 292): 5 to 20.
+        expect([5, 10, 15, 20]).toContain(e.details.level);
+        expect(e.details.attacks.length).toBeGreaterThan(0);
+      }
+    });
+
+    it('gives every Species the Affinities its rule demands (p. 303-305)', () => {
+      for (const e of ofSpecies('construct')) {
+        expect(e.details.affinities).toMatchObject({
+          poison: 'immune',
+          earth: 'resistant',
+        });
+      }
+      for (const e of ofSpecies('elemental')) {
+        expect(e.details.affinities.poison).toBe('immune');
+      }
+      for (const e of ofSpecies('undead')) {
+        expect(e.details.affinities).toMatchObject({
+          dark: 'immune',
+          poison: 'immune',
+          light: 'vulnerable',
+        });
+      }
+      for (const e of ofSpecies('plant')) {
+        const weak = ['air', 'fire', 'ice', 'bolt'].filter(
+          (type) =>
+            e.details.affinities[type as keyof typeof e.details.affinities] ===
+            'vulnerable',
+        );
+        expect(weak.length).toBeGreaterThanOrEqual(1);
+      }
+    });
+
+    it('prints a fixed Defesa, not a bonus, for the six creatures that have one', () => {
+      const fixed = bestiary
+        .filter((e) => e.details.defense.fixed)
+        .map((e) => [e.name, e.details.defense.value]);
+      expect(fixed).toEqual([
+        ['Soldado Tecnomágico', 11],
+        ['Guarda', 11],
+        ['Mercenário', 11],
+        ['Mago de Batalha', 11],
+        ['Soldado Esqueleto', 12],
+        ['Vinha-daninha', 12],
+      ]);
+    });
+
+    it('seeds the Cactonto with the numbers printed on p. 352', () => {
+      const cactonto = seedEntries.find((e) => e.name === 'Cactonto');
+      expect(cactonto).toMatchObject({ type: 'creature', page: 352 });
+      expect(cactonto?.details).toMatchObject({
+        level: 15,
+        species: 'plant',
+        rank: 'soldier',
+        attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+        hp: 90,
+        crisis: 45,
+        mp: 55,
+        initiative: 7,
+        defense: { value: 0, fixed: false },
+        magicDefense: 0,
+        affinities: {
+          air: 'resistant',
+          earth: 'resistant',
+          fire: 'resistant',
+          ice: 'vulnerable',
+          light: 'resistant',
+        },
+      });
+      const { attacks, spells } = cactonto?.details as CreatureDetails;
+      expect(attacks.map((a) => [a.name, a.accuracy, a.damage])).toEqual([
+        ['Abraço Perfurador', 'VIG + VIG', 10],
+        ['Barragem de Espinhos', 'DES + VIG', 5],
+      ]);
+      expect(spells).toMatchObject([
+        { name: 'Drenar Umidade', mpCost: '10', offensive: true },
+      ]);
+    });
+
+    describe('Creature Groups', () => {
+      // A Group is a Creature Entry with no stat block; its members point to it.
+      const group = (name = 'Fantasmas'): SeedEntry =>
+        ({
+          type: 'creature',
+          name,
+          page: 330,
+          summary: 'Almas que não encontraram descanso.',
+          details: { group: true },
+        }) as SeedEntry;
+      const member = (name: string, groupSlug: string): SeedEntry =>
+        creature({ groupSlug }, { name });
+
+      it('builds a Group with creatureGroup(), tagged and without stats', () => {
+        const built = creatureGroup({
+          name: 'Fantasmas',
+          page: 330,
+          summary: 'Almas inquietas.',
+        });
+        expect(built).toMatchObject({
+          type: 'creature',
+          details: { group: true },
+          tags: ['criatura', 'grupo'],
+        });
+        expect(validateSeed([built, member('Espectro', 'fantasmas')])).toEqual(
+          [],
+        );
+      });
+
+      it('accepts a Group whose members point to it', () => {
+        expect(
+          validateSeed([
+            group(),
+            member('Espectro', 'fantasmas'),
+            member('Aparição', 'fantasmas'),
+          ]),
+        ).toEqual([]);
+      });
+
+      it('rejects a member of a Group that does not exist', () => {
+        expect(validateSeed([member('Espectro', 'fantasmas')])).toEqual([
+          'espectro: "fantasmas" is not a creature group',
+        ]);
+      });
+
+      it('rejects a member of an Entry that is not a Creature', () => {
+        const rule = {
+          type: 'rule',
+          name: 'Fantasmas',
+          page: 10,
+          summary: 'Regra.',
+          details: {},
+        } as SeedEntry;
+        expect(validateSeed([rule, member('Espectro', 'fantasmas')])).toEqual([
+          'espectro: "fantasmas" is not a creature group',
+        ]);
+      });
+
+      it('rejects a member of a Creature that has a stat block of its own', () => {
+        expect(
+          validateSeed([
+            creature({}, { name: 'Chefe' }),
+            member('Espectro', 'chefe'),
+          ]),
+        ).toEqual(['espectro: "chefe" is not a creature group']);
+      });
+
+      it('rejects a Group with no members', () => {
+        expect(validateSeed([group()])).toEqual([
+          'fantasmas: a creature group needs at least one member',
+        ]);
+      });
+    });
+
+    it('accepts a valid Livro Básico Creature', () => {
+      expect(validateSeed([creature()])).toEqual([]);
+    });
+
+    it('gives a Livro Básico Creature no Role and never a champion Rank', () => {
+      expect(validateSeed([creature({ role: 'brute' })])).toEqual([
+        expect.stringContaining('only the Bestiary Vol. I has a role'),
+      ]);
+      expect(validateSeed([creature({ rank: 'champion' })])).toEqual([
+        expect.stringContaining('only the Bestiary Vol. I has champions'),
+      ]);
+    });
+
+    describe('Bestiary Vol. I extras', () => {
+      const volumeOne = (
+        details: Partial<CreatureDetails> = {},
+        entry: Partial<SeedEntry> = {},
+      ) =>
+        creature(
+          { role: 'brute', originalName: 'Cactus Brute', ...details },
+          { source: 'bestiary-vol-1', page: 120, ...entry },
+        );
+
+      it('may have no Role (the final boss and its worlds have none)', () => {
+        expect(validateSeed([volumeOne({ role: undefined })])).toEqual([]);
+      });
+
+      it('gives a champion the number of soldiers it replaces, from 1 to 6, and nobody else', () => {
+        const champion = (championX?: number) =>
+          volumeOne({ rank: 'champion', championX });
+        expect(validateSeed([champion(4)])).toEqual([]);
+        expect(validateSeed([champion()])).toEqual([
+          'cactonto: a champion needs details.championX',
+        ]);
+        expect(validateSeed([champion(7)])).toEqual([
+          'cactonto: details.championX (7) must be an integer from 1 to 6',
+        ]);
+        expect(validateSeed([volumeOne({ championX: 3 })])).toEqual([
+          'cactonto: only a champion has details.championX',
+        ]);
+      });
+
+      it('accepts the Solo, Unique and Part marks, and Part needs a Group', () => {
+        expect(
+          validateSeed([volumeOne({ flags: ['solo', 'unique'] })]),
+        ).toEqual([]);
+        expect(validateSeed([volumeOne({ flags: ['huge' as never] })])).toEqual(
+          ['cactonto: unknown details.flags "huge"'],
+        );
+        expect(validateSeed([volumeOne({ flags: ['part'] })])).toEqual([
+          'cactonto: a Part must belong to a creature group',
+        ]);
+      });
+    });
+
+    it('requires the English name of a Bestiary Vol. I Creature', () => {
+      const volumeOne = (details: Partial<CreatureDetails> = {}) =>
+        creature(
+          { role: 'brute', rank: 'champion', championX: 3, ...details },
+          { source: 'bestiary-vol-1', page: 120 },
+        );
+      expect(validateSeed([volumeOne()])).toEqual([
+        expect.stringContaining('originalName'),
+      ]);
+      expect(
+        validateSeed([volumeOne({ originalName: 'Cactus Brute' })]),
+      ).toEqual([]);
+    });
+
+    it('rejects an unknown Species, Rank, damage type or Affinity', () => {
+      expect(validateSeed([creature({ species: 'dragon' as never })])).toEqual([
+        expect.stringContaining('details.species'),
+      ]);
+      expect(validateSeed([creature({ rank: 'boss' as never })])).toEqual([
+        expect.stringContaining('details.rank'),
+      ]);
+      expect(
+        validateSeed([creature({ affinities: { sound: 'immune' } as never })]),
+      ).toEqual([expect.stringContaining('damage type "sound"')]);
+      expect(
+        validateSeed([creature({ affinities: { fire: 'weak' } as never })]),
+      ).toEqual([expect.stringContaining('affinity "weak"')]);
+    });
+
+    it('rejects an Attribute die outside d6 to d12', () => {
+      for (const VIG of [4, 7, 14]) {
+        const attributes = { DES: 8, AST: 6, VIG, VON: 6 } as never;
+        expect(validateSeed([creature({ attributes })])).toEqual([
+          expect.stringContaining('details.attributes.VIG'),
+        ]);
+      }
+    });
+
+    it('rejects a level that is not a multiple of 5 between 5 and 60', () => {
+      for (const level of [0, 7, 15.5, 65]) {
+        expect(validateSeed([creature({ level })])).toEqual([
+          expect.stringContaining('details.level'),
+        ]);
+      }
+      for (const level of [5, 10, 15, 60]) {
+        expect(validateSeed([creature({ level })])).toEqual([]);
+      }
+    });
+
+    it('rejects a Crisis that is not half the PV, rounded down', () => {
+      expect(validateSeed([creature({ hp: 90, crisis: 40 })])).toEqual([
+        expect.stringContaining('crisis'),
+      ]);
+      expect(validateSeed([creature({ hp: 91, crisis: 45 })])).toEqual([]);
+    });
+  });
+
+  describe('quick assembly', () => {
+    const rules = seedEntries.filter(
+      (e) => e.type === 'rule' && e.source === 'bestiary-vol-1',
+    );
+    const role = (name: string) =>
+      rules.find((e) => e.name === `Montagem Rápida: ${name}`);
+
+    it('seeds the process Rule and one Rule per Role, from the Bestiary Vol. I', () => {
+      expect(rules.map((e) => [e.name, e.page])).toEqual([
+        ['Montagem Rápida', 25],
+        ['Montagem Rápida: Bruto', 30],
+        ['Montagem Rápida: Caçador', 34],
+        ['Montagem Rápida: Mago', 38],
+        ['Montagem Rápida: Sabotador', 42],
+        ['Montagem Rápida: Sentinela', 46],
+        ['Montagem Rápida: Apoio', 50],
+      ]);
+      // The English names stay searchable.
+      expect(role('Bruto')?.tags).toEqual(
+        expect.arrayContaining(['quick assembly', 'brute']),
+      );
+    });
+
+    it('keeps the book numbers of the level tables (p. 32-52)', () => {
+      const row = (name: string, level: number) => {
+        const d = role(name)?.details as { progression: { level: number }[] };
+        return d.progression.find((r) => r.level === level);
+      };
+      expect(row('Bruto', 60)).toEqual({
+        level: 60,
+        attributes: { AST: 8, VIG: 12, VON: 10 },
+        hp: 200,
+        mp: 110,
+        accuracy: 6,
+        extraDamage: 15,
+      });
+      expect(row('Caçador', 40)).toEqual({
+        level: 40,
+        attributes: { DES: 12, VON: 8 },
+        hp: 120,
+        mp: 80,
+        accuracy: 4,
+        extraDamage: 10,
+      });
+      expect(row('Mago', 20)).toMatchObject({ hp: 70, mp: 70, extraDamage: 5 });
+      expect(row('Sabotador', 10)).toMatchObject({
+        hp: 60,
+        mp: 50,
+        accuracy: 1,
+      });
+      expect(row('Sentinela', 60)).toMatchObject({ hp: 170, mp: 110 });
+      expect(row('Apoio', 60)).toMatchObject({
+        attributes: { AST: 12, VIG: 8 },
+        hp: 170,
+      });
+    });
+
+    it('keeps the level 5 profile of each Role', () => {
+      const base = (name: string) =>
+        (role(name)?.details as { base: Record<string, unknown> }).base;
+      expect(base('Bruto')).toMatchObject({
+        attributes: { DES: 8, AST: 6, VIG: 10, VON: 8 },
+        hp: 70,
+        mp: 45,
+        initiative: 7,
+        vulnerabilities: 2,
+      });
+      expect(base('Mago')).toMatchObject({
+        hp: 40,
+        mp: 55,
+        defense: 1,
+        magicDefense: 2,
+      });
+      expect(base('Sentinela')).toMatchObject({
+        vulnerabilities: 2,
+        defense: 2,
+      });
+    });
+
+    /** The NPC spell Rule without its body links: what the process Rule's spell references need. */
+    const npcAlone = () =>
+      ({
+        ...seedEntries.find(
+          (e) => e.type === 'rule' && e.name === 'Feitiços de NPC',
+        )!,
+        body: '',
+      }) as SeedEntry;
+
+    /** A Role Rule on its own: no body links, and no spell references (their targets are not in the list). */
+    const aloneWithoutSpells = (name: string) => {
+      const clone = structuredClone(role(name)) as SeedEntry & {
+        details: { skills: { spells?: unknown }[]; baseSpells?: unknown };
+      };
+      clone.body = '';
+      clone.details.skills = clone.details.skills.filter(
+        (skill) => !skill.spells,
+      );
+      delete clone.details.baseSpells;
+      return clone;
+    };
+
+    const withRole = (change: (d: Record<string, unknown>) => void) => {
+      const brute = aloneWithoutSpells('Bruto') as SeedEntry & {
+        details: Record<string, unknown>;
+      };
+      change(brute.details);
+      return validateSeed([brute]);
+    };
+
+    it('rejects a base Initiative that is not (DES + AST) / 2 rounded down', () => {
+      const errors = withRole((d) => {
+        (d.base as { initiative: number }).initiative = 9;
+      });
+      expect(errors).toEqual([expect.stringContaining('initiative')]);
+    });
+
+    it('rejects a progression that skips a level', () => {
+      const errors = withRole((d) => {
+        // Level 50: no grant of the brute points at it.
+        (d.progression as unknown[]).splice(4, 1);
+      });
+      expect(errors).toEqual([expect.stringContaining('progression')]);
+    });
+
+    it('rejects a text that names a choice the entry does not offer', () => {
+      const errors = withRole((d) => {
+        const attacks = d.attacks as { effect?: string }[];
+        attacks[0].effect = 'Causa dano e o alvo fica {status}.';
+      });
+      expect(errors).toEqual([expect.stringContaining('{status}')]);
+    });
+
+    it('lists the Skills and customizations in the page of each Role, naming the choices', () => {
+      const body = (name: string) => role(name)?.body ?? '';
+      expect(body('Bruto')).toContain('## Poderes de função');
+      expect(body('Bruto')).toContain('## Personalização');
+      expect(body('Bruto')).toContain('**Esmagar**');
+      expect(body('Bruto')).toContain('perder 20 PV');
+      expect(body('Bruto')).toContain('**Mau Humor**');
+      expect(body('Caçador')).toContain('**Mira Fixa**');
+      // A choice reads as "(escolha: …)", an amount as the three values of the table.
+      expect(body('Bruto')).toContain('(escolha: tipo de dano)');
+      expect(body('Bruto')).toContain('pequena (10/20/30)');
+      expect(body('Bruto')).not.toMatch(/\{\w+\}/);
+      // Who may take it.
+      expect(body('Bruto')).toContain(
+        '**Relógio de Colapso** (só elite e campeão)',
+      );
+    });
+
+    it('names the tool the Rules link to, the Laboratório Oroboros', () => {
+      const link = '[Laboratório Oroboros](/laboratorio-oroboros)';
+      for (const name of [
+        'Montagem Rápida',
+        'Montagem Rápida: Bruto',
+        'Feitiços de NPC',
+      ]) {
+        const entry = seedEntries.find((e) => e.name === name);
+        expect(entry?.body).toContain(link);
+      }
+      expect(JSON.stringify(seedEntries)).not.toContain(
+        'Montagem de Criaturas',
+      );
+    });
+
+    describe('species', () => {
+      type Option = {
+        id: string;
+        label: string;
+        kind: string;
+        max?: number;
+        amount?: number;
+        spells?: { from: { name: string }[]; options: { mp: number }[] };
+        swaps?: string;
+        swapType?: string;
+        slots?: { id: string }[];
+        rule?: { name: string; text: string };
+      };
+      type SpeciesRule = {
+        species: string;
+        affinities: Record<string, string>;
+        statusImmunities: string[];
+        resistances?: number;
+        immunities?: number;
+        vulnerability?: string[];
+        picks: number;
+        extra?: { vulnerability: string[]; picks: number };
+        note?: string;
+        options: Option[];
+      };
+      const process = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Montagem Rápida',
+      );
+      const all = () =>
+        (process?.details as unknown as { species: SpeciesRule[] }).species;
+      const of = (species: string) => all().find((r) => r.species === species)!;
+      const ids = (species: string) => of(species).options.map((o) => o.id);
+
+      it('has a rule for each of the eight Species, in the book order (p. 70-73)', () => {
+        expect(all().map((r) => r.species)).toEqual([
+          'beast',
+          'construct',
+          'demon',
+          'elemental',
+          'humanoid',
+          'monster',
+          'plant',
+          'undead',
+        ]);
+      });
+
+      it('keeps what each Species always has', () => {
+        expect(of('construct').affinities).toEqual({
+          earth: 'resistant',
+          poison: 'immune',
+        });
+        expect(of('construct').statusImmunities).toEqual(['poisoned']);
+        expect(of('elemental').affinities).toEqual({ poison: 'immune' });
+        expect(of('elemental').immunities).toBe(1);
+        expect(of('elemental').statusImmunities).toEqual(['poisoned']);
+        expect(of('demon').resistances).toBe(2);
+        expect(of('plant').statusImmunities).toEqual([
+          'dazed',
+          'enraged',
+          'shaken',
+        ]);
+        expect(of('undead').affinities).toEqual({
+          light: 'vulnerable',
+          dark: 'immune',
+          poison: 'immune',
+        });
+        expect(of('undead').statusImmunities).toEqual(['poisoned']);
+        expect(of('undead').note).toContain('PV');
+        expect(of('beast').affinities).toEqual({});
+        expect(of('monster').statusImmunities).toEqual([]);
+      });
+
+      it('restricts the Vulnerability a Species asks for, as the book does', () => {
+        expect(of('humanoid').vulnerability).toEqual([
+          'dark',
+          'light',
+          'physical',
+          'poison',
+        ]);
+        expect(of('plant').vulnerability).toEqual([
+          'air',
+          'bolt',
+          'fire',
+          'ice',
+        ]);
+        expect(of('beast').vulnerability).toBeUndefined();
+        // The optional extra Vulnerability, and what it buys.
+        expect(of('construct').extra).toEqual({
+          vulnerability: ['air', 'bolt', 'fire', 'ice'],
+          picks: 1,
+        });
+        expect(of('undead').extra?.vulnerability).toEqual([
+          'air',
+          'bolt',
+          'earth',
+          'fire',
+          'ice',
+        ]);
+        expect(of('elemental').extra?.picks).toBe(1);
+        expect(of('monster').extra).toBeUndefined();
+      });
+
+      it('says how many options each Species takes', () => {
+        expect(
+          Object.fromEntries(all().map((r) => [r.species, r.picks])),
+        ).toEqual({
+          beast: 2,
+          construct: 0,
+          demon: 1,
+          elemental: 0,
+          humanoid: 3,
+          monster: 2,
+          plant: 1,
+          undead: 0,
+        });
+      });
+
+      it('lists the options of each Species', () => {
+        expect(ids('beast')).toEqual([
+          'hp',
+          'spell',
+          'opposed',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('construct')).toEqual([
+          'status-immunity',
+          'opposed',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('demon')).toEqual([
+          'absorb',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('elemental')).toEqual([
+          'absorb',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('humanoid')).toEqual([
+          'resistances',
+          'spell',
+          'opposed',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('monster')).toEqual([
+          'hp',
+          'resistances',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('plant')).toEqual([
+          'hp',
+          'resistances',
+          'spell',
+          'thorns',
+          'flying',
+          'role-skill',
+        ]);
+        expect(ids('undead')).toEqual([
+          'absorb',
+          'spell',
+          'flying',
+          'role-skill',
+        ]);
+      });
+
+      it('lets the Role Skill be taken twice by the Species that may', () => {
+        const max = (species: string) =>
+          of(species).options.find((o) => o.id === 'role-skill')?.max;
+        expect([max('beast'), max('humanoid'), max('monster')]).toEqual([
+          2, 2, 2,
+        ]);
+        expect([max('construct'), max('demon'), max('plant')]).toEqual([
+          undefined,
+          undefined,
+          undefined,
+        ]);
+      });
+
+      it('names the spells each Species may learn, with +10 PM', () => {
+        const names = (species: string) =>
+          of(species)
+            .options.find((o) => o.id === 'spell')
+            ?.spells?.from.map((r) => r.name);
+        expect(names('beast')).toEqual([
+          'Lamber Feridas',
+          'Concha',
+          'Brado de Guerra',
+        ]);
+        expect(names('demon')).toEqual([
+          'Sopro',
+          'Ultramaldição',
+          'Roubo de Mana',
+          'Enfraquecer',
+        ]);
+        expect(names('elemental')).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Lamber Feridas',
+        ]);
+        expect(names('humanoid')).toEqual([
+          'Lamber Feridas',
+          'Concha',
+          'Brado de Guerra',
+        ]);
+        expect(names('plant')).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Roubo de Vida',
+          'Envenenar',
+        ]);
+        expect(names('undead')).toEqual([
+          'Sopro',
+          'Maldição',
+          'Roubo de Vida',
+          'Envenenar',
+        ]);
+        for (const species of ['beast', 'demon', 'plant']) {
+          expect(
+            of(species).options.find((o) => o.id === 'spell')?.spells
+              ?.options[0].mp,
+          ).toBe(10);
+        }
+      });
+
+      it('keeps the +10 Hit Points in the data, and lets the Reader pick the type an Absorption swaps', () => {
+        const opt = (species: string, id: string) =>
+          of(species).options.find((o) => o.id === id) as Option & {
+            amount?: number;
+          };
+        for (const species of ['beast', 'monster', 'plant']) {
+          expect(opt(species, 'hp').amount).toBe(10);
+        }
+        // The book fixes the type for the undead (dark) and leaves it open for the others.
+        expect(opt('demon', 'absorb').slots?.map((sl) => sl.id)).toEqual([
+          'type',
+        ]);
+        expect(opt('elemental', 'absorb').slots?.map((sl) => sl.id)).toEqual([
+          'type',
+        ]);
+        expect(opt('undead', 'absorb').slots).toBeUndefined();
+      });
+
+      it('keeps the Absorption swaps and the Plant thorns', () => {
+        const opt = (species: string, id: string) =>
+          of(species).options.find((o) => o.id === id)!;
+        expect(opt('demon', 'absorb').swaps).toBe('resistant');
+        expect(opt('elemental', 'absorb').swaps).toBe('immune');
+        expect(opt('undead', 'absorb')).toMatchObject({
+          swaps: 'immune',
+          swapType: 'dark',
+        });
+        expect(opt('plant', 'thorns').rule?.text).toContain('5 de dano físico');
+        expect(opt('plant', 'thorns').rule?.text).toContain('10');
+      });
+
+      it('lists the Species in the page of the process Rule', () => {
+        expect(process?.body).toContain('## Espécies');
+        expect(process?.body).toContain('### Construto');
+        expect(process?.body).toContain('### Morto-vivo');
+        expect(process?.body).toContain('Resistência a dano de terra');
+        expect(process?.body).not.toMatch(/\{\w+\}/);
+      });
+
+      const withSpecies = (change: (r: SpeciesRule[]) => void) => {
+        const rule = structuredClone(process) as SeedEntry & {
+          details: { species: SpeciesRule[] };
+        };
+        rule.body = '';
+        change(rule.details.species);
+        return validateSeed([
+          {
+            ...(seedEntries.find(
+              (e) => e.name === 'Feitiços de NPC',
+            ) as SeedEntry),
+            body: '',
+          },
+          rule,
+        ]);
+      };
+
+      it('rejects a missing or repeated Species', () => {
+        const errors = withSpecies((r) => {
+          r.pop();
+        });
+        expect(errors).toEqual([expect.stringContaining('species')]);
+      });
+
+      it('says how many Resistances the Resistances option buys, and rejects it without a count', () => {
+        const amounts = all()
+          .flatMap((rule) => rule.options)
+          .filter((o) => o.kind === 'resistances')
+          .map((o) => o.amount);
+        expect(amounts.length).toBeGreaterThan(0);
+        expect(new Set(amounts)).toEqual(new Set([2]));
+        const errors = withSpecies((r) => {
+          const option = r
+            .flatMap((rule) => rule.options)
+            .find((o) => o.kind === 'resistances')!;
+          delete option.amount;
+        });
+        // The option object is shared by the Species that offer it.
+        expect(errors.length).toBeGreaterThan(0);
+        for (const error of errors) {
+          expect(error).toContain(
+            'option "resistances" needs a positive amount',
+          );
+        }
+      });
+
+      it('rejects a Species option whose text names a choice it does not offer', () => {
+        const errors = withSpecies((r) => {
+          const rule = r[1].options.find((o) => o.id === 'status-immunity')!;
+          rule.rule!.text = 'Imune a {nada}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{nada}')]);
+      });
+    });
+
+    describe('boss skills', () => {
+      type Boss = {
+        id: string;
+        name: string;
+        group: string;
+        effects: { to: string; text: string }[];
+        slots?: {
+          id: string;
+          count: number;
+          min?: number;
+          options: unknown[];
+        }[];
+        spells?: { from: { id: string; minLevel?: number }[] };
+      };
+      type Group = { id: string; name: string; summary: string };
+      const process = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Montagem Rápida',
+      );
+      const details = () =>
+        process?.details as unknown as {
+          bossSkills: Boss[];
+          bossGroups: Group[];
+        };
+      const inGroup = (group: string) =>
+        details()
+          .bossSkills.filter((b) => b.group === group)
+          .map((b) => b.name);
+
+      it('lists the 40 Boss Skills of the book (p. 54-67) in their 7 groups', () => {
+        expect(details().bossSkills).toHaveLength(40);
+        expect(details().bossGroups.map((g) => g.name)).toEqual([
+          'Campo de batalha',
+          'Controle',
+          'Destrutivos',
+          'Elementais',
+          'Objetivo',
+          'Invocação',
+          'Sobrevivência',
+        ]);
+        expect(inGroup('battlefield')).toEqual([
+          'Aura de Sofrimento',
+          'Vida e Morte',
+          'Perto e Longe',
+          'Zumbificação',
+        ]);
+        expect(inGroup('control')).toEqual([
+          'Contra-ataque Automático',
+          'Condição na Crise',
+          'Marca da Dor Compartilhada',
+          'Observar e Punir',
+          'Decreto do Tirano',
+          'Você Acabou de Provar Meu Ponto',
+        ]);
+        expect(inGroup('destructive')).toEqual([
+          'Carregador de Catástrofe',
+          'Condição Corrosiva',
+          'Formação Destrutiva',
+          'Devastação',
+          'Condenação',
+          'Aposta Infernal',
+          'Nihilo',
+        ]);
+        expect(inGroup('elemental')).toEqual([
+          'Elementos Binários',
+          'Crise Elemental',
+          'Postura Elemental',
+        ]);
+        expect(inGroup('objective')).toEqual([
+          'Desgaste',
+          'Contagem Regressiva',
+          'Reviravolta Cruel',
+          'Vantagem Esmagadora',
+          'Eu Conheço Vocês',
+          'Influência Ruinosa',
+        ]);
+        expect(inGroup('summoner')).toEqual([
+          'Chamar Reforços',
+          'Contra-invocação',
+          'Reforços de Emergência',
+          'Regeneração de Partes',
+          'Coordenação Perfeita',
+        ]);
+        expect(inGroup('survival')).toEqual([
+          'Afinidades Adaptativas',
+          'Camuflagem',
+          'Pegue-me se Puder',
+          'Postura Defensiva',
+          'Regeneração',
+          'Segundo Fôlego',
+          'Defesas Temporárias',
+          'Desfazer',
+          'Formação Vampírica',
+        ]);
+      });
+
+      it('keeps the choices the book asks for', () => {
+        const by = (name: string) =>
+          details().bossSkills.find((b) => b.name === name);
+        // "Choose two to five stances", then one change trigger.
+        expect(
+          by('Postura Elemental')?.slots?.map((s) => [
+            s.id,
+            s.count,
+            s.min,
+            s.options.length,
+          ]),
+        ).toEqual([
+          ['stances', 5, 2, 7],
+          ['trigger', 1, undefined, 4],
+          ['twist', 1, undefined, 5],
+        ]);
+        // "Choose one, two, or three" forbidden actions.
+        expect(by('Decreto do Tirano')?.slots?.[0]).toMatchObject({
+          count: 3,
+          min: 1,
+        });
+        expect(by('Decreto do Tirano')?.slots?.[0].options).toHaveLength(7);
+        // "Choose one or both: Hit Points, Mind Points".
+        expect(by('Regeneração')?.slots?.[0]).toMatchObject({
+          count: 2,
+          min: 1,
+        });
+        expect(by('Defesas Temporárias')?.slots?.[0].options).toHaveLength(2);
+      });
+
+      it('makes Devastação teach the spell, for level 30 and up', () => {
+        const spell = details().bossSkills.find((b) => b.name === 'Devastação');
+        expect(spell?.spells?.from).toEqual([
+          expect.objectContaining({ id: 'devastation', minLevel: 30 }),
+        ]);
+      });
+
+      it('lists them by group in the page of the process Rule, naming the choices', () => {
+        expect(process?.body).toContain('## Poderes de chefe');
+        expect(process?.body).toContain('### Campo de batalha');
+        expect(process?.body).toContain('**Aura de Sofrimento**');
+        expect(process?.body).toContain('**Postura Elemental**');
+        expect(process?.body).toContain('(escolha: condição)');
+        expect(process?.body).not.toMatch(/\{\w+\}/);
+      });
+
+      const withBoss = (
+        change: (b: Boss, d: { bossGroups: Group[] }) => void,
+      ) => {
+        const rule = structuredClone(process) as SeedEntry & {
+          details: { bossSkills: Boss[]; bossGroups: Group[] };
+        };
+        rule.body = '';
+        change(rule.details.bossSkills[0], rule.details);
+        return validateSeed([npcAlone(), rule]);
+      };
+
+      it('rejects a Boss Skill of a group that does not exist', () => {
+        const errors = withBoss((b) => {
+          b.group = 'fantasma';
+        });
+        expect(errors).toEqual([expect.stringContaining('"fantasma"')]);
+      });
+
+      it('rejects a Boss Skill text that names a choice it does not offer', () => {
+        const errors = withBoss((b) => {
+          b.effects[0].text = 'Sofre {nada}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{nada}')]);
+      });
+    });
+
+    describe('negative skills', () => {
+      type Negative = {
+        id: string;
+        name: string;
+        advice?: string;
+        effects: { to: string; text: string }[];
+        slots?: { id: string; count: number; options: unknown[] }[];
+      };
+      const process = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Montagem Rápida',
+      );
+      const negatives = () =>
+        (process?.details as unknown as { negativeSkills: Negative[] })
+          .negativeSkills;
+
+      it('lists the 8 Negative Skills of the book (p. 68-69)', () => {
+        expect(negatives().map((n) => n.name)).toEqual([
+          'Atraso Final',
+          'Detonação Final',
+          'Restauração Final',
+          'Condição Final',
+          'Enfraquecimento Final',
+          'Pouso Forçado',
+          'Erro Doloroso',
+          'Amarras de Condição',
+        ]);
+        // Each says what it is meant for, as the book does.
+        for (const negative of negatives()) {
+          expect(negative.advice).toBeTruthy();
+        }
+      });
+
+      it('keeps the choices of the Skills that have them', () => {
+        const by = (name: string) => negatives().find((n) => n.name === name);
+        expect(
+          by('Detonação Final')?.slots?.map((s) => [s.id, s.options.length]),
+        ).toEqual([['type', 9]]);
+        expect(by('Restauração Final')?.slots?.[0].options).toHaveLength(2);
+        expect(by('Condição Final')?.slots?.[0].options).toHaveLength(4);
+        expect(by('Erro Doloroso')?.slots?.map((s) => s.id)).toEqual([
+          'attack',
+          'victim',
+        ]);
+        // Each of the four actions is tied to a different condition.
+        expect(by('Amarras de Condição')?.slots?.map((s) => s.id)).toEqual([
+          'normal',
+          'strong',
+          'skill',
+          'spell',
+        ]);
+        expect(by('Pouso Forçado')?.slots).toBeUndefined();
+      });
+
+      it('lists them in the page of the process Rule', () => {
+        expect(process?.body).toContain('## Poderes negativos');
+        expect(process?.body).toContain('**Detonação Final**');
+        expect(process?.body).toContain('quantidade grande (30/40/50)');
+        expect(process?.body).not.toMatch(/\{\w+\}/);
+      });
+
+      const withNegative = (change: (n: Negative) => void) => {
+        const rule = structuredClone(process) as SeedEntry & {
+          details: { negativeSkills: Negative[] };
+        };
+        rule.body = '';
+        change(rule.details.negativeSkills[0]);
+        return validateSeed([npcAlone(), rule]);
+      };
+
+      it('rejects a Negative Skill text that names a choice it does not offer', () => {
+        const errors = withNegative((n) => {
+          n.effects[0].text = 'Sofre {nada}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{nada}')]);
+      });
+
+      it('rejects two Negative Skills with the same id', () => {
+        const errors = (() => {
+          const rule = structuredClone(process) as SeedEntry & {
+            details: { negativeSkills: Negative[] };
+          };
+          rule.body = '';
+          rule.details.negativeSkills[1].id = rule.details.negativeSkills[0].id;
+          return validateSeed([npcAlone(), rule]);
+        })();
+        expect(errors).toEqual([expect.stringContaining('repeated')]);
+      });
+    });
+
+    describe('spells', () => {
+      type Ref = { kind: string; id: string; name: string; minLevel?: number };
+      type Grant = {
+        from: Ref[];
+        options: { id: string; label: string; count: number; mp: number }[];
+      };
+      const details = (roleName: string) =>
+        role(roleName)?.details as unknown as {
+          skills: { id: string; ranks?: string[]; spells?: Grant }[];
+          baseSpells?: Grant;
+        };
+      const names = (grant?: Grant) => grant?.from.map((r) => r.name);
+      const spellSkill = (roleName: string) =>
+        details(roleName).skills.find((skill) => skill.spells);
+
+      const npc = seedEntries.find(
+        (e) => e.type === 'rule' && e.name === 'Feitiços de NPC',
+      );
+
+      it('seeds the 15 spells of the Livro Básico NPC list (p. 310-311)', () => {
+        expect(npc).toMatchObject({ page: 310 });
+        expect(npc?.source ?? 'livro-basico').toBe('livro-basico');
+        const spells = (
+          npc?.details as unknown as {
+            spells: {
+              name: string;
+              mpCost: string;
+              target: string;
+              duration: string;
+              offensive: boolean;
+            }[];
+          }
+        ).spells;
+        expect(
+          spells.map((s) => [
+            s.name,
+            s.mpCost,
+            s.target,
+            s.duration,
+            s.offensive,
+          ]),
+        ).toEqual([
+          ['Acelerar', '20', 'Uma criatura', 'Instantânea', false],
+          ['Brado de Guerra', '10 × A', 'Até três criaturas', 'Cena', false],
+          ['Concha', '10', 'Pessoal', 'Cena', false],
+          ['Condição em Área', '20', 'Especial', 'Instantânea', false],
+          ['Devastação', '30', 'Especial', 'Instantânea', false],
+          ['Enfraquecer', '10', 'Uma criatura', 'Cena', true],
+          ['Envenenar', '10 × A', 'Até três criaturas', 'Instantânea', true],
+          ['Fúria', '10 × A', 'Até três criaturas', 'Instantânea', true],
+          ['Lamber Feridas', '5', 'Pessoal', 'Instantânea', false],
+          ['Maldição', '5', 'Uma criatura', 'Instantânea', true],
+          ['Roubo de Mana', '10', 'Uma criatura', 'Instantânea', true],
+          ['Roubo de Vida', '10', 'Uma criatura', 'Instantânea', true],
+          ['Sopro', '5', 'Uma criatura', 'Instantânea', true],
+          ['Sopro Amaldiçoado', '10', 'Uma criatura', 'Instantânea', true],
+          ['Ultramaldição', '10', 'Uma criatura', 'Instantânea', true],
+        ]);
+      });
+
+      it('lists the NPC spells in a page that the Role pages link to', () => {
+        expect(npc?.body).toContain('**Sopro Amaldiçoado**');
+        expect(npc?.body).toContain('(escolha: tipo de dano)');
+        expect(npc?.tags).toEqual(expect.arrayContaining(['npc spells']));
+        expect(role('Sentinela')?.body).toContain('[[feiticos-de-npc]]');
+      });
+
+      it('gives each Role the spells the book lists, by their Portuguese names', () => {
+        expect(names(spellSkill('Bruto')?.spells)).toEqual([
+          'Condição em Área',
+          'Ultramaldição',
+          'Sopro Amaldiçoado',
+          'Fúria',
+          'Lamber Feridas',
+          'Roubo de Vida',
+          'Envenenar',
+          'Reforçar',
+        ]);
+        expect(names(spellSkill('Caçador')?.spells)).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Lamber Feridas',
+          'Roubo de Vida',
+          'Espelhar',
+        ]);
+        expect(names(spellSkill('Sabotador')?.spells)).toEqual([
+          'Condição em Área',
+          'Ultramaldição',
+          'Dissipar',
+          'Drenar Espírito',
+          'Envenenar',
+          'Fúria',
+          'Parar',
+          'Enfraquecer',
+        ]);
+        expect(names(spellSkill('Sentinela')?.spells)).toEqual([
+          'Sopro',
+          'Lamber Feridas',
+          'Concha',
+          'Brado de Guerra',
+        ]);
+      });
+
+      it('gives the mage and the support a base choice of spells, and the mage a second list', () => {
+        expect(names(details('Mago').baseSpells)).toEqual([
+          'Sopro',
+          'Sopro Amaldiçoado',
+          'Clarão',
+          'Fulgur',
+          'Glacies',
+          'Iceberg',
+          'Ignis',
+          'Lux',
+          'Ômega',
+          'Terra',
+          'Raio',
+          'Umbra',
+          'Ventus',
+        ]);
+        expect(names(spellSkill('Mago')?.spells)).toEqual([
+          'Sopro Amaldiçoado',
+          'Devastação',
+          'Drenar Espírito',
+          'Clarão',
+          'Iceberg',
+          'Roubo de Vida',
+          'Roubo de Mana',
+          'Ômega',
+          'Raio',
+        ]);
+        expect(names(details('Apoio').baseSpells)).toEqual([
+          'Aura',
+          'Despertar',
+          'Barreira',
+          'Purificar',
+          'Divinação',
+          'Mortalha Elemental',
+          'Curar',
+          'Espelhar',
+          'Acelerar',
+          'Reforçar',
+          'Bastião Espiritual',
+          'Brado de Guerra',
+        ]);
+        expect(details('Bruto').baseSpells).toBeUndefined();
+      });
+
+      it('says how many spells a grant gives and what it costs in PM', () => {
+        const options = (grant?: Grant) =>
+          grant?.options.map((o) => [o.id, o.count, o.mp]);
+        expect(options(spellSkill('Bruto')?.spells)).toEqual([['two', 2, 0]]);
+        expect(options(spellSkill('Sabotador')?.spells)).toEqual([
+          ['one', 1, 10],
+        ]);
+        expect(options(spellSkill('Sentinela')?.spells)).toEqual([
+          ['one', 1, 10],
+        ]);
+        expect(options(details('Mago').baseSpells)).toEqual([
+          ['two', 2, 0],
+          ['one', 1, 10],
+        ]);
+        expect(options(spellSkill('Mago')?.spells)).toEqual([
+          ['two', 2, 0],
+          ['one', 1, 10],
+        ]);
+      });
+
+      it('keeps the strongest spells for level 30 and up, as the book does', () => {
+        const level = (grant: Grant | undefined, name: string) =>
+          grant?.from.find((r) => r.name === name)?.minLevel;
+        const base = details('Mago').baseSpells;
+        expect(
+          ['Clarão', 'Iceberg', 'Raio'].map((n) => level(base, n)),
+        ).toEqual([30, 30, 30]);
+        expect(level(base, 'Fulgur')).toBeUndefined();
+        expect(level(spellSkill('Mago')?.spells, 'Devastação')).toBe(30);
+      });
+
+      it('keeps the elite and champion limit of the brute spells', () => {
+        expect(spellSkill('Bruto')?.ranks).toEqual(['elite', 'champion']);
+      });
+
+      const withGrant = (change: (grant: Grant) => void) => {
+        const mage = aloneWithoutSpells('Mago') as SeedEntry & {
+          details: { baseSpells?: Grant };
+        };
+        // Only NPC spells can be resolved here (the NPC rule is in the list).
+        const grant: Grant = {
+          from: (
+            role('Mago')?.details as unknown as { baseSpells: Grant }
+          ).baseSpells.from.filter((ref) => ref.kind === 'npc'),
+          options: [{ id: 'two', label: 'Dois feitiços', count: 2, mp: 0 }],
+        };
+        mage.details.baseSpells = grant;
+        change(grant);
+        return validateSeed([{ ...npc!, body: '' } as SeedEntry, mage]);
+      };
+
+      it('rejects a spell of the NPC list that does not exist', () => {
+        const errors = withGrant((grant) => {
+          grant.from[0] = { kind: 'npc', id: 'fantasma', name: 'Fantasma' };
+        });
+        expect(errors).toEqual([expect.stringContaining('"fantasma"')]);
+      });
+
+      it('rejects a class spell that is not a spell Entry', () => {
+        const errors = withGrant((grant) => {
+          grant.from[1] = { kind: 'class', id: 'nada', name: 'Nada' };
+        });
+        expect(errors).toEqual([
+          expect.stringContaining('"nada" is not a spell'),
+        ]);
+      });
+    });
+
+    describe('role skills and customizations', () => {
+      type Skill = {
+        id: string;
+        name: string;
+        effects: { to: string; name?: string; text: string }[];
+        slots?: {
+          id: string;
+          count: number;
+          min?: number;
+          options: unknown[];
+        }[];
+        ranks?: string[];
+        addsAttack?: { id: string };
+        resistances?: number;
+        extraVulnerabilities?: number;
+      };
+      const skillsOf = (roleName: string) => {
+        const d = role(roleName)?.details as unknown as {
+          skills: Skill[];
+          customizations: Skill[];
+          extra: string;
+        };
+        return d;
+      };
+
+      it('lists the Role Skills and customizations of every Role', () => {
+        const counts = Object.fromEntries(
+          ['Bruto', 'Caçador', 'Mago', 'Sabotador', 'Sentinela', 'Apoio'].map(
+            (name) => [
+              name,
+              [
+                skillsOf(name).skills.length,
+                skillsOf(name).customizations.length,
+              ],
+            ],
+          ),
+        );
+        expect(counts).toEqual({
+          Bruto: [9, 5],
+          Caçador: [9, 4],
+          Mago: [8, 3],
+          Sabotador: [9, 5],
+          Sentinela: [9, 4],
+          Apoio: [11, 3],
+        });
+      });
+
+      it('says what the customization slot gives instead of a customization', () => {
+        expect(
+          Object.fromEntries(
+            ['Bruto', 'Caçador', 'Mago', 'Sabotador', 'Sentinela', 'Apoio'].map(
+              (name) => [name, skillsOf(name).extra],
+            ),
+          ),
+        ).toEqual({
+          Bruto: 'hp',
+          Caçador: 'skill',
+          Mago: 'immunity',
+          Sabotador: 'skill',
+          Sentinela: 'skill',
+          Apoio: 'skill',
+        });
+      });
+
+      it("keeps the book's limits: some Skills are for elites and champions only", () => {
+        const restricted = (name: string) =>
+          skillsOf(name)
+            .skills.filter((skill) => skill.ranks)
+            .map((skill) => [skill.name, skill.ranks]);
+        expect(restricted('Bruto')).toEqual([
+          ['Relógio de Colapso', ['elite', 'champion']],
+          ['Feitiços', ['elite', 'champion']],
+        ]);
+        expect(restricted('Sentinela')).toEqual([
+          ['Ataque normal múltiplo', ['elite', 'champion']],
+          ['Vingança', ['elite', 'champion']],
+        ]);
+        expect(restricted('Apoio')).toEqual([
+          ['Aconselhar e Inspirar', ['champion']],
+        ]);
+      });
+
+      it('has the Barricada choose one or two damage types', () => {
+        const barricade = skillsOf('Sentinela').skills.find(
+          (skill) => skill.name === 'Barricada',
+        );
+        expect(barricade?.effects[0].to).toBe('action');
+        expect(barricade?.slots?.[0]).toMatchObject({ count: 2, min: 1 });
+        expect(barricade?.slots?.[0].options).toHaveLength(9);
+      });
+
+      it('makes the support champion Skill add both actions and one Vulnerability', () => {
+        const both = skillsOf('Apoio').skills.find(
+          (skill) => skill.name === 'Aconselhar e Inspirar',
+        );
+        expect(both?.effects.map((e) => [e.to, e.name])).toEqual([
+          ['action', 'Aconselhar'],
+          ['action', 'Inspirar'],
+        ]);
+        expect(both?.extraVulnerabilities).toBe(1);
+      });
+
+      it('lets the hunter and the saboteur add a strong attack', () => {
+        for (const name of ['Caçador', 'Sabotador']) {
+          const strongAttack = skillsOf(name).skills.filter(
+            (skill) => skill.addsAttack?.id === 'strong',
+          );
+          expect(strongAttack).toHaveLength(1);
+        }
+      });
+
+      const withSkill = (change: (skill: Skill) => void) => {
+        const brute = aloneWithoutSpells('Bruto') as SeedEntry & {
+          details: { skills: Skill[] };
+        };
+        change(brute.details.skills[0]);
+        return validateSeed([brute]);
+      };
+
+      it('rejects a Skill text that names a choice it does not offer', () => {
+        const errors = withSkill((skill) => {
+          skill.effects[0].text = 'Imune a {inexistente}.';
+        });
+        expect(errors).toEqual([expect.stringContaining('{inexistente}')]);
+      });
+
+      it('rejects a Skill effect that goes nowhere', () => {
+        const errors = withSkill((skill) => {
+          skill.effects[0].to = 'nowhere';
+        });
+        expect(errors).toEqual([expect.stringContaining('nowhere')]);
+      });
+
+      it('rejects two Skills with the same id', () => {
+        const errors = withSkill((skill) => {
+          skill.id = 'estrutura-repetida';
+        });
+        // The first Skill now has a fresh id: no error. Repeat it on the second one too.
+        expect(errors).toEqual([]);
+        const brute = aloneWithoutSpells('Bruto') as SeedEntry & {
+          details: { skills: Skill[] };
+        };
+        brute.details.skills[1].id = brute.details.skills[0].id;
+        expect(validateSeed([brute])).toEqual([
+          expect.stringContaining('repeated'),
+        ]);
+      });
     });
   });
   describe('services and transport', () => {

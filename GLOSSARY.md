@@ -72,7 +72,7 @@ _Avoid_: Magic weapon, unique weapon
 
 **Customization**:
 One of the three options a Custom Weapon takes from the Atlas list (such as Certeira, Elemental, Mutável or Rápida); each can be taken once per weapon. Shown to Readers as "personalização". It is not a Weapon Feature.
-_Avoid_: Upgrade, modifier, perk
+_Avoid_: Upgrade, modifier, perk; not the Role Customization of Quick Assembly
 
 **Weapon Feature**:
 The single special property a Rare Weapon may carry, chosen from the Core Rulebook's priced list (such as Anticondição, Multi or Perfuradora) or a custom effect the Game Master prices. Shown to Readers as "característica". It is not a Customization.
@@ -139,7 +139,7 @@ The state of having current Hit Points at or below half of the maximum, rounded 
 _Avoid_: Bloodied, wounded
 
 **Species**:
-What kind of being a Creature is, one of eight: Construct, Demon, Elemental, Beast, Humanoid, Monster, Undead or Plant ("Construto", "Demônio", "Elemental", "Fera", "Humanoide", "Monstro", "Morto-vivo", "Planta"). It sets a few special rules (immunities, Vulnerabilities) and how many powers a built Creature starts with.
+What kind of being a Creature is, one of eight: Construct, Demon, Elemental, Beast, Humanoid, Monster, Undead or Plant ("Construto", "Demônio", "Elemental", "Fera", "Humanoide", "Monstro", "Morto-vivo", "Planta"). It sets a few special rules (immunities, Vulnerabilities) and how many powers a built Creature starts with. Quick Assembly has its own Species rules (Bestiary Vol. I), which replace the Core Rulebook's for a Creature built with it.
 _Avoid_: Race, kind, creature type
 
 **Inventory Points**:
@@ -201,12 +201,24 @@ The method in the Bestiary Vol. I for building a Creature fast: pick a Role, a l
 _Avoid_: Standard creation (the Core Rulebook's own method is not offered by the app's builder)
 
 **Creature Assembler**:
-The modal on the Creatures list where a Reader builds a Creature by following Quick Assembly. Nothing built there is saved: the Reader can only copy the finished stat block as text, and closing the modal or reloading the page discards it. Shown to Readers as "Montagem de Criaturas", opened by the button "Montar criatura".
-_Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb for invoking a Trait or Bond), creature builder, generator
+The page where a Reader builds a Creature by following Quick Assembly. Nothing built there is saved: the Reader can only copy the finished stat block as text, and leaving or reloading the page discards it. Shown to Readers as "Laboratório Oroboros" (the button, the menu link and the page title share the name).
+_Avoid_: Forge (reserved for weapons), Evocation ("evocar" is the book's verb for invoking a Trait or Bond), creature builder, generator, "Montagem de Criaturas" and "Montar criatura" (the earlier names)
 
 **Role**:
-One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation).
+One of six functions a Creature plays in a fight under Quick Assembly: brute, hunter, mage, saboteur, sentinel or support. Shown to Readers as "função" (unofficial translation), with the Roles named Bruto, Caçador, Mago, Sabotador, Sentinela and Apoio (also unofficial).
 _Avoid_: Class (a Class belongs to a Player's character), archetype
+
+**NPC Spell**:
+One of the 15 spells of the Core Rulebook's list for Creatures (Sopro, Roubo de Vida, Condição em Área…). The Game Master renames it and picks its damage type or condition when making the stat block. Shown to Readers as "feitiço de NPC".
+_Avoid_: Class spell (a Spell belongs to a Class; a Creature may also learn some of those), monster spell
+
+**Role Skill**:
+A special ability a Creature takes from the list of its Role under Quick Assembly: a special rule, an extra action, or a change to a basic attack. A level and a Rank decide how many it gets. Shown to Readers as "poder de função" (unofficial translation).
+_Avoid_: Skill (alone; a Skill belongs to a Class), NPC power
+
+**Role Customization**:
+What a soldier or elite takes under Quick Assembly in place of a Role Skill: one option from a short list of its Role, or what the Role gives instead (more Hit Points, an Immunity or one more Role Skill). A champion takes none. Shown to Readers as "personalização" (unofficial translation); it is not a Custom Weapon's Customization.
+_Avoid_: Customization (alone; that is the Atlas Custom Weapon option), upgrade
 
 **Boss Skill**:
 A special ability that only a champion Creature may take under Quick Assembly, giving a boss its own gimmick. Shown to Readers as "poder de chefe" (unofficial translation).

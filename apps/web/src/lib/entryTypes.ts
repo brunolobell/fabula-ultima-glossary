@@ -46,6 +46,13 @@ export const TYPE_INFO: Record<EntryType, TypeInfo> = {
     plural: 'Equipamento',
     description: 'Armas, armaduras, escudos e acessórios.',
   },
+  creature: {
+    slug: 'criaturas',
+    label: 'Criatura',
+    plural: 'Criaturas',
+    description:
+      'As criaturas do Bestiário: nível, Espécie, Afinidades a dano, ataques e feitiços.',
+  },
   service: {
     slug: 'servicos',
     label: 'Serviço',
@@ -75,6 +82,7 @@ export const BROWSE_TYPES: EntryType[] = [
   'heroic-skill',
   'spell',
   'equipment',
+  'creature',
   'service',
   'transport',
 ];

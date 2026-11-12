@@ -2,6 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { EntriesService } from './entries.service';
+import { CreatureStats } from './entities/creature-stats.entity';
 import { Entry } from './entities/entry.entity';
 
 function queryBuilder(result: unknown[] = []) {
@@ -20,9 +21,50 @@ function queryBuilder(result: unknown[] = []) {
   return qb;
 }
 
+/** A `creature_stats` row as the database holds it. */
+const cactontoRow = {
+  entryId: 'e1',
+  level: 15,
+  species: 'plant',
+  rank: 'soldier',
+  role: null,
+  championX: null,
+  flags: [],
+  villain: false,
+  originalName: null,
+  traits: ['assustador', 'territorial'],
+  des: 8,
+  ast: 6,
+  vig: 12,
+  von: 6,
+  hp: 90,
+  crisis: 45,
+  mp: 55,
+  initiative: 7,
+  defense: 0,
+  defenseFixed: false,
+  magicDefense: 0,
+  hasSpells: true,
+  affinities: { fire: 'resistant', ice: 'vulnerable' },
+  attacks: [
+    {
+      name: 'Abraço Perfurador',
+      range: 'melee',
+      accuracy: 'VIG + VIG',
+      accuracyBonus: 1,
+      damage: 10,
+      damageType: 'physical',
+    },
+  ],
+  spells: [{ name: 'Drenar Umidade' }],
+  otherActions: [{ name: 'Seiva de Cactonto', effect: 'Se recupera.' }],
+  specialRules: [{ name: 'Planta', effect: 'Imune a abalado.' }],
+};
+
 describe('EntriesService', () => {
   let service: EntriesService;
   const repo = { findOne: jest.fn(), createQueryBuilder: jest.fn() };
+  const stats = { findOne: jest.fn(), find: jest.fn() };
 
   beforeEach(async () => {
     jest.resetAllMocks();
@@ -30,9 +72,171 @@ describe('EntriesService', () => {
       providers: [
         EntriesService,
         { provide: getRepositoryToken(Entry), useValue: repo },
+        { provide: getRepositoryToken(CreatureStats), useValue: stats },
       ],
     }).compile();
     service = moduleRef.get(EntriesService);
+  });
+
+  it('serves the stat block of a Creature as its details', async () => {
+    repo.findOne.mockResolvedValue({
+      id: 'e1',
+      slug: 'cactonto',
+      type: 'creature',
+      details: {},
+    });
+    stats.findOne.mockResolvedValue(cactontoRow);
+
+    const { details } = await service.findOne('cactonto');
+
+    expect(stats.findOne).toHaveBeenCalledWith({ where: { entryId: 'e1' } });
+    expect(details).toEqual({
+      level: 15,
+      species: 'plant',
+      rank: 'soldier',
+      villain: false,
+      traits: ['assustador', 'territorial'],
+      attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+      hp: 90,
+      crisis: 45,
+      mp: 55,
+      initiative: 7,
+      defense: { value: 0, fixed: false },
+      magicDefense: 0,
+      hasSpells: true,
+      affinities: { fire: 'resistant', ice: 'vulnerable' },
+      attacks: cactontoRow.attacks,
+      spells: cactontoRow.spells,
+      otherActions: cactontoRow.otherActions,
+      specialRules: cactontoRow.specialRules,
+    });
+  });
+
+  it('lists a Creature with its scalar stats and no abilities', async () => {
+    const qb = queryBuilder([
+      { id: 'e1', slug: 'cactonto', type: 'creature', details: {} },
+      { id: 'e2', slug: 'crise', type: 'rule', details: {} },
+    ]);
+    repo.createQueryBuilder.mockReturnValue(qb);
+    stats.find.mockResolvedValue([cactontoRow]);
+
+    const list = await service.findAll(undefined, 'creature');
+
+    expect(list).toHaveLength(2);
+    expect(list[0].details).toMatchObject({
+      level: 15,
+      species: 'plant',
+      hp: 90,
+      hasSpells: true,
+      attributes: { DES: 8, AST: 6, VIG: 12, VON: 6 },
+    });
+    expect(list[0].details).not.toHaveProperty('attacks');
+    expect(list[0].details).not.toHaveProperty('spells');
+    expect(list[1].details).toEqual({});
+  });
+
+  describe('Creature Groups', () => {
+    const member = (id: string, order: number, name: string) => ({
+      ...cactontoRow,
+      entryId: id,
+      groupSlug: 'fantasmas',
+      groupOrder: order,
+      entry: { id, slug: name, name, type: 'creature', details: {} },
+    });
+
+    it('serves a Group with its members, stat blocks in full, in their order', async () => {
+      repo.findOne.mockResolvedValue({
+        id: 'g1',
+        slug: 'fantasmas',
+        type: 'creature',
+        details: { group: true },
+      });
+      stats.find.mockResolvedValue([
+        member('m1', 0, 'espectro'),
+        member('m2', 1, 'aparicao'),
+      ]);
+
+      const result = await service.findOne('fantasmas');
+
+      expect(stats.find).toHaveBeenCalledWith({
+        where: { groupSlug: 'fantasmas' },
+        relations: { entry: true },
+        order: { groupOrder: 'ASC' },
+      });
+      expect(stats.findOne).not.toHaveBeenCalled();
+      expect(result.details).toEqual({ group: true });
+      expect(result.children.map((c) => c.slug)).toEqual([
+        'espectro',
+        'aparicao',
+      ]);
+      expect(result.children[0].details).toMatchObject({
+        level: 15,
+        groupSlug: 'fantasmas',
+        attacks: cactontoRow.attacks,
+      });
+    });
+
+    it('lists a member with its Group', async () => {
+      repo.createQueryBuilder.mockReturnValue(
+        queryBuilder([
+          { id: 'm1', slug: 'espectro', type: 'creature', details: {} },
+          {
+            id: 'g1',
+            slug: 'fantasmas',
+            type: 'creature',
+            details: { group: true },
+          },
+        ]),
+      );
+      stats.find.mockResolvedValue([member('m1', 0, 'espectro')]);
+
+      const list = await service.findAll(undefined, 'creature');
+
+      expect(list[0].details).toMatchObject({ groupSlug: 'fantasmas' });
+      // The Group has no stats row: its details stay as stored.
+      expect(list[1].details).toEqual({ group: true });
+    });
+  });
+
+  it('does not touch the stats table when the list has no Creature', async () => {
+    repo.createQueryBuilder.mockReturnValue(
+      queryBuilder([{ id: 'e2', slug: 'crise', type: 'rule', details: {} }]),
+    );
+
+    await service.findAll();
+
+    expect(stats.find).not.toHaveBeenCalled();
+  });
+
+  it('lists the assembler Rules as their marker only, keeping other Rules whole', async () => {
+    repo.createQueryBuilder.mockReturnValue(
+      queryBuilder([
+        {
+          id: 'r1',
+          slug: 'montagem-rapida',
+          type: 'rule',
+          details: { forge: 'quick-assembly', levels: [5, 10], species: [] },
+        },
+        {
+          id: 'r2',
+          slug: 'feiticos-de-npc',
+          type: 'rule',
+          details: { forge: 'npc-spells', spells: [{ id: 'x' }] },
+        },
+        {
+          id: 'r3',
+          slug: 'armas-personalizadas',
+          type: 'rule',
+          details: { forge: 'custom-weapon', slots: [] },
+        },
+      ]),
+    );
+
+    const list = await service.findAll();
+
+    expect(list[0].details).toEqual({ forge: 'quick-assembly' });
+    expect(list[1].details).toEqual({ forge: 'npc-spells' });
+    expect(list[2].details).toEqual({ forge: 'custom-weapon', slots: [] });
   });
 
   it('throws NotFoundException for a missing entry', async () => {

@@ -72,12 +72,24 @@ export class Entry {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  /**
+   * Extra words to find the Entry by, set by the seed for a Creature (its Species,
+   * Traits and ability names). Not a column: only `searchText` keeps them.
+   */
+  searchTerms?: string[];
+
   @BeforeInsert()
   @BeforeUpdate()
   buildSearchColumns() {
     this.nameSearch = normalizeText(this.name);
     this.searchText = normalizeText(
-      [this.name, this.summary, this.body, ...(this.tags ?? [])].join(' '),
+      [
+        this.name,
+        this.summary,
+        this.body,
+        ...(this.tags ?? []),
+        ...(this.searchTerms ?? []),
+      ].join(' '),
     );
   }
 }

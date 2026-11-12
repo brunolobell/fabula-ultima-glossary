@@ -1,4 +1,8 @@
-import { EntrySource, Medium } from '../../entries/entry-types';
+import {
+  CreatureDetails,
+  EntrySource,
+  Medium,
+} from '../../entries/entry-types';
 import { slugify } from '../../entries/slug';
 import { SeedEntry } from './types';
 
@@ -214,6 +218,67 @@ export const guide = ({ steps, order, ...rest }: GuideInput): Of<'guide'> => ({
   tags: ['guia'],
   details: { order, steps },
   ...rest,
+});
+
+export interface CreatureInput extends CreatureDetails {
+  name: string;
+  /** Set it only to resolve a slug collision. */
+  slug?: string;
+  page: number;
+  /** Our own words. */
+  summary: string;
+  body?: string;
+}
+
+/** A Creature ("criatura"): its stat block is `details`; the seed stores it in `creature_stats`. */
+export const creature = ({
+  name,
+  slug,
+  page,
+  summary,
+  body = '',
+  ...details
+}: CreatureInput): Of<'creature'> => ({
+  type: 'creature',
+  name,
+  ...(slug && { slug }),
+  page,
+  summary,
+  body,
+  tags: ['criatura'],
+  details,
+});
+
+export interface CreatureGroupInput {
+  name: string;
+  /** Set it only to resolve a slug collision. */
+  slug?: string;
+  page: number;
+  /** Our own words. */
+  summary: string;
+  /** The text the members share: description, tactics, routine. */
+  body?: string;
+}
+
+/**
+ * A Creature Group ("grupo de criaturas"): a Creature Entry with no stat block.
+ * Its members set `groupSlug` to its slug; the seed keeps their order.
+ */
+export const creatureGroup = ({
+  name,
+  slug,
+  page,
+  summary,
+  body = '',
+}: CreatureGroupInput): Of<'creature'> => ({
+  type: 'creature',
+  name,
+  ...(slug && { slug }),
+  page,
+  summary,
+  body,
+  tags: ['criatura', 'grupo'],
+  details: { group: true },
 });
 
 /** Marks every entry as coming from a supplement book (`page` is that book's printed page). */

@@ -1,22 +1,28 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import {
+  creatureDetailsFromStats,
+  creatureSummaryFromStats,
+} from './creature-stats.mapper';
+import { CreatureStats } from './entities/creature-stats.entity';
 import { Entry } from './entities/entry.entity';
-import { EntryType } from './entry-types';
+import {
+  EntryType,
+  HeavyRuleMarker,
+  ServedCreatureSummary,
+  isCreatureGroup,
+  isHeavyRule,
+} from './entry-types';
 import { normalizeText } from './slug';
 
 export type EntrySummary = Pick<
   Entry,
-  | 'id'
-  | 'slug'
-  | 'name'
-  | 'type'
-  | 'summary'
-  | 'source'
-  | 'page'
-  | 'tags'
-  | 'details'
->;
+  'id' | 'slug' | 'name' | 'type' | 'summary' | 'source' | 'page' | 'tags'
+> & {
+  /** What the list sends: the stored `details`, a Creature's scalar stats or a heavy Rule's marker. */
+  details: Entry['details'] | ServedCreatureSummary | HeavyRuleMarker;
+};
 
 export type EntryWithChildren = Entry & {
   /** For a Class: its Skills then its Spells, in full. Empty otherwise. */
@@ -35,6 +41,34 @@ const SUMMARY_COLUMNS = [
   'details',
 ];
 
+/** Every `creature_stats` column except the abilities, which the list leaves out. */
+const CREATURE_SUMMARY_COLUMNS: (keyof CreatureStats)[] = [
+  'entryId',
+  'level',
+  'species',
+  'rank',
+  'role',
+  'championX',
+  'flags',
+  'villain',
+  'originalName',
+  'groupSlug',
+  'traits',
+  'des',
+  'ast',
+  'vig',
+  'von',
+  'hp',
+  'crisis',
+  'mp',
+  'initiative',
+  'defense',
+  'defenseFixed',
+  'magicDefense',
+  'hasSpells',
+  'affinities',
+];
+
 const escapeLike = (value: string) => value.replace(/[\\%_]/g, '\\$&');
 
 @Injectable()
@@ -42,6 +76,8 @@ export class EntriesService {
   constructor(
     @InjectRepository(Entry)
     private readonly entries: Repository<Entry>,
+    @InjectRepository(CreatureStats)
+    private readonly creatureStats: Repository<CreatureStats>,
   ) {}
 
   /**
@@ -49,7 +85,7 @@ export class EntriesService {
    * drive the menu and the requirement lines). A search matches name, summary, body
    * and tags ignoring case and accents, with name matches ranked first.
    */
-  findAll(search?: string, type?: EntryType): Promise<EntrySummary[]> {
+  async findAll(search?: string, type?: EntryType): Promise<EntrySummary[]> {
     const qb = this.entries
       .createQueryBuilder('entry')
       .select(SUMMARY_COLUMNS.map((column) => `entry.${column}`));
@@ -68,7 +104,33 @@ export class EntriesService {
       qb.orderBy('entry.name');
     }
 
-    return qb.getMany();
+    const entries: EntrySummary[] = await qb.getMany();
+    for (const entry of entries) {
+      // The assembler Rules are big and only the lab page reads them, by slug.
+      if (entry.type === 'rule' && isHeavyRule(entry.details)) {
+        entry.details = { forge: entry.details.forge };
+      }
+    }
+    return this.withCreatureSummaries(entries);
+  }
+
+  /** Replaces the details of each listed Creature with its scalar stats (no abilities). */
+  private async withCreatureSummaries(
+    entries: EntrySummary[],
+  ): Promise<EntrySummary[]> {
+    const ids = entries.filter((e) => e.type === 'creature').map((e) => e.id);
+    if (ids.length === 0) return entries;
+
+    const rows = await this.creatureStats.find({
+      where: { entryId: In(ids) },
+      select: CREATURE_SUMMARY_COLUMNS,
+    });
+    const byEntry = new Map(rows.map((row) => [row.entryId, row]));
+    for (const entry of entries) {
+      const row = byEntry.get(entry.id);
+      if (row) entry.details = creatureSummaryFromStats(row);
+    }
+    return entries;
   }
 
   async findOne(slug: string): Promise<EntryWithChildren> {
@@ -76,9 +138,30 @@ export class EntriesService {
     if (!entry) {
       throw new NotFoundException(`Entry "${slug}" not found`);
     }
-    const children =
-      entry.type === 'class' ? await this.findClassChildren(entry.slug) : [];
+    let children: Entry[] = [];
+    if (entry.type === 'class') {
+      children = await this.findClassChildren(entry.slug);
+    } else if (entry.type === 'creature' && isCreatureGroup(entry.details)) {
+      children = await this.findGroupMembers(entry.slug);
+    } else if (entry.type === 'creature') {
+      const row = await this.creatureStats.findOne({
+        where: { entryId: entry.id },
+      });
+      if (row) entry.details = creatureDetailsFromStats(row);
+    }
     return Object.assign(entry, { children });
+  }
+
+  /** The members of a Creature Group, each with its whole stat block as `details`. */
+  private async findGroupMembers(groupSlug: string): Promise<Entry[]> {
+    const rows = await this.creatureStats.find({
+      where: { groupSlug },
+      relations: { entry: true },
+      order: { groupOrder: 'ASC' },
+    });
+    return rows.map((row) =>
+      Object.assign(row.entry, { details: creatureDetailsFromStats(row) }),
+    );
   }
 
   private findClassChildren(classSlug: string): Promise<Entry[]> {
