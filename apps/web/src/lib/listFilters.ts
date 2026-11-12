@@ -161,6 +161,17 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
       menuRow: true,
     },
     {
+      // Weapons only: armor, shields and the rest have no category, so they
+      // drop out as soon as one is chosen.
+      param: 'categoria',
+      label: 'Tipo de arma',
+      values: (e) => {
+        const { category } = e.details as EquipmentDetails;
+        return category ? [category] : [];
+      },
+      labelOf: (value) => value,
+    },
+    {
       param: 'raridade',
       label: 'Raridade',
       values: (e) => [

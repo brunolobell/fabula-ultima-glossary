@@ -122,6 +122,24 @@ describe('applyFilters', () => {
     expect(pick('raridade=raro')).toEqual(['relíquia']);
     expect(pick('marcial=nao&raridade=basico')).toEqual(['escudo']);
   });
+
+  it('filters weapons by category and leaves other items out', () => {
+    const item = (slug: string, kind: string, category?: string) =>
+      entry(slug, 'equipment', { kind, rarity: 'basic', martial: false, cost: null, category });
+    const list = [
+      item('katana', 'weapon', 'Espadas'),
+      item('punhal', 'weapon', 'Adagas'),
+      item('soco', 'weapon', 'Luta'),
+      item('escudo', 'shield'),
+    ];
+    const pick = (q: string) =>
+      slugs(applyFilters('equipment', list, readSelection('equipment', new URLSearchParams(q))));
+    expect(pick('categoria=Luta')).toEqual(['soco']);
+    expect(pick('categoria=Adagas,Espadas')).toEqual(['katana', 'punhal']);
+    const rows = buildRows('equipment', list, new Map());
+    const row = rows.find((r) => r.param === 'categoria');
+    expect(row?.options.map((o) => o.value)).toEqual(['Adagas', 'Espadas', 'Luta']);
+  });
 });
 
 describe('buildRows', () => {
