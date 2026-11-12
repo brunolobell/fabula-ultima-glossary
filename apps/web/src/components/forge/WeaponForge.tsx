@@ -23,6 +23,7 @@ import { Modal } from '../Modal';
 import { CustomTab } from './CustomTab';
 import { RareTab, type BaseKind, type RareFilterKey } from './RareTab';
 import { ResultCard } from './ResultCard';
+import { WeaponStatBlocks } from './WeaponStatBlocks';
 
 type FilterKey = 'custom' | RareFilterKey;
 type AllFilters = Record<FilterKey, Selection>;
@@ -191,22 +192,22 @@ export function WeaponForge({
           <div className="sticky bottom-0 z-10 bg-bg md:top-0 md:self-start md:pt-3">
             {active === 'personalizada' ? (
               <ResultCard
-                kind="custom"
-                forms={custom.forms}
                 cost={custom.cost}
                 total={custom.total}
                 problems={custom.problems}
                 notes={custom.notes}
-              />
+              >
+                <WeaponStatBlocks kind="custom" forms={custom.forms} />
+              </ResultCard>
             ) : rare ? (
               <ResultCard
-                kind="rare"
-                forms={rare.forms}
                 cost={rare.cost}
                 total={rare.total}
                 problems={rare.problems}
                 notes={[]}
-              />
+              >
+                <WeaponStatBlocks kind="rare" forms={rare.forms} />
+              </ResultCard>
             ) : (
               <div className="highlight-key">
                 <p>

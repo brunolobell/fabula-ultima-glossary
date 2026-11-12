@@ -1,4 +1,5 @@
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
+import { ArmorForge } from '../components/forge/ArmorForge';
 import { WeaponForge } from '../components/forge/WeaponForge';
 import { EquipmentOrder } from '../components/EquipmentOrder';
 import { ListFilters } from '../components/ListFilters';
@@ -41,12 +42,14 @@ import { QUICK_ASSEMBLY_SLUG } from '../lib/creatures';
 import { useDocumentTitle } from '../lib/useDocumentTitle';
 import type {
   CustomWeaponRuleDetails,
+  RareArmorRuleDetails,
   RareWeaponRuleDetails,
 } from '../api/types';
 
 /** Slugs of the two Rules whose `details` feed the Weapon Forge. */
 const CUSTOM_WEAPON_RULE = 'armas-personalizadas';
 const RARE_WEAPON_RULE = 'criar-armas-raras';
+const RARE_ARMOR_RULE = 'criar-armaduras-e-escudos-raros';
 
 export function TypeList() {
   const { tipo } = useParams();
@@ -122,6 +125,18 @@ export function TypeList() {
       ? { customRules, rareRules }
       : null;
   const forgeTab = forge ? forgeTabFromParam(params.get(FORGE_PARAM)) : null;
+  // The Armor Forge is offered on the armors and shields lists. It reuses
+  // `forja=rara`: the list decides which modal that opens.
+  const rareArmorRules = bySlug.get(RARE_ARMOR_RULE)?.details as
+    | RareArmorRuleDetails
+    | undefined;
+  const armorForge =
+    (kind?.kind === 'armor' || kind?.kind === 'shield') &&
+    rareArmorRules?.forge === 'rare-armor'
+      ? rareArmorRules
+      : null;
+  const armorForgeOpen =
+    armorForge !== null && forgeTabFromParam(params.get(FORGE_PARAM)) === 'rara';
   const setForgeTab = (next: ForgeTab | null, replace: boolean) =>
     setParams(
       (prev) => {
@@ -164,6 +179,29 @@ export function TypeList() {
             equipment={ofType}
             tab={forgeTab}
             onTab={(next) => setForgeTab(next, true)}
+            onClose={() => setForgeTab(null, true)}
+          />
+        </>
+      )}
+
+      {armorForge && (
+        <>
+          <p className="mt-4">
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={() => setForgeTab('rara', false)}
+            >
+              Forjar armadura ou escudo
+            </button>{' '}
+            <span className="text-[15px] text-muted">
+              Monte uma armadura ou um escudo raro. Nada é salvo.
+            </span>
+          </p>
+          <ArmorForge
+            rules={armorForge}
+            equipment={ofType}
+            open={armorForgeOpen}
             onClose={() => setForgeTab(null, true)}
           />
         </>

@@ -126,7 +126,7 @@ ${featureTable('offensive')}
 
 ## Regra opcional: comprar características
 
-Um ferreiro ou artesão pode acrescentar uma característica a uma arma, armadura ou escudo normal, ou trocar a característica de um item raro. A característica escolhida deve custar **+1.000z ou menos** na lista padrão. O personagem paga o custo da característica e o trabalho leva cerca de um dia por item. Por exemplo, aplicar Multi custa 1.000z e trocá-la por Resistência, 700z. O poder heroico Melhoria (Livro Básico, p. 238) é uma versão aprimorada desta regra.
+Um ferreiro ou artesão pode acrescentar uma característica a uma arma, armadura ou escudo normal, ou trocar a característica de um item raro. A característica escolhida deve custar **+1.000z ou menos** na lista padrão do tipo de item (a das armas está acima; a de armaduras e escudos, em [[criar-armaduras-e-escudos-raros]]). O personagem paga o custo da característica e o trabalho leva cerca de um dia por item. Por exemplo, aplicar Multi custa 1.000z e trocá-la por Resistência, 700z. O poder heroico Melhoria (Livro Básico, p. 238) é uma versão aprimorada desta regra.
 
 ## Quanto vale uma recompensa
 

@@ -330,6 +330,23 @@ export interface RareWeaponRuleDetails {
   notes: string[];
 }
 
+export interface ArmorFeature {
+  id: string;
+  name: string;
+  group: 'defensive' | 'improvement';
+  cost: number;
+  summary: string;
+  /** Added to an armor's Iniciativa (Mais Iniciativa). */
+  initiative?: number;
+}
+
+/** Livro Básico "Como criar armaduras e escudos raros" (p. 280). */
+export interface RareArmorRuleDetails {
+  forge: 'rare-armor';
+  features: ArmorFeature[];
+  notes: string[];
+}
+
 /** A choice the Reader makes while assembling a Creature (a damage type, a status effect…). */
 export interface AssemblySlot {
   id: string;
@@ -520,6 +537,7 @@ export type RuleDetails =
   | PlainRuleDetails
   | CustomWeaponRuleDetails
   | RareWeaponRuleDetails
+  | RareArmorRuleDetails
   | QuickAssemblyRuleDetails
   | QuickAssemblyRoleDetails
   | NpcSpellsRuleDetails;

@@ -47,6 +47,7 @@ import { peculiarities, peculiaritiesRule } from './peculiarities';
 import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
 import { weaponForgeRules } from './weapon-forge';
+import { armorForgeRules } from './armor-forge';
 import { SeedEntry } from './types';
 
 export const seedEntries: SeedEntry[] = [
@@ -77,6 +78,7 @@ export const seedEntries: SeedEntry[] = [
   npcSpellsRule,
   ...quickAssemblySeed,
   ...weaponForgeRules,
+  ...armorForgeRules,
   ...servicesAndTransport,
   ...poderesHeroicosLivroBasico,
   // Peculiaridades dos três Atlas (cada livro com seu `source`)

@@ -74,6 +74,14 @@ _Avoid_: Homebrew weapon, crafted weapon
 A weapon with a special effect beyond a basic weapon's. Either an Equipment Entry from the books or one a Reader designs in the Weapon Forge; "rare" is a rarity, not an Equipment Kind. Shown to Readers as "arma rara".
 _Avoid_: Magic weapon, unique weapon
 
+**Rare Armor / Rare Shield**:
+An armor or shield with a special effect beyond a basic one's: a basic armor or shield from the Core Rulebook plus a single Armor Feature, and the feature's cost added to the base price. Either an Equipment Entry from the books or one a Reader designs in the Armor Forge. Shown to Readers as "armadura rara" and "escudo raro".
+_Avoid_: Magic armor, unique armor
+
+**Armor Feature**:
+The single special property a Rare Armor or Rare Shield carries, chosen from the Core Rulebook's priced list (defensive ones such as Anticondição or Resistência, and "melhoria" ones such as Mais Iniciativa or Mais dano) or a custom effect the Game Master prices. The same list serves armors and shields. Shown to Readers as "característica". It is not a Weapon Feature, which has its own list.
+_Avoid_: Trait (a Trait is Identity, Theme or Origin), property, enchantment
+
 **Customization**:
 One of the three options a Custom Weapon takes from the Atlas list (such as Certeira, Elemental, Mutável or Rápida); each can be taken once per weapon. Shown to Readers as "personalização". It is not a Weapon Feature.
 _Avoid_: Upgrade, modifier, perk; not the Role Customization of Quick Assembly
@@ -85,6 +93,10 @@ _Avoid_: Trait (a Trait is Identity, Theme or Origin), property, enchantment
 **Weapon Forge**:
 The modal on the weapons list where a Reader builds a Custom Weapon or a Rare Weapon. Nothing built there is saved: closing the modal or reloading the page discards it. Shown to Readers as "Forja de Armas".
 _Avoid_: Weapon builder, generator, creator
+
+**Armor Forge**:
+The modal on the armors and shields lists where a Reader builds a Rare Armor or a Rare Shield. Nothing built there is saved: closing the modal or reloading the page discards it. Shown to Readers as "Forja de Armaduras e Escudos".
+_Avoid_: Armor builder, generator, creator
 
 ### Guidance
 

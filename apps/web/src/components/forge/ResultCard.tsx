@@ -1,15 +1,9 @@
-import { decorateChecks } from '../../lib/check';
-import {
-  effectLines,
-  formatZ,
-  statLine,
-  type CostLine,
-  type WeaponStats,
-} from '../../lib/weaponForge';
+import type { ReactNode } from 'react';
+import { formatZ, type CostLine } from '../../lib/weaponForge';
 
 interface Props {
-  kind: 'custom' | 'rare';
-  forms: WeaponStats[];
+  /** The item as built so far (a weapon's stat blocks, an armor's stat line). */
+  children: ReactNode;
   cost: CostLine[];
   total: number;
   /** What is still missing or wrong. */
@@ -19,10 +13,9 @@ interface Props {
   className?: string;
 }
 
-/** The weapon as built so far, in the same format as the entries, with its cost breakdown. */
+/** The item as built so far, in the same format as the entries, with its cost breakdown. */
 export function ResultCard({
-  kind,
-  forms,
+  children,
   cost,
   total,
   problems,
@@ -41,21 +34,7 @@ export function ResultCard({
         Resultado
       </h3>
       <div aria-live="polite">
-        {forms.map((stats, index) => (
-          <div key={index} className="mt-2">
-            {forms.length > 1 && (
-              <p className="font-heading uppercase tracking-wider text-heading">
-                Forma {index === 0 ? 'I' : 'II'}
-              </p>
-            )}
-            <p>{decorateChecks(statLine(stats, kind))}</p>
-            {effectLines(stats).map((line) => (
-              <p key={line} className="text-[15px]">
-                {decorateChecks(line)}
-              </p>
-            ))}
-          </div>
-        ))}
+        {children}
         {problems.length > 0 && (
           <ul className="mt-2 text-[15px] text-accent-ink">
             {problems.map((problem) => (

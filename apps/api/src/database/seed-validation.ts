@@ -12,6 +12,7 @@ import {
   RANKS,
   RoleSkill,
   ROLES,
+  RareArmorRuleDetails,
   RareWeaponRuleDetails,
   SPECIES,
   SpellGrant,
@@ -111,6 +112,21 @@ function validateRareWeapon(
       fail(`forge feature "${f.id}" has an unknown group`);
   }
   for (const slug of d.excludedBases) expectEquipment(slug);
+}
+
+function validateRareArmor(d: RareArmorRuleDetails, fail: Fail) {
+  if (d.features.length === 0) fail('forge needs features');
+  for (const dup of duplicates(d.features.map((f) => f.id)))
+    fail(`forge feature "${dup}" is repeated`);
+  for (const f of d.features) {
+    if (!f.name || !f.summary)
+      fail(`forge feature "${f.id}" needs a name and summary`);
+    if (!isMoney(f.cost)) fail(`forge feature "${f.id}" has a bad cost`);
+    if (f.group !== 'defensive' && f.group !== 'improvement')
+      fail(`forge feature "${f.id}" has an unknown group`);
+    if (f.initiative !== undefined && !Number.isInteger(f.initiative))
+      fail(`forge feature "${f.id}" has a bad initiative`);
+  }
 }
 
 const TOKEN = /\{(\w+)\}/g;
@@ -510,6 +526,8 @@ export function validateSeed(entries: SeedEntry[]): string[] {
           validateRareWeapon(details, fail, (target) =>
             expectType(slug, target, 'equipment'),
           );
+        } else if (details.forge === 'rare-armor') {
+          validateRareArmor(details, fail);
         } else if (details.forge === 'quick-assembly') {
           validateQuickAssembly(
             details,

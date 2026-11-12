@@ -445,6 +445,26 @@ export interface RareWeaponRuleDetails {
   notes: string[];
 }
 
+/** One line of the Livro Básico armor and shield feature table (p. 280). */
+export interface ArmorFeature {
+  id: string;
+  name: string;
+  group: 'defensive' | 'improvement';
+  /** Zênites added to the item's cost. */
+  cost: number;
+  summary: string;
+  /** Added to an armor's Iniciativa (Mais Iniciativa). */
+  initiative?: number;
+}
+
+/** The Livro Básico "Como criar armaduras e escudos raros" rule (p. 280). */
+export interface RareArmorRuleDetails {
+  forge: 'rare-armor';
+  features: ArmorFeature[];
+  /** Reminders for the Forge, in our own words. */
+  notes: string[];
+}
+
 /** A choice the Reader makes while assembling a Creature (a damage type, a status effect…). */
 export interface AssemblySlot {
   id: string;
@@ -685,6 +705,7 @@ export type RuleDetails =
   | PlainRuleDetails
   | CustomWeaponRuleDetails
   | RareWeaponRuleDetails
+  | RareArmorRuleDetails
   | QuickAssemblyRuleDetails
   | QuickAssemblyRoleDetails
   | NpcSpellsRuleDetails;
