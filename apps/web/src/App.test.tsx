@@ -504,6 +504,45 @@ describe('Empty states offer the way out', () => {
   });
 });
 
+describe('Equipment sort and maximum price', () => {
+  const order = (main: ReturnType<typeof within>): (string | undefined)[] =>
+    main.getAllByRole('link', { name: /^(Katana|Anel de Prata)/ }).map((a: HTMLElement) => a.textContent?.slice(0, 5));
+
+  it('sorts by name by default and by price on request, keeping it in the URL', async () => {
+    mockApi();
+    renderAt('/equipamento');
+    const main = within(screen.getByRole('main'));
+    await main.findByText('Katana');
+    expect(order(main)).toEqual(['Anel ', 'Katan']);
+
+    fireEvent.change(main.getByLabelText('Ordenar por'), { target: { value: 'preco-desc' } });
+    await waitFor(() => expect(order(main)).toEqual(['Katan', 'Anel ']));
+    fireEvent.change(main.getByLabelText('Ordenar por'), { target: { value: 'nome-asc' } });
+    await waitFor(() => expect(order(main)).toEqual(['Anel ', 'Katan']));
+  });
+
+  it('hides what costs more than the maximum and clears with the filters', async () => {
+    mockApi();
+    renderAt('/equipamento?ate=150');
+    const main = within(screen.getByRole('main'));
+    expect(await main.findByText('Anel de Prata')).toBeInTheDocument();
+    expect(main.queryByText('Katana')).toBeNull();
+    expect(main.getByLabelText(/Preço máximo/)).toHaveValue(150);
+
+    fireEvent.click(main.getByRole('button', { name: 'Limpar filtros' }));
+    expect(await main.findByText('Katana')).toBeInTheDocument();
+    expect(main.getByLabelText(/Preço máximo/)).toHaveValue(null);
+  });
+
+  it('is not offered on other lists', async () => {
+    mockApi();
+    renderAt('/feiticos');
+    const main = within(screen.getByRole('main'));
+    await main.findByText(/Raio/);
+    expect(main.queryByLabelText('Ordenar por')).toBeNull();
+  });
+});
+
 describe('Skill and Spell rows show what identifies them', () => {
   it('names the Class and the PM cost on a Spell row', async () => {
     mockApi();

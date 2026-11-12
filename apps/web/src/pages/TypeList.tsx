@@ -1,11 +1,22 @@
 import { Link, Navigate, useParams, useSearchParams } from 'react-router-dom';
 import { WeaponForge } from '../components/forge/WeaponForge';
+import { EquipmentOrder } from '../components/EquipmentOrder';
 import { ListFilters } from '../components/ListFilters';
 import { ResultRow } from '../components/ResultRow';
 import { TravelTabs } from '../components/TravelTabs';
 import { ErrorState, ListSkeleton, NotFoundState } from '../components/States';
 import { useEntryIndex } from '../hooks/useEntryIndex';
 import { kindFromParam } from '../lib/equipmentKinds';
+import {
+  DEFAULT_ORDER,
+  MAX_PRICE_PARAM,
+  ORDER_PARAM,
+  filterByMaxPrice,
+  maxPriceFromParam,
+  orderFromParam,
+  sortEquipment,
+  type EquipmentOrder as Order,
+} from '../lib/equipmentOrder';
 import {
   TRAVEL_TYPES,
   TYPE_INFO,
@@ -55,13 +66,41 @@ export function TypeList() {
   const ofType = entries.filter((e) => e.type === type);
   const selection = readSelection(type, params);
   const rows = buildRows(type, ofType, bySlug, selection);
-  const filtering = hasActiveFilters(selection);
-  const shown = applyFilters(type, ofType, selection);
+  // Equipment can also be sorted and capped by price (both live in the URL).
+  const isEquipment = type === 'equipment';
+  const order = orderFromParam(params.get(ORDER_PARAM));
+  const maxPrice = isEquipment ? maxPriceFromParam(params.get(MAX_PRICE_PARAM)) : null;
+  const filtering = hasActiveFilters(selection) || maxPrice !== null;
+  const filtered = applyFilters(type, ofType, selection);
+  const shown = isEquipment
+    ? sortEquipment(filterByMaxPrice(filtered, maxPrice), order)
+    : filtered;
 
   const toggle = (param: string, value: string) =>
     setParams((prev) => toggleValue(prev, param, value), { replace: true });
   const clear = () =>
-    setParams((prev) => clearFilters(type, prev), { replace: true });
+    setParams(
+      (prev) => {
+        const next = clearFilters(type, prev);
+        next.delete(MAX_PRICE_PARAM);
+        return next;
+      },
+      { replace: true },
+    );
+  const setQuery = (param: string, value: string | null) =>
+    setParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value === null) next.delete(param);
+        else next.set(param, value);
+        return next;
+      },
+      { replace: true },
+    );
+  const setOrder = (next: Order) =>
+    setQuery(ORDER_PARAM, next === DEFAULT_ORDER ? null : next);
+  const setMaxPrice = (max: number | null) =>
+    setQuery(MAX_PRICE_PARAM, max === null ? null : String(max));
 
   const items = selection.item ?? [];
   const kind = type === 'equipment' && items.length === 1 ? kindFromParam(items[0]) : undefined;
@@ -148,6 +187,15 @@ export function TypeList() {
         onToggle={toggle}
         onClear={filtering && (isLoading || shown.length > 0) ? clear : undefined}
       />
+
+      {isEquipment && (
+        <EquipmentOrder
+          order={order}
+          onOrder={setOrder}
+          maxPrice={maxPrice}
+          onMaxPrice={setMaxPrice}
+        />
+      )}
 
       {isError ? (
         <div className="mt-6">
