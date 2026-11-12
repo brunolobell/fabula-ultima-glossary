@@ -185,6 +185,35 @@ As classes e seus Poderes começam na página 176.`,
   ),
 
   rule(
+    'Testes',
+    38,
+    'Um teste é uma rolagem de exatamente dois dados de Atributo, somados e ajustados por um modificador; é exigido pelas regras ou pedido pelo mestre, e jogadores nunca o pedem.',
+    `Um **teste** é uma rolagem feita com os dados de [[atributos]] do personagem: Destreza, Vigor, Astúcia e Vontade.
+
+## Quando fazer um teste
+
+Em geral, um personagem faz um teste:
+
+- **Quando as regras exigem.** Atingir um alvo, lançar um feitiço e usar um Poder de classe costumam pedir testes para definir sucesso ou fracasso. Um efeito que **não** pede um teste de forma explícita sempre tem **sucesso automático**.
+- **Quando o mestre pede.** O mestre pode pedir testes quando os personagens fazem algo arriscado, enfrentam oposição ou reagem a um perigo.
+
+**Só o mestre pode pedir testes; os jogadores nunca fazem isso.**
+
+## A fórmula
+
+Cada teste vem com uma fórmula que diz quais dados rolar e somar. Você **sempre rola exatamente dois dados**. A fórmula também pode somar ou subtrair um valor do total.
+
+> **Exemplo:** um teste de (AST + VON) feito por um personagem com Astúcia d6 e Vontade d10 soma um d6 e um d10, com resultado entre 2 e 16.
+
+> **Exemplo:** num teste de (VIG + VIG) +5, o personagem rola o dado de Vigor duas vezes e soma 5 ao total.
+
+## Resolver
+
+No jogo, "resolver" algo é encontrar o resultado depois de aplicar todos os efeitos e suas consequências. Resolver um ataque inclui o teste de Precisão, o dano, a aplicação das Afinidades do alvo, a redução dos PV dele e as penalidades ou condições que ele possa sofrer. Isso vale para testes, Poderes, feitiços, características e o resto do jogo.`,
+    ['regra', 'teste', 'dados'],
+  ),
+
+  rule(
     'Pontos de Vida',
     84,
     'Medem a energia vital e o espírito de luta do personagem, não sua integridade física. Quando chegam a 0, o espírito de luta se quebra.',
