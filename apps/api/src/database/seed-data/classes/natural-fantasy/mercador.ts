@@ -21,6 +21,7 @@ Pode parecer estranho ver mercadores em pé de igualdade com heróis. Mas quem r
 - Você tem algum rival de negócios? Qual é sua relação com ele?`,
     otherNames: ['Antiquário', 'Colecionador', 'Farmacêutico'],
     quote: 'Antes de mais nada, pense: como isso vai ajudar a quem precisa?',
+    traits: ['ip'],
     freeBenefits: [
       'Aumenta permanentemente seus Pontos de Inventário (PI) máximos em 2.',
     ],

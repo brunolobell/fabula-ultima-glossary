@@ -21,6 +21,7 @@ Alguns parecem barulhentos e tempestuosos, mas muitos só escondem memórias ato
 - O que você usa de armadura e/ou escudo?`,
     otherNames: ['Paladino', 'Soldado', 'Yojimbo'],
     quote: 'Deixe-me ser seu escudo.',
+    traits: ['hp', 'armor', 'shield'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armaduras e escudos marciais.',

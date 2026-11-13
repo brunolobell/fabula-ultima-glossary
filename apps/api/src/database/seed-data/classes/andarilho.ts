@@ -21,6 +21,7 @@ Para um Andarilho, a natureza não é inimiga nem aliada: é uma professora seve
 - Você perdeu algo ou alguém por causa das suas viagens. O que aconteceu?`,
     otherNames: ['Aventureiro', 'Caçador de Tesouros', 'Explorador'],
     quote: 'Fronteiras são um truque da mente.',
+    traits: ['ip'],
     freeBenefits: ['Aumenta permanentemente seus PI máximos em 2.'],
   }),
 

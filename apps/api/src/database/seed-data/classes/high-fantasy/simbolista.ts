@@ -58,6 +58,7 @@ Descrição resumida dos 19 símbolos (páginas 145 a 147 do Atlas). "Escolha um
     otherNames: ['Calígrafo', 'Pintor', 'Runomante'],
     quote:
       'Para que serve um pincel se o seu coração é guiado pela motivação errada?',
+    traits: ['ip'],
     freeBenefits: [
       'Aumenta permanentemente seus Pontos de Inventário (PI) máximos em 2.',
     ],

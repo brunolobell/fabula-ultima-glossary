@@ -21,6 +21,7 @@ Infelizmente, muitos são desligados e se distraem com facilidade, pouco se preo
 - É verdade que algumas coisas são melhores se esquecidas pelo tempo?`,
     otherNames: ['Acadêmico', 'Arquivista', 'Sábio'],
     quote: 'Ah, eu sabia que isto aconteceria.',
+    traits: ['mp'],
     freeBenefits: ['Aumenta permanentemente seus PM máximos em 5.'],
   }),
 

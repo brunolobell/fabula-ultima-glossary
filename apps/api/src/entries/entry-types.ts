@@ -35,11 +35,27 @@ export type EquipmentKind = (typeof EQUIPMENT_KINDS)[number];
 export const ATTRIBUTES = ['DES', 'VIG', 'AST', 'VON'] as const;
 export type AttributeCode = (typeof ATTRIBUTES)[number];
 
+/** What a Class's "Benefícios Iniciais" grant, as codes (order = display order). */
+export const CLASS_TRAITS = [
+  'hp',
+  'mp',
+  'ip',
+  'melee-weapon',
+  'ranged-weapon',
+  'armor',
+  'shield',
+  'rituals',
+  'projects',
+] as const;
+export type ClassTrait = (typeof CLASS_TRAITS)[number];
+
 export interface ClassDetails {
   /** Alternative names the book lists for the Class ("Outros nomes"). */
   otherNames: string[];
   /** The Class's "Benefícios Iniciais", in our own words. */
   freeBenefits: string[];
+  /** Machine-readable view of `freeBenefits`; drives the Classes list line and the Benefício filter. */
+  traits: ClassTrait[];
   /** The Class's epigraph. */
   quote: string | null;
 }

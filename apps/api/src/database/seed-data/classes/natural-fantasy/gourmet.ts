@@ -82,6 +82,7 @@ Com [[culinaria]], você combina **dois ou três ingredientes** numa **iguaria**
 A classe é atípica: suas habilidades são geradas ao longo da campanha. Você pode preparar iguarias **fora de conflito**, gastando ingredientes, para descobrir os efeitos antes da luta. Aproveite a propriedade **multi** para aplicar a mesma iguaria em vários inimigos.`,
     otherNames: ['Cervejeiro', 'Chef', 'Confeiteiro'],
     quote: 'Chefs de verdade respeitam a natureza do que transformam.',
+    traits: ['ip', 'projects'],
     freeBenefits: [
       'Aumenta permanentemente seus Pontos de Inventário em 2.',
       'Pode iniciar projetos para criar comidas e bebidas únicas: sempre consumíveis, com área baseada no número e tipo de criaturas a alimentar.',

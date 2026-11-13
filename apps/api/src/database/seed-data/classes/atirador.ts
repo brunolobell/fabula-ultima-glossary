@@ -24,6 +24,7 @@ Quem usa armas à distância deve ver [[equipamento]] para os itens marciais.
     otherNames: ['Arqueiro', 'Franco-atirador', 'Pistoleiro'],
     quote:
       'Fuja até o outro canto do mundo; minha flecha ainda encontrará você.',
+    traits: ['hp', 'ranged-weapon', 'shield'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armas à distância e escudos marciais.',

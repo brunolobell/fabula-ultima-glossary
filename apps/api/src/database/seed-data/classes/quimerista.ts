@@ -23,6 +23,7 @@ Apoiam-se na resistência e na força física, unidas à magia, e costumam ser v
 - Há muitos praticando a sua arte, ou você é uma exceção?`,
     otherNames: ['Druida', 'Mago Selvagem', 'Metamorfo'],
     quote: 'Poder sem harmonia só leva ao sofrimento.',
+    traits: ['mp', 'rituals'],
     freeBenefits: [
       'Aumenta permanentemente seus PM máximos em 5.',
       'Pode fazer rituais da disciplina ritualismo.',

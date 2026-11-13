@@ -135,6 +135,7 @@ Você pode fazer a ação **Inventário** e gastar **2 PI** para fazer a ação 
     otherNames: ['Alquimista', 'Engenheiro Tecnomágico', 'Mecânico'],
     quote:
       'Gosto de imaginar que aquilo que temos hoje não foi um presente dos deuses.',
+    traits: ['ip', 'projects'],
     freeBenefits: [
       'Aumenta permanentemente seus PI máximos em 2.',
       'Pode iniciar Projetos.',

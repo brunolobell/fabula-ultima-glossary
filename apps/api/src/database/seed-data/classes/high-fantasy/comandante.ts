@@ -21,6 +21,7 @@ Não pense só no cavaleiro de armadura reluzente: líderes bandidos, nobres em 
 - Como suas habilidades se manifestam? Elas são visivelmente sobrenaturais?`,
     otherNames: ['Príncipe', 'Rainha', 'Shôgun'],
     quote: 'Não há vitoriosos em uma guerra.',
+    traits: ['hp', 'melee-weapon', 'ranged-weapon'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armas corpo a corpo e armas à distância marciais.',

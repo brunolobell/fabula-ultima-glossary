@@ -21,9 +21,69 @@ const guardiao = classEntry({
   otherNames: [],
   quote: null,
   freeBenefits: ['PV +5'],
+  traits: ['hp'],
 });
 
 describe('validateSeed', () => {
+  describe('class traits', () => {
+    const classWith = (traits: never[] | string[]) =>
+      classEntry({
+        name: 'Guardião',
+        page: 202,
+        summary: 'Protetor.',
+        body: '',
+        otherNames: [],
+        quote: null,
+        freeBenefits: ['PV +5'],
+        traits: traits as never,
+      });
+    const messagesFor = (traits: string[]) =>
+      validateSeed([classWith(traits)]).join('\n');
+
+    it('rejects a class with no traits', () => {
+      expect(messagesFor([])).toContain(
+        'details.traits must be a non-empty list',
+      );
+    });
+
+    it('rejects a class with an unknown trait', () => {
+      expect(messagesFor(['flying'])).toContain('unknown trait "flying"');
+    });
+
+    it('rejects a class with a repeated trait', () => {
+      expect(messagesFor(['hp', 'hp'])).toContain(
+        'details.traits has duplicates',
+      );
+    });
+
+    it('gives every seeded class traits that are consistent with its freeBenefits', () => {
+      const classes = seedEntries.filter((e) => e.type === 'class');
+      expect(classes.length).toBeGreaterThan(0);
+      for (const c of classes) {
+        const { traits, freeBenefits } = c.details as {
+          traits: string[];
+          freeBenefits: string[];
+        };
+        const text = freeBenefits.join(' ');
+        expect([c.name, 'hp', traits.includes('hp')]).toEqual([
+          c.name,
+          'hp',
+          /\bPV\b/.test(text),
+        ]);
+        expect([c.name, 'mp', traits.includes('mp')]).toEqual([
+          c.name,
+          'mp',
+          /\bPM\b/.test(text),
+        ]);
+        expect([c.name, 'ip', traits.includes('ip')]).toEqual([
+          c.name,
+          'ip',
+          /\bPI\b|Pontos de Inventário/.test(text),
+        ]);
+      }
+    });
+  });
+
   it('accepts the real seed data', () => {
     expect(validateSeed(seedEntries)).toEqual([]);
   });

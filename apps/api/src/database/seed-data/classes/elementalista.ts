@@ -23,6 +23,7 @@ Quem lança feitiços precisa seguir as regras de [[como-lancar-um-feitico]].
 - Qual a aparência da sua magia?`,
     otherNames: ['Feiticeiro', 'Geomante', 'Mago de Batalha'],
     quote: 'Ignore os avisos deste mundo por sua conta e risco.',
+    traits: ['mp', 'rituals'],
     freeBenefits: [
       'Aumenta permanentemente seus PM máximos em 5.',
       'Pode fazer rituais cujos efeitos pertencem à disciplina de ritualismo.',
