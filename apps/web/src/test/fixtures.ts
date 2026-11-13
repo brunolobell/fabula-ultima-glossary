@@ -85,6 +85,7 @@ const elementalista: EntryWithChildren = {
     otherNames: ['Feiticeiro'],
     quote: 'Ignore os avisos.',
     freeBenefits: ['Aumenta seus PM máximos em 5.'],
+    traits: ['mp'],
   },
   children: [magiaElemental, raio],
 };

@@ -28,9 +28,23 @@ export type EquipmentKind =
   | 'accessory'
   | 'artifact';
 
+/** Mirrors `CLASS_TRAITS` in the API's `entry-types.ts`, in canonical order. */
+export type ClassTrait =
+  | 'hp'
+  | 'mp'
+  | 'ip'
+  | 'melee-weapon'
+  | 'ranged-weapon'
+  | 'armor'
+  | 'shield'
+  | 'rituals'
+  | 'projects';
+
 export interface ClassDetails {
   otherNames: string[];
   freeBenefits: string[];
+  /** What the Class's free benefits grant, in canonical order. */
+  traits: ClassTrait[];
   quote: string | null;
 }
 

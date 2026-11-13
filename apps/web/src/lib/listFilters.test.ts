@@ -367,3 +367,42 @@ describe('creatures', () => {
     ]);
   });
 });
+
+describe('class traits filter', () => {
+  const cls = (
+    slug: string,
+    traits: string[],
+    source: EntrySummary['source'] = 'livro-basico',
+  ) => entry(slug, 'class', { otherNames: [], quote: null, freeBenefits: [], traits }, source);
+  const list = [
+    cls('atirador', ['hp', 'ranged-weapon', 'shield']),
+    cls('guardiao', ['hp', 'armor', 'shield']),
+    cls('dancarino', ['hp', 'mp'], 'high-fantasy'),
+    cls('arcanista', ['mp']),
+  ];
+  const pick = (q: string) =>
+    slugs(applyFilters('class', list, readSelection('class', new URLSearchParams(q))));
+
+  it('filters by one trait', () => {
+    expect(pick('beneficio=shield')).toEqual(['atirador', 'guardiao']);
+    expect(pick('beneficio=mp')).toEqual(['dancarino', 'arcanista']);
+    expect(pick('beneficio=hp')).toContain('dancarino');
+  });
+
+  it('is OR inside the filter and AND with the book', () => {
+    expect(pick('beneficio=armor,ranged-weapon')).toEqual(['atirador', 'guardiao']);
+    expect(pick('beneficio=hp&livro=high-fantasy')).toEqual(['dancarino']);
+  });
+
+  it('offers only the traits some Class has, in canonical order', () => {
+    const row = buildRows('class', list, new Map()).find((r) => r.param === 'beneficio');
+    expect(row?.label).toBe('Benefício');
+    expect(row?.options.map((o) => o.label)).toEqual([
+      'Aumento de PV',
+      'Aumento de PM',
+      'Armas à distância marciais',
+      'Armaduras marciais',
+      'Escudos marciais',
+    ]);
+  });
+});
