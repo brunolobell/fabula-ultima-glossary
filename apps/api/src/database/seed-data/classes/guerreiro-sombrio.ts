@@ -21,6 +21,7 @@ Heróis no mínimo improváveis, sacrificam a própria força vital para desferi
 - Há muitos praticando a sua magia, ou você é uma exceção?`,
     otherNames: ['Cavaleiro da Morte', 'Cavaleiro Negro', 'Vingador'],
     quote: 'Hoje você conhecerá a extensão do meu sofrimento.',
+    traits: ['hp', 'melee-weapon', 'armor'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armas corpo a corpo e armaduras marciais.',

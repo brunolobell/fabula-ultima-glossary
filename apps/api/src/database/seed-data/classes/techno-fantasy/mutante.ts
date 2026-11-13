@@ -47,6 +47,7 @@ Entre parênteses, as sugestões de Genoclepse (tipos de NPC que a refletem).
     otherNames: ['Abominação', 'Experimento', 'Licantropo'],
     quote:
       'Olhe para mim, covarde! Contemple o que seu silêncio permitiu que criassem!',
+    traits: ['hp'],
     freeBenefits: ['Aumenta permanentemente seus PV máximos em 5.'],
   }),
 

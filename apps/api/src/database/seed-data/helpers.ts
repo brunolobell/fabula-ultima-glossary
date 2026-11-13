@@ -1,4 +1,5 @@
 import {
+  ClassTrait,
   CreatureDetails,
   EntrySource,
   Medium,
@@ -32,17 +33,19 @@ export interface ClassInput {
   otherNames: string[];
   quote: string | null;
   freeBenefits: string[];
+  traits: ClassTrait[];
 }
 
 export const classEntry = ({
   otherNames,
   quote,
   freeBenefits,
+  traits,
   ...rest
 }: ClassInput): Of<'class'> => ({
   type: 'class',
   tags: ['classe'],
-  details: { otherNames, quote, freeBenefits },
+  details: { otherNames, quote, freeBenefits, traits },
   ...rest,
 });
 

@@ -21,6 +21,7 @@ export const ladino: SeedEntry[] = [
 - Qual é a regra mais importante do seu código pessoal?`,
     otherNames: ['Bandido', 'Ladrão', 'Ninja'],
     quote: 'Eu encontrarei minha própria justiça.',
+    traits: ['ip'],
     freeBenefits: ['Aumenta permanentemente seus PI máximos em 2.'],
   }),
 

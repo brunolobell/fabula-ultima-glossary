@@ -23,6 +23,7 @@ Quem lança feitiços segue as regras de [[como-lancar-um-feitico]].
 - Qual a aparência da sua magia?`,
     otherNames: ['Bruxa', 'Curandeiro', 'Sacerdote'],
     quote: 'Mostre-me a verdade do seu coração.',
+    traits: ['mp', 'rituals'],
     freeBenefits: [
       'Aumenta permanentemente seus PM máximos em 5.',
       'Pode fazer rituais da disciplina ritualismo.',

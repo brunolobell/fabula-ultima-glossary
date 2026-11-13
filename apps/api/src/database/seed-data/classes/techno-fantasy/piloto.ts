@@ -119,6 +119,7 @@ O Mestre deve incluir módulos novos (ou versões melhoradas) entre as recompens
     otherNames: ['Motoqueiro', 'Piloto de Mecha', 'Pirata do Céu'],
     quote:
       'Dentro deste aço batem os corações e esperanças de todos em Minerva IV. O Império já perdeu, só não sabe disso ainda.',
+    traits: ['hp', 'melee-weapon', 'ranged-weapon'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armas corpo a corpo e à distância marciais.',

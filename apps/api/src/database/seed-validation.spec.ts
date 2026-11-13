@@ -1,4 +1,8 @@
-import { CreatureDetails, isCreatureGroup } from '../entries/entry-types';
+import {
+  ClassTrait,
+  CreatureDetails,
+  isCreatureGroup,
+} from '../entries/entry-types';
 import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
@@ -21,9 +25,72 @@ const guardiao = classEntry({
   otherNames: [],
   quote: null,
   freeBenefits: ['PV +5'],
+  traits: ['hp'],
 });
 
 describe('validateSeed', () => {
+  describe('class traits', () => {
+    const classWith = (traits: string[]) =>
+      classEntry({
+        name: 'Guardião',
+        page: 202,
+        summary: 'Protetor.',
+        body: '',
+        otherNames: [],
+        quote: null,
+        freeBenefits: ['PV +5'],
+        traits: traits as ClassTrait[],
+      });
+    const messagesFor = (traits: string[]) =>
+      validateSeed([classWith(traits)]).join('\n');
+
+    it('rejects a class with no traits', () => {
+      expect(messagesFor([])).toContain(
+        'details.traits must be a non-empty list',
+      );
+    });
+
+    it('rejects a class with an unknown trait', () => {
+      expect(messagesFor(['flying'])).toContain('unknown trait "flying"');
+    });
+
+    it('rejects a class with a repeated trait', () => {
+      expect(messagesFor(['hp', 'hp'])).toContain(
+        'details.traits has duplicates',
+      );
+    });
+
+    it('gives every seeded class traits that are consistent with its freeBenefits', () => {
+      const wording: [string, RegExp][] = [
+        ['hp', /\bPV\b/],
+        ['mp', /\bPM\b/],
+        ['ip', /\bPI\b|Pontos de Inventário/],
+        ['melee-weapon', /corpo a corpo/],
+        ['ranged-weapon', /à distância/],
+        ['armor', /armaduras/],
+        ['shield', /escudos/],
+        ['rituals', /rituais/],
+        ['projects', /projetos/i],
+      ];
+      const classes = seedEntries.filter((e) => e.type === 'class');
+      expect(classes.length).toBeGreaterThan(0);
+      for (const c of classes) {
+        const { traits, freeBenefits } = c.details as {
+          traits: string[];
+          freeBenefits: string[];
+        };
+        const text = freeBenefits.join(' ');
+        for (const [trait, pattern] of wording) {
+          expect([c.name, trait, traits.includes(trait)]).toEqual([
+            c.name,
+            trait,
+            pattern.test(text),
+          ]);
+        }
+      }
+    });
+  });
+
   it('accepts the real seed data', () => {
     expect(validateSeed(seedEntries)).toEqual([]);
   });

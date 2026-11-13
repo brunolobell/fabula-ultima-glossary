@@ -149,6 +149,7 @@ Lista padrão de 20 magissementes (páginas 141 a 147 do Atlas). Seu grupo pode 
 - **3:** causa dano de luz de 15 + NP a cada inimigo lento que veja (o livro imprime "luz" aqui).`,
     otherNames: ['Lâmina do Florescer', 'Jardineiro', 'Herbalista'],
     quote: 'Não há rosas sem espinhos.',
+    traits: ['hp', 'mp'],
     freeBenefits: [
       'Aumenta permanentemente seus PV ou PM máximos em 5 (à sua escolha).',
     ],

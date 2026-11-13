@@ -21,6 +21,7 @@ Alguns seguem e protegem alguém por amor ou lealdade; outros atravessam o mundo
 - Qual a aparência das suas armas e como é o seu estilo de luta?`,
     otherNames: ['Guerreiro', 'Lutador', 'Ronin'],
     quote: 'As lâminas mais aguçadas nunca são desembainhadas.',
+    traits: ['hp', 'melee-weapon', 'shield'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armas corpo a corpo e escudos marciais.',

@@ -21,6 +21,7 @@ Alguns passam por treinamentos rígidos para controlar as emoções; outros veem
 - Qual a aparência das suas armas e como é o seu estilo de luta?`,
     otherNames: ['Berserker', 'Lutador', 'Viking'],
     quote: 'Eu só preciso ficar mais forte que você!',
+    traits: ['hp', 'melee-weapon', 'armor'],
     freeBenefits: [
       'Aumenta permanentemente seus PV máximos em 5.',
       'Pode equipar armas corpo a corpo e armaduras marciais.',

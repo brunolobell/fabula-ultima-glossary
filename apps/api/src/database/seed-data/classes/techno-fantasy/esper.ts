@@ -52,6 +52,7 @@ Nas fórmulas, **S** é o número de seções preenchidas no seu Relógio Mental
     otherNames: ['Empata', 'Psiônico', 'Hacker de Almas'],
     quote:
       'Paz ditada por uma vontade única não é paz; é apenas uma forma diferente de submissão.',
+    traits: ['mp'],
     freeBenefits: ['Aumenta permanentemente seus PM máximos em 5.'],
   }),
 

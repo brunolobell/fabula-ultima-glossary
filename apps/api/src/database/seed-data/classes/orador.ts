@@ -22,6 +22,7 @@ As palavras de um Orador podem reacender a coragem ou causar desespero nos opone
     otherNames: ['Artista', 'Diplomata', 'Embaixador'],
     quote:
       'Palavras só servem de algo se as ações subsequentes também servirem.',
+    traits: ['mp'],
     freeBenefits: ['Aumenta permanentemente seus PM máximos em 5.'],
   }),
 

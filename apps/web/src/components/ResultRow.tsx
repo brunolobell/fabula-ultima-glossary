@@ -13,6 +13,7 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
+import { classTraitLabels, classTraitsOf } from '../lib/classTraits';
 import { SPECIES_LABEL, isCreatureGroup, rankText } from '../lib/creatures';
 import {
   MEDIUM_LABEL,
@@ -101,6 +102,12 @@ function CreatureFacts({ entry }: { entry: EntrySummary }) {
   );
 }
 
+/** "Aumento de PV · Escudos marciais · ": what a Class's free benefits grant. */
+function ClassFacts({ entry }: { entry: EntrySummary }) {
+  const labels = classTraitLabels(classTraitsOf(entry));
+  return labels.length > 0 ? <>{labels.join(' · ')}{' · '}</> : null;
+}
+
 /** The facts a Reader scans for, then where it is in the book. */
 function RowMeta({ entry }: { entry: EntrySummary }) {
   return (
@@ -118,6 +125,7 @@ function RowMeta({ entry }: { entry: EntrySummary }) {
           </span>
         </>
       )}
+      {entry.type === 'class' && <ClassFacts entry={entry} />}
       {entry.type === 'creature' && <CreatureFacts entry={entry} />}
       {entry.type === 'service' && <ServiceFacts entry={entry} />}
       {entry.type === 'transport' && <TransportFacts entry={entry} />}

@@ -23,6 +23,7 @@ import {
   MEDIUMS,
   SERVICE_GROUPS,
   TRANSPORT_CLASSES,
+  CLASS_TRAITS,
   isCreatureGroup,
   CREATURE_FLAGS,
 } from '../entries/entry-types';
@@ -555,6 +556,16 @@ export function validateSeed(entries: SeedEntry[]): string[] {
           fail('details.otherNames must be a list');
         if (!Array.isArray(freeBenefits) || freeBenefits.length === 0) {
           fail('details.freeBenefits must be a non-empty list');
+        }
+        const { traits } = entry.details;
+        if (!Array.isArray(traits) || traits.length === 0) {
+          fail('details.traits must be a non-empty list');
+        } else {
+          for (const trait of traits) {
+            if (!CLASS_TRAITS.includes(trait)) fail(`unknown trait "${trait}"`);
+          }
+          if (new Set(traits).size !== traits.length)
+            fail('details.traits has duplicates');
         }
         break;
       }

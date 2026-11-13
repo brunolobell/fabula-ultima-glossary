@@ -23,6 +23,7 @@ Quem lança feitiços segue as regras de [[como-lancar-um-feitico]].
 - Há muitos praticando a sua magia, ou você é uma exceção?`,
     otherNames: ['Apostador', 'Astromante', 'Mago do Caos'],
     quote: 'O frio entre as estrelas... não me assusta.',
+    traits: ['mp', 'rituals'],
     freeBenefits: [
       'Aumenta permanentemente seus PM máximos em 5.',
       'Pode fazer rituais da disciplina ritualismo.',

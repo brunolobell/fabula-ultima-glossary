@@ -47,6 +47,7 @@ As danças elementais (Anjo, Fênix, Golem, Grifo, Ieti, Mirmidão e Morcego) fu
 | Dança do Unicórnio | instantânea | Você e um aliado que o veja e tenha Laço com você recuperam PV igual ao seu dado atual de Destreza (+5 a partir do 20º nível, +10 a partir do 40º). |`,
     otherNames: ['Acrobata', 'Bufão', 'Bucaneiro'],
     quote: 'Minha história? Dance comigo para descobrir.',
+    traits: ['hp', 'mp'],
     freeBenefits: [
       'Aumenta permanentemente seus PV ou PM máximos em 5 (à sua escolha).',
     ],

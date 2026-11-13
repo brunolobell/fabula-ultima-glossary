@@ -53,6 +53,7 @@ Uma **praga** dura até o início do seu próximo turno: o alvo sofre 5 pontos d
 A "Explosão" de cada manancial causa 20 pontos de dano do tipo do manancial.`,
     otherNames: ['Assecla', 'Canalizador', 'Mestre das Cinco Almas'],
     quote: 'Anseie pela compreensão, não pelo controle.',
+    traits: ['hp', 'mp'],
     freeBenefits: [
       'Aumenta permanentemente seus PV ou PM máximos em 5 (à sua escolha).',
     ],

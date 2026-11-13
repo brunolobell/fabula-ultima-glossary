@@ -1,4 +1,5 @@
 import type {
+  ClassTrait,
   CreatureSummaryDetails,
   DamageType,
   Affinity,
@@ -11,6 +12,11 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
+import {
+  CLASS_TRAIT_LABEL,
+  CLASS_TRAIT_ORDER,
+  classTraitsOf,
+} from './classTraits';
 import {
   AFFINITY_ORDER,
   DAMAGE_ORDER,
@@ -115,7 +121,16 @@ const statRow = (spec: RowSpec): RowSpec => ({
 });
 
 const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
-  class: [bookRow],
+  class: [
+    {
+      param: 'beneficio',
+      label: 'Benefício',
+      values: classTraitsOf,
+      labelOf: (value) => CLASS_TRAIT_LABEL[value as ClassTrait] ?? value,
+      order: CLASS_TRAIT_ORDER,
+    },
+    bookRow,
+  ],
   skill: [
     classRow('Classe', (e) => [(e.details as SkillDetails).classSlug]),
     bookRow,

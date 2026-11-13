@@ -110,6 +110,7 @@ Cada Arcano se associa a alguns conceitos-chave, os **domínios**. O Mestre os u
   - **Translocar.** Você e até cinco outras criaturas voluntárias são teletransportados para um local que você já visitou, a até 1 dia de Viagem.`,
     otherNames: ['Avatar', 'Escolhido', 'Invocador'],
     quote: 'Alguns destinos não podem ser evitados.',
+    traits: ['mp'],
     freeBenefits: ['Aumenta permanentemente seus PM máximos em 5.'],
   }),
 

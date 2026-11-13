@@ -64,6 +64,7 @@ O livro imprime a coluna de custo como "PV", mas o exemplo do próprio texto fal
 - **Vibrante.** Cada alvo trata o Atributo da escala como um tipo de dado maior (máximo d12) até o início do seu próximo turno.`,
     otherNames: ['Bardo', 'Idol', 'Trovador'],
     quote: 'O show mal começou e sua cortina já está abaixando!',
+    traits: ['mp'],
     freeBenefits: ['Aumenta permanentemente seus PM máximos em 5.'],
   }),
 
