@@ -1,7 +1,5 @@
 import type { ClassTrait } from '../api/types';
 
-export type { ClassTrait };
-
 /** What a Class's free benefits can grant, in the order the lists show them. */
 export const CLASS_TRAIT_ORDER: readonly ClassTrait[] = [
   'hp',

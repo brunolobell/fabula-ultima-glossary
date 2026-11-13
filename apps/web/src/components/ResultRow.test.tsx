@@ -43,4 +43,18 @@ describe('ResultRow of a Class', () => {
     expect(meta.textContent).not.toContain('·');
     expect(meta.textContent).toContain('184');
   });
+
+  it('renders a Class whose details lack traits (older database or cached list)', () => {
+    const entry = classEntry([]);
+    delete (entry.details as { traits?: ClassTrait[] }).traits;
+    const { container } = render(
+      <MemoryRouter>
+        <ResultRow entry={entry} showType={false} />
+      </MemoryRouter>,
+    );
+    expect(screen.getByText('Atirador')).toBeInTheDocument();
+    const meta = container.querySelector('p.text-meta') as HTMLElement;
+    expect(meta.textContent).not.toContain('·');
+    expect(meta.textContent).toContain('184');
+  });
 });

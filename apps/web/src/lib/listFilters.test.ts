@@ -157,6 +157,13 @@ describe('buildRows', () => {
     expect(byParam.livro.map((o) => o.value)).toEqual(['livro-basico', 'natural-fantasy']);
   });
 
+  it('does not throw for Classes whose details lack traits', () => {
+    const classes = [...index.values()];
+    expect(() => buildRows('class', classes, index)).not.toThrow();
+    const sel = readSelection('class', new URLSearchParams('beneficio=shield'));
+    expect(applyFilters('class', classes, sel)).toEqual([]);
+  });
+
   it('has no rows for types without filters', () => {
     expect(buildRows('rule', [entry('r', 'rule', {})], index)).toEqual([]);
   });

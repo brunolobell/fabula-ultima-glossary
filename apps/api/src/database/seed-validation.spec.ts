@@ -80,6 +80,36 @@ describe('validateSeed', () => {
           'ip',
           /\bPI\b|Pontos de Inventário/.test(text),
         ]);
+        expect([c.name, 'melee-weapon', traits.includes('melee-weapon')]).toEqual([
+          c.name,
+          'melee-weapon',
+          /corpo a corpo/.test(text),
+        ]);
+        expect([c.name, 'ranged-weapon', traits.includes('ranged-weapon')]).toEqual([
+          c.name,
+          'ranged-weapon',
+          /à distância/.test(text),
+        ]);
+        expect([c.name, 'armor', traits.includes('armor')]).toEqual([
+          c.name,
+          'armor',
+          /armaduras/.test(text),
+        ]);
+        expect([c.name, 'shield', traits.includes('shield')]).toEqual([
+          c.name,
+          'shield',
+          /escudos/.test(text),
+        ]);
+        expect([c.name, 'rituals', traits.includes('rituals')]).toEqual([
+          c.name,
+          'rituals',
+          /rituais/.test(text),
+        ]);
+        expect([c.name, 'projects', traits.includes('projects')]).toEqual([
+          c.name,
+          'projects',
+          /projetos/i.test(text),
+        ]);
       }
     });
   });

@@ -122,6 +122,8 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     {
       param: 'beneficio',
       label: 'Benefício',
+      // `?? []` is deliberate: older seeded databases and cached list responses
+      // (stale-while-revalidate) can lack `traits`, and /classes must not throw.
       values: (e) => (e.details as ClassDetails).traits ?? [],
       labelOf: (value) => CLASS_TRAIT_LABEL[value as ClassTrait] ?? value,
       order: CLASS_TRAIT_ORDER,

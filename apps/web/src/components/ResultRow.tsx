@@ -105,6 +105,8 @@ function CreatureFacts({ entry }: { entry: EntrySummary }) {
 
 /** "Aumento de PV · Escudos marciais · ": what a Class's free benefits grant. */
 function ClassFacts({ entry }: { entry: EntrySummary }) {
+  // `?? []` is deliberate: older seeded databases and cached list responses
+  // (stale-while-revalidate) can lack `traits`, and /classes must not throw.
   const labels = classTraitLabels((entry.details as ClassDetails).traits ?? []);
   return labels.length > 0 ? <>{labels.join(' · ')}{' · '}</> : null;
 }
