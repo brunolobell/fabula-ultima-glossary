@@ -23,13 +23,23 @@ const DEBOUNCE_MS = 200;
 interface Props {
   size?: 'md' | 'lg';
   label?: string;
+  /**
+   * Offer the last opened entries when the empty box is focused (default).
+   * Home turns it off: its "Vistos recentemente" row sits right under the box,
+   * and the panel would repeat it and cover it.
+   */
+  recents?: boolean;
 }
 
 /**
  * Type-ahead search: up to 10 matches appear under the box as you type.
  * Enter opens the search page; Arrow keys + Enter open a highlighted match.
  */
-export function SearchBox({ size = 'md', label = 'Buscar' }: Props) {
+export function SearchBox({
+  size = 'md',
+  label = 'Buscar',
+  recents: offerRecents = true,
+}: Props) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const [params] = useSearchParams();
@@ -172,7 +182,7 @@ export function SearchBox({ size = 'md', label = 'Buscar' }: Props) {
             setActive(-1);
           }}
           onFocus={() => {
-            setRecents(readRecents());
+            if (offerRecents) setRecents(readRecents());
             setOpen(true);
           }}
           onKeyDown={onKeyDown}

@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ComponentProps } from 'react';
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -36,12 +37,12 @@ function Where() {
   return <p data-testid="where">{pathname + search}</p>;
 }
 
-function setup(path = '/') {
+function setup(path = '/', props: ComponentProps<typeof SearchBox> = {}) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[path]}>
-        <SearchBox />
+        <SearchBox {...props} />
         <Where />
       </MemoryRouter>
     </QueryClientProvider>,
@@ -192,6 +193,23 @@ describe('SearchBox shortcut and recents', () => {
     fireEvent.keyDown(input, { key: 'ArrowDown' });
     fireEvent.submit(input.closest('form')!);
     expect(where()).toBe('/feiticos/raio');
+  });
+
+  it('skips the recents when asked to, but still suggests once the Reader types', async () => {
+    stubSearch([entry(1)]);
+    rememberEntry({ slug: 'raio', name: 'Raio', type: 'spell' });
+    const input = setup('/', { recents: false });
+    fireEvent.focus(input);
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+    expect(input).toHaveAttribute('aria-expanded', 'false');
+
+    // Arrow keys have nothing to open while the box is empty.
+    fireEvent.keyDown(input, { key: 'ArrowDown' });
+    expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+
+    fireEvent.change(input, { target: { value: 'en' } });
+    const list = await screen.findByRole('listbox', { name: 'Sugestões de busca' });
+    expect(within(list).getAllByRole('option')[0]).toHaveTextContent('Entrada 1');
   });
 
   it('shows nothing extra when there are no recents', () => {

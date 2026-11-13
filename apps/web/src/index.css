@@ -20,23 +20,35 @@
 :root {
   color-scheme: light;
   --bg: #ffffff;
-  --surface: #f7f6fc;
-  --ink: #1d1b2b;
-  --ink-muted: #5b5873;
-  --line: #d8d4e8;
-  --primary: #4a4398;
-  --primary-deep: #363074;
-  --heading: #363074;
+  --surface: #f3f8f7;
+  --ink: #172625;
+  --ink-muted: #4b6361;
+  --line: #d0e0de;
+  /* Boundary of a text field or select: 3:1 on --bg (WCAG 1.4.11). --line is
+     for hairlines only and is about 1.5:1. */
+  --line-control: #7a9693;
+  --primary: #1a6366;
+  --primary-deep: #164b4e;
+  --heading: #164b4e;
   --on-primary: #ffffff;
   --on-bar: #ffffff;
-  --tint-key: #ece9f8;
+  --tint-key: #e3f1f0;
   --tint-example: #fceee2;
   --accent-ink: #8a4a1f;
   --accent: #c2661f;
   --hp: #a83d4e;
   --mp: #2f5f9e;
   --on-stat: #ffffff;
-  --scrim: rgba(20, 19, 28, 0.5);
+  --scrim: rgba(16, 26, 27, 0.5);
+  /* The Feather sprite (FeatherIcon). Dark theme lifts the outline so the
+     silhouette survives on --bg. */
+  --feather-ink: #070606;
+  --feather-eye: #595755;
+  --feather-shade: #3e6f5f;
+  --feather-mid: #63adb3;
+  --feather-light: #bfdfda;
+  --feather-pale: #e6f2f2;
+  --feather-white: #ffffff;
   /* Reading measure: about 82 characters of PT Sans Narrow at 18 px (measured;
      the 44rem column holds about 110). Prose entries sit in a 34rem column
      (EntryPage), so the title rule and the text end near the same edge; lists,
@@ -50,22 +62,25 @@
 
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --bg: #14131c;
-  --surface: #1c1b27;
-  --ink: #e9e7f4;
-  --ink-muted: #a9a6c0;
-  --line: #37354d;
-  --primary: #b4aef2;
-  --primary-deep: #4a4398;
-  --heading: #e9e7f4;
-  --on-primary: #14131c;
-  --tint-key: rgba(155, 144, 240, 0.16);
+  --bg: #101a1b;
+  --surface: #172324;
+  --ink: #e4f0f0;
+  --ink-muted: #9cb5b5;
+  --line: #2b4042;
+  --line-control: #5d7e80;
+  --primary: #81ced3;
+  --primary-deep: #1a5f63;
+  --heading: #e4f0f0;
+  --on-primary: #101a1b;
+  --tint-key: rgba(111, 193, 198, 0.16);
   --tint-example: rgba(242, 167, 119, 0.14);
   --accent-ink: #f2b48a;
   --accent: #f2a777;
   --hp: #e2788a;
   --mp: #7ba6e6;
-  --on-stat: #14131c;
+  --on-stat: #101a1b;
+  --feather-ink: var(--line);
+  --feather-eye: var(--ink-muted);
 }
 
 /* ---------- Base ---------- */
@@ -441,7 +456,7 @@
   .field {
     min-height: 44px;
     padding: 0 12px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-control);
     border-radius: 4px;
     background: var(--bg);
     color: var(--ink);
@@ -479,7 +494,7 @@
     width: 100%;
     min-height: 48px;
     padding: 0 14px 0 44px;
-    border: 1px solid var(--line);
+    border: 1px solid var(--line-control);
     border-radius: 4px;
     background: var(--bg);
     color: var(--ink);
@@ -515,15 +530,30 @@
 
   /* ---------- Result row (§6.9) ---------- */
   .result-row {
+    position: relative;
+    isolation: isolate;
     display: block;
-    padding: 14px 4px;
+    padding: 14px 0;
     border-bottom: 1px solid var(--line);
     color: var(--ink);
     text-decoration: none;
   }
-  .result-row:hover {
+  /* The text sits on the column edge; the hover tint bleeds 4px past it so
+     the name still has room inside the tint. The hairline stays column width. */
+  .result-row::before {
+    content: '';
+    position: absolute;
+    inset: 0 -4px;
+    z-index: -1;
     background: var(--grad-key);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .result-row:hover {
     text-decoration: none;
+  }
+  .result-row:hover::before {
+    opacity: 1;
   }
   .result-name {
     font-weight: 700;

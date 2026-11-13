@@ -73,6 +73,36 @@ export const CrystalIcon = ({ className }: IconProps) => (
   </svg>
 );
 
+/**
+ * The Fabula Ultima Feather: a 16 x 16 pixel sprite. Inline SVG so the dark
+ * theme can recolor it (--feather-* tokens). Draw it at 16, 32 or 48 px only,
+ * whole multiples of its grid, or the pixels smear.
+ */
+export const FeatherIcon = ({
+  size = 32,
+  className,
+}: {
+  size?: 16 | 32 | 48;
+  className?: string;
+}) => (
+  <svg
+    viewBox="0 0 16 16"
+    width={size}
+    height={size}
+    shapeRendering="crispEdges"
+    aria-hidden
+    className={className}
+  >
+    <path fill="var(--feather-ink)" d="M12 1h2v1h-2zM10 2h2v1h-2zM14 2h1v1h-1zM9 3h1v1h-1zM14 3h1v1h-1zM8 4h1v1h-1zM14 4h1v1h-1zM7 5h2v1h-2zM13 5h1v1h-1zM6 6h1v1h-1zM8 6h1v1h-1zM13 6h1v1h-1zM5 7h1v1h-1zM12 7h1v1h-1zM4 8h2v1h-2zM11 8h1v1h-1zM3 9h1v1h-1zM5 9h1v1h-1zM10 9h1v1h-1zM3 10h1v1h-1zM9 10h1v1h-1zM3 11h1v1h-1zM8 11h1v1h-1zM2 12h1v1h-1zM8 12h1v1h-1zM2 13h1v1h-1zM4 13h1v1h-1zM6 13h2v1h-2zM1 14h3v1h-3zM5 14h1v1h-1zM1 15h1v1h-1z" />
+    <path fill="var(--feather-eye)" d="M10 4h1v1h-1z" />
+    <path fill="var(--feather-shade)" d="M3 12h2v1h-2zM3 13h1v1h-1z" />
+    <path fill="var(--feather-mid)" d="M7 9h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM4 11h2v1h-2zM7 11h1v1h-1zM5 12h1v1h-1zM5 13h1v1h-1z" />
+    <path fill="var(--feather-light)" d="M12 6h1v1h-1zM7 7h1v1h-1zM8 8h2v1h-2zM8 9h2v1h-2zM4 10h2v1h-2zM7 10h1v1h-1zM6 11h1v1h-1zM6 12h2v1h-2z" />
+    <path fill="var(--feather-pale)" d="M13 2h1v1h-1zM10 3h1v1h-1zM13 3h1v1h-1zM9 4h1v1h-1zM13 4h1v1h-1zM7 6h1v1h-1zM10 6h1v1h-1zM6 7h1v1h-1zM8 7h4v1h-4zM6 8h2v1h-2zM10 8h1v1h-1zM4 9h1v1h-1zM6 9h1v1h-1z" />
+    <path fill="var(--feather-white)" d="M12 2h1v1h-1zM11 3h2v1h-2zM11 4h2v1h-2zM9 5h4v1h-4zM9 6h1v1h-1zM11 6h1v1h-1z" />
+  </svg>
+);
+
 export const ChevronIcon = ({ className }: IconProps) => (
   <svg {...base} width={18} height={18} className={className}>
     <path d="m6 9 6 6 6-6" />

@@ -19,6 +19,55 @@ function renderAt(path: string) {
 }
 
 describe('Home', () => {
+  it('holds the guides\' place while they load, so the page below does not jump', async () => {
+    mockApi();
+    renderAt('/');
+    const guides = screen.getByRole('region', { name: 'Por onde começar' });
+    expect(within(guides).getByRole('status', { name: 'Carregando' })).toBeInTheDocument();
+    expect(await within(guides).findByRole('link', { name: /criar um personagem/i })).toBeInTheDocument();
+    expect(within(guides).queryByRole('status')).toBeNull();
+  });
+
+  it('shows no counts when the list could not load, never "0 entradas"', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500, json: async () => ({}) }));
+    renderAt('/');
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    const types = screen.getByRole('region', { name: 'Navegar por tipo' });
+    expect(within(types).getByRole('link', { name: /regras/i })).toHaveAttribute('href', '/regras');
+    expect(within(types).queryByText(/entradas?$/)).toBeNull();
+  });
+
+  it('leaves out a recent entry that the index no longer has', async () => {
+    localStorage.setItem(
+      'codice-recentes',
+      JSON.stringify([
+        { slug: 'raio', name: 'Raio', type: 'spell' },
+        { slug: 'foi-removido', name: 'Foi removido', type: 'rule' },
+      ]),
+    );
+    mockApi();
+    renderAt('/');
+    const recents = within(screen.getByRole('navigation', { name: 'Vistos recentemente' }));
+    await waitFor(() => expect(recents.queryByRole('link', { name: 'Foi removido' })).toBeNull());
+    expect(recents.getByRole('link', { name: 'Raio' })).toBeInTheDocument();
+    localStorage.clear();
+  });
+
+  it('lists what the Reader opened last under the search box, and puts the types before the tools', async () => {
+    localStorage.setItem(
+      'codice-recentes',
+      JSON.stringify([{ slug: 'raio', name: 'Raio', type: 'spell' }]),
+    );
+    mockApi();
+    renderAt('/');
+    const recents = within(screen.getByRole('navigation', { name: 'Vistos recentemente' }));
+    expect(recents.getByRole('link', { name: 'Raio' })).toHaveAttribute('href', '/feiticos/raio');
+    const types = screen.getByRole('region', { name: 'Navegar por tipo' });
+    const tools = screen.getByRole('region', { name: 'Ferramentas' });
+    expect(types.compareDocumentPosition(tools) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    localStorage.clear();
+  });
+
   it('shows the title, the guide cards and the type grid with counts', async () => {
     mockApi();
     renderAt('/');
@@ -34,6 +83,22 @@ describe('Home', () => {
     expect(await within(grid).findByRole('link', { name: /regras.*10 entradas/i }))
       .toHaveAttribute('href', '/regras');
     expect(within(grid).getByRole('link', { name: /classes.*1 entrada\b/i })).toBeInTheDocument();
+  });
+
+  it('keeps "Navegar por tipo" compact: a line only for the names that do not explain themselves', async () => {
+    mockApi();
+    renderAt('/');
+    const types = screen.getByRole('region', { name: 'Navegar por tipo' });
+    await within(types).findByRole('link', { name: /regras.*10 entradas/i });
+    const withLine = ['Regras', 'Poderes Heroicos', 'Peculiaridades'];
+    for (const name of withLine) {
+      const link = within(types).getByRole('link', { name: new RegExp(`^${name}`) });
+      expect(link.querySelectorAll(':scope > span')).toHaveLength(2);
+    }
+    const classes = within(types).getByRole('link', { name: /^classes/i });
+    expect(classes.querySelectorAll(':scope > span')).toHaveLength(1);
+    expect(within(types).queryByText(/as classes do livro/i)).toBeNull();
+    expect(within(types).queryByText(/armas, armaduras/i)).toBeNull();
   });
 
   it('has a skip link and no longer lists every Class in the sidebar', async () => {
@@ -230,7 +295,7 @@ describe('Search', () => {
   it('filters by the type in the URL and reports the count', async () => {
     mockApi();
     renderAt('/buscar?q=raio&tipo=feiticos');
-    await waitFor(() => expect(screen.getByText(/1 resultado/)).toHaveTextContent('“raio”'));
+    await waitFor(() => expect(screen.getByText(/^1 resultado para/)).toHaveTextContent('“raio”'));
     expect(screen.getByRole('button', { name: /feitiços/i })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getAllByRole('link', { name: /raio/i }).length).toBeGreaterThan(0);
   });
@@ -248,6 +313,30 @@ describe('Search', () => {
     expect(screen.queryByRole('button', { name: /^Guias/ })).toBeNull();
   });
 
+  it('says what a chip count counts, for a screen reader', async () => {
+    mockApi();
+    renderAt('/buscar?q=raio');
+    await screen.findByText(/resultados? para “raio”/);
+    const spells = await screen.findByRole('button', { name: /^Feitiços/ });
+    // "Feitiços, 1 resultado", not "Feitiços 1".
+    expect(spells).toHaveAccessibleName(/^Feitiços\s*, \d+ resultados?$/);
+  });
+
+  it('does not repeat a zero count above the empty message', async () => {
+    mockApi();
+    renderAt('/buscar?q=zzzz');
+    const message = await screen.findByText(/nenhuma entrada encontrada para “zzzz”/i);
+    expect(message).toHaveAttribute('role', 'status');
+    expect(screen.queryByText(/^0 resultados/)).toBeNull();
+  });
+
+  it('leaves out the type filter when nothing matches at all', async () => {
+    mockApi();
+    renderAt('/buscar?q=zzzz');
+    await screen.findByText(/nenhuma entrada encontrada para “zzzz”/i);
+    expect(screen.queryByRole('group', { name: 'Filtrar por tipo' })).toBeNull();
+  });
+
   it('includes Poderes Heroicos among the types', async () => {
     mockApi();
     renderAt('/buscar?q=poderoso');
@@ -257,7 +346,7 @@ describe('Search', () => {
   it('ignores accents in the query', async () => {
     const fetchMock = mockApi();
     renderAt('/buscar?q=traco');
-    expect(await screen.findByText(/1 resultado/)).toBeInTheDocument();
+    expect(await screen.findByText(/^1 resultado para/)).toBeInTheDocument();
     expect(fetchMock).toHaveBeenCalledWith('/api/entries?search=traco');
   });
 
@@ -271,6 +360,36 @@ describe('Search', () => {
     mockApi();
     renderAt('/buscar');
     expect(screen.getByText(/digite no campo de busca/i)).toBeInTheDocument();
+  });
+
+  it('offers the types, and what was opened last, when there is no query', () => {
+    localStorage.setItem(
+      'codice-recentes',
+      JSON.stringify([{ slug: 'raio', name: 'Raio', type: 'spell' }]),
+    );
+    mockApi();
+    renderAt('/buscar');
+    const recents = within(screen.getByRole('navigation', { name: 'Vistos recentemente' }));
+    expect(recents.getByRole('link', { name: 'Raio' })).toHaveAttribute('href', '/feiticos/raio');
+    const types = within(screen.getByRole('navigation', { name: 'Tipos de entrada' }));
+    expect(types.getByRole('link', { name: 'Regras' })).toHaveAttribute('href', '/regras');
+    localStorage.clear();
+  });
+
+  it('shows no recents box on a first visit', () => {
+    localStorage.clear();
+    mockApi();
+    renderAt('/buscar');
+    expect(screen.queryByRole('navigation', { name: 'Vistos recentemente' })).toBeNull();
+    expect(screen.getByRole('navigation', { name: 'Tipos de entrada' })).toBeInTheDocument();
+  });
+
+  it('leads out of an empty result to the types', async () => {
+    mockApi();
+    renderAt('/buscar?q=zzzz');
+    await screen.findByText(/nenhuma entrada encontrada para “zzzz”/i);
+    const types = within(screen.getByRole('navigation', { name: 'Tipos de entrada' }));
+    expect(types.getByRole('link', { name: 'Feitiços' })).toHaveAttribute('href', '/feiticos');
   });
 
   it('goes to the search page when submitting from another page', async () => {
@@ -598,7 +717,7 @@ describe('Empty states offer the way out', () => {
     mockApi();
     renderAt('/buscar?q=traco&tipo=feiticos');
     fireEvent.click(await screen.findByRole('button', { name: 'Buscar em todos os tipos' }));
-    expect(await screen.findByText(/1 resultado/)).toBeInTheDocument();
+    expect(await screen.findByText(/^1 resultado para/)).toBeInTheDocument();
   });
 });
 

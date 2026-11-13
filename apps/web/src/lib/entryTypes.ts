@@ -25,7 +25,7 @@ export const TYPE_INFO: Record<EntryType, TypeInfo> = {
     slug: 'poderes',
     label: 'Poder',
     plural: 'Poderes',
-    description: 'Os Poderes que cada classe oferece, com o NP máximo.',
+    description: 'Os Poderes que cada classe oferece, com o nível de poder (NP) máximo.',
   },
   'heroic-skill': {
     slug: 'poderes-heroicos',
@@ -39,7 +39,7 @@ export const TYPE_INFO: Record<EntryType, TypeInfo> = {
     label: 'Peculiaridade',
     plural: 'Peculiaridades',
     description:
-      'Regra opcional dos Atlas: uma marca única para cada personagem, como uma maldição, uma profecia ou o voo.',
+      'Regra opcional dos suplementos Atlas: uma marca única para cada personagem, como uma maldição, uma profecia ou o voo.',
   },
   spell: {
     slug: 'feiticos',

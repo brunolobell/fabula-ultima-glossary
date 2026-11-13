@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 30" width="22" height="30">
   <style>
-    .crystal { fill: #4a4398; }
+    .crystal { fill: #1a6366; }
     .facet { fill: #ffffff; opacity: 0.28; }
     @media (prefers-color-scheme: dark) {
-      .crystal { fill: #b4aef2; }
-      .facet { fill: #14131c; }
+      .crystal { fill: #81ced3; }
+      .facet { fill: #101a1b; }
     }
   </style>
   <path class="crystal" d="M11 0 22 11 11 30 0 11Z" />
