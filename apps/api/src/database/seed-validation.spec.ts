@@ -1,4 +1,8 @@
-import { CreatureDetails, isCreatureGroup } from '../entries/entry-types';
+import {
+  ClassTrait,
+  CreatureDetails,
+  isCreatureGroup,
+} from '../entries/entry-types';
 import { slugify } from '../entries/slug';
 import { seedEntries } from './seed-data';
 import {
@@ -26,7 +30,7 @@ const guardiao = classEntry({
 
 describe('validateSeed', () => {
   describe('class traits', () => {
-    const classWith = (traits: never[] | string[]) =>
+    const classWith = (traits: string[]) =>
       classEntry({
         name: 'Guardião',
         page: 202,
@@ -35,7 +39,7 @@ describe('validateSeed', () => {
         otherNames: [],
         quote: null,
         freeBenefits: ['PV +5'],
-        traits: traits as never,
+        traits: traits as ClassTrait[],
       });
     const messagesFor = (traits: string[]) =>
       validateSeed([classWith(traits)]).join('\n');
@@ -57,6 +61,17 @@ describe('validateSeed', () => {
     });
 
     it('gives every seeded class traits that are consistent with its freeBenefits', () => {
+      const wording: [string, RegExp][] = [
+        ['hp', /\bPV\b/],
+        ['mp', /\bPM\b/],
+        ['ip', /\bPI\b|Pontos de Inventário/],
+        ['melee-weapon', /corpo a corpo/],
+        ['ranged-weapon', /à distância/],
+        ['armor', /armaduras/],
+        ['shield', /escudos/],
+        ['rituals', /rituais/],
+        ['projects', /projetos/i],
+      ];
       const classes = seedEntries.filter((e) => e.type === 'class');
       expect(classes.length).toBeGreaterThan(0);
       for (const c of classes) {
@@ -65,51 +80,13 @@ describe('validateSeed', () => {
           freeBenefits: string[];
         };
         const text = freeBenefits.join(' ');
-        expect([c.name, 'hp', traits.includes('hp')]).toEqual([
-          c.name,
-          'hp',
-          /\bPV\b/.test(text),
-        ]);
-        expect([c.name, 'mp', traits.includes('mp')]).toEqual([
-          c.name,
-          'mp',
-          /\bPM\b/.test(text),
-        ]);
-        expect([c.name, 'ip', traits.includes('ip')]).toEqual([
-          c.name,
-          'ip',
-          /\bPI\b|Pontos de Inventário/.test(text),
-        ]);
-        expect([c.name, 'melee-weapon', traits.includes('melee-weapon')]).toEqual([
-          c.name,
-          'melee-weapon',
-          /corpo a corpo/.test(text),
-        ]);
-        expect([c.name, 'ranged-weapon', traits.includes('ranged-weapon')]).toEqual([
-          c.name,
-          'ranged-weapon',
-          /à distância/.test(text),
-        ]);
-        expect([c.name, 'armor', traits.includes('armor')]).toEqual([
-          c.name,
-          'armor',
-          /armaduras/.test(text),
-        ]);
-        expect([c.name, 'shield', traits.includes('shield')]).toEqual([
-          c.name,
-          'shield',
-          /escudos/.test(text),
-        ]);
-        expect([c.name, 'rituals', traits.includes('rituals')]).toEqual([
-          c.name,
-          'rituals',
-          /rituais/.test(text),
-        ]);
-        expect([c.name, 'projects', traits.includes('projects')]).toEqual([
-          c.name,
-          'projects',
-          /projetos/i.test(text),
-        ]);
+        for (const [trait, pattern] of wording) {
+          expect([c.name, trait, traits.includes(trait)]).toEqual([
+            c.name,
+            trait,
+            pattern.test(text),
+          ]);
+        }
       }
     });
   });

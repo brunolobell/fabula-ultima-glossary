@@ -1,5 +1,4 @@
 import type {
-  ClassDetails,
   ClassTrait,
   CreatureSummaryDetails,
   DamageType,
@@ -13,7 +12,11 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
-import { CLASS_TRAIT_LABEL, CLASS_TRAIT_ORDER } from './classTraits';
+import {
+  CLASS_TRAIT_LABEL,
+  CLASS_TRAIT_ORDER,
+  classTraitsOf,
+} from './classTraits';
 import {
   AFFINITY_ORDER,
   DAMAGE_ORDER,
@@ -122,9 +125,7 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     {
       param: 'beneficio',
       label: 'Benefício',
-      // `?? []` is deliberate: older seeded databases and cached list responses
-      // (stale-while-revalidate) can lack `traits`, and /classes must not throw.
-      values: (e) => (e.details as ClassDetails).traits ?? [],
+      values: classTraitsOf,
       labelOf: (value) => CLASS_TRAIT_LABEL[value as ClassTrait] ?? value,
       order: CLASS_TRAIT_ORDER,
     },

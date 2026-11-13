@@ -5,7 +5,6 @@ import { decorateChecks } from '../lib/check';
 import { entryPath } from '../lib/entryTypes';
 import { requirementText } from '../lib/requirements';
 import type {
-  ClassDetails,
   CreatureSummaryDetails,
   EquipmentDetails,
   HeroicSkillDetails,
@@ -14,7 +13,7 @@ import type {
   SpellDetails,
   TransportDetails,
 } from '../api/types';
-import { classTraitLabels } from '../lib/classTraits';
+import { classTraitLabels, classTraitsOf } from '../lib/classTraits';
 import { SPECIES_LABEL, isCreatureGroup, rankText } from '../lib/creatures';
 import {
   MEDIUM_LABEL,
@@ -105,9 +104,7 @@ function CreatureFacts({ entry }: { entry: EntrySummary }) {
 
 /** "Aumento de PV · Escudos marciais · ": what a Class's free benefits grant. */
 function ClassFacts({ entry }: { entry: EntrySummary }) {
-  // `?? []` is deliberate: older seeded databases and cached list responses
-  // (stale-while-revalidate) can lack `traits`, and /classes must not throw.
-  const labels = classTraitLabels((entry.details as ClassDetails).traits ?? []);
+  const labels = classTraitLabels(classTraitsOf(entry));
   return labels.length > 0 ? <>{labels.join(' · ')}{' · '}</> : null;
 }
 
