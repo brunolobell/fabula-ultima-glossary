@@ -27,6 +27,9 @@ export const BONUS_ENGLISH_NAMES: Record<string, string> = {
   'vanguarda-das-cartas': 'card vanguard',
   'mestre-de-duelos': 'duel master',
   'rito-proibido': 'forbidden rite',
+  'nascimento-da-crueldade': 'birth of the cruel',
+  'ceifeiro-do-pesar': 'harvester of sorrow',
+  'pulso-das-larvas': 'pulse of the maggots',
 };
 
 /** Skills ("Poderes") of a class: [name, maxLevel, page], sorted by name. */
@@ -374,6 +377,77 @@ describe('Codex Extra and Bonus content', () => {
       .join('\n');
     expect(text).toContain('Pontos de Túmulo');
     expect(text).toContain('morto-vivo');
+  });
+
+  it('seeds the Necromancer heroic skills (Bonus, translated)', () => {
+    expect(heroicOf('bonus-necromancer')).toEqual([
+      {
+        name: 'Ceifeiro do Pesar',
+        page: 4,
+        classes: ['entropista', 'necromante'],
+        alsoRequires: ['drenar-espirito', 'drenar-vigor'],
+      },
+      {
+        name: 'Nascimento da Crueldade',
+        page: 4,
+        classes: ['necromante'],
+        alsoRequires: [],
+      },
+      {
+        name: 'Pulso das Larvas',
+        page: 5,
+        classes: ['necromante'],
+        alsoRequires: [],
+      },
+    ]);
+    const heroic = (name: string) =>
+      seedEntries.find(
+        (e) =>
+          e.type === 'heroic-skill' &&
+          e.source === 'bonus-necromancer' &&
+          e.name === name,
+      ) as Extract<SeedEntry, { type: 'heroic-skill' }>;
+    const nascimento = heroic('Nascimento da Crueldade').body ?? '';
+    for (const term of [
+      '2 Pontos de Túmulo',
+      'nível',
+      'morto-vivo',
+      'soldado',
+      'Livro Básico, página 305',
+      '1 dia de viagem',
+    ]) {
+      expect(nascimento).toContain(term);
+    }
+    const ceifeiro = heroic('Ceifeiro do Pesar').body ?? '';
+    for (const term of ['(RA + 20)', '(RA + 25)', '(RA + 15)']) {
+      expect(ceifeiro).toContain(term);
+    }
+    const pulso = heroic('Pulso das Larvas').body ?? '';
+    for (const term of ['trevas', 'veneno', 'físico', 'luz']) {
+      expect(pulso).toContain(term);
+    }
+    const codexSlugs = seedEntries
+      .filter((e) => e.source === 'codex-extra')
+      .map((e) => e.slug ?? slugify(e.name));
+    for (const slug of [
+      'nascimento-da-crueldade',
+      'ceifeiro-do-pesar',
+      'pulso-das-larvas',
+    ]) {
+      expect(codexSlugs).not.toContain(slug);
+    }
+  });
+
+  it('seeds 30 heroic skills and 8 classes across the three new sources', () => {
+    const inNew = (e: SeedEntry) =>
+      e.source !== undefined &&
+      (NEW_SOURCES as readonly string[]).includes(e.source);
+    expect(
+      seedEntries.filter((e) => e.type === 'heroic-skill' && inNew(e)),
+    ).toHaveLength(30);
+    expect(
+      seedEntries.filter((e) => e.type === 'class' && inNew(e)),
+    ).toHaveLength(8);
   });
 
   it('seeds the Codex heroic skills that need the new classes and those that need only existing ones', () => {

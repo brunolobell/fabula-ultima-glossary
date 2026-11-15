@@ -46,6 +46,7 @@ import {
 } from './services-transport';
 import { guides } from './guides';
 import { poderesHeroicosAceOfCards } from './heroic-skills/bonus-ace-of-cards';
+import { poderesHeroicosNecromancer } from './heroic-skills/bonus-necromancer';
 import { poderesHeroicosCodexExtra } from './heroic-skills/codex-extra';
 import { poderesHeroicosHighFantasy } from './heroic-skills/high-fantasy';
 import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
@@ -130,4 +131,5 @@ export const seedEntries: SeedEntry[] = [
   ...inBook('bonus-ace-of-cards', [...carteador]),
   ...inBook('bonus-ace-of-cards', poderesHeroicosAceOfCards),
   ...inBook('bonus-necromancer', [...necromante]),
+  ...inBook('bonus-necromancer', poderesHeroicosNecromancer),
 ];
