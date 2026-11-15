@@ -1,7 +1,7 @@
 import { EntrySource } from '../../entries/entry-types';
 import { slugify } from '../../entries/slug';
 import { seedEntries } from '.';
-import { heroicSkill } from './helpers';
+import { classEntry, heroicSkill, withTags } from './helpers';
 import { SeedEntry } from './types';
 import { resolveSlug, validateSeed } from '../seed-validation';
 
@@ -20,7 +20,9 @@ const BONUS_SOURCES: EntrySource[] = [
  * English name (lower-case) of each Bonus class and heroic skill, keyed by the
  * entry's slug. Each task that seeds Bonus content adds its entries here.
  */
-export const BONUS_ENGLISH_NAMES: Record<string, string> = {};
+export const BONUS_ENGLISH_NAMES: Record<string, string> = {
+  carteador: 'ace of cards',
+};
 
 /** Skills ("Poderes") of a class: [name, maxLevel, page], sorted by name. */
 export const skillsOf = (
@@ -245,6 +247,41 @@ describe('Codex Extra and Bonus content', () => {
     }
   });
 
+  it('seeds Carteador (Bonus Ace of Cards, translated)', () => {
+    const carteador = classOf('Carteador');
+    expect(carteador?.source).toBe('bonus-ace-of-cards');
+    expect(carteador?.page).toBe(2);
+    expect(carteador?.tags).toContain('ace of cards');
+    expect(carteador?.details).toMatchObject({
+      traits: ['hp', 'mp'],
+      otherNames: ['Baralhomante', 'Duelista do Destino', 'Apostador'],
+      quote: 'Não desvie o olhar!',
+    });
+    expect(skillsOf('Carteador')).toEqual([
+      ['Altos e Baixos', 1, 3],
+      ['Carta Armadilha', 4, 3],
+      ['Cartas Mágicas', 3, 3],
+      ['Dobro ou Nada', 1, 3],
+      ['Mulligan', 5, 3],
+    ]);
+    const body = carteador?.body ?? '';
+    for (const term of [
+      'Gerenciando o Baralho',
+      'Usando um conjunto',
+      'Grande Prêmio',
+      'Flush Mágico',
+      'Flush Ofuscante',
+      'Full Status',
+      'Trinca de Suporte',
+      'Encrenca em Dobro',
+      'Par Mágico',
+      '777',
+      '30 cartas',
+    ]) {
+      expect(body).toContain(term);
+    }
+  });
+
   describe('the invariants can fail', () => {
     const bonusHeroic = (overrides: Partial<SeedEntry> = {}): SeedEntry =>
       ({
@@ -285,6 +322,23 @@ describe('Codex Extra and Bonus content', () => {
   });
 
   describe('helpers', () => {
+    it('withTags appends to the default tags without touching the entry', () => {
+      const base = classEntry({
+        name: 'Teste',
+        page: 1,
+        summary: 'Uma classe.',
+        body: 'Uma classe.',
+        otherNames: [],
+        quote: null,
+        freeBenefits: ['Aumenta seus PV máximos em 5.'],
+        traits: ['hp'],
+      });
+      const tagged = withTags(base, 'extra', 'outra');
+      expect(tagged.tags).toEqual(['classe', 'extra', 'outra']);
+      expect(base.tags).toEqual(['classe']);
+      expect(tagged.name).toBe('Teste');
+    });
+
     it('return nothing for a class that is not seeded', () => {
       expect(skillsOf('Classe Inexistente')).toEqual([]);
       expect(classOf('Classe Inexistente')).toBeUndefined();

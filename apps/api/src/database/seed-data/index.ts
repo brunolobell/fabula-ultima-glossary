@@ -21,6 +21,7 @@ import { floralista } from './classes/natural-fantasy/floralista';
 import { gourmet } from './classes/natural-fantasy/gourmet';
 import { invocador } from './classes/natural-fantasy/invocador';
 import { mercador } from './classes/natural-fantasy/mercador';
+import { carteador } from './classes/bonus-ace-of-cards/carteador';
 import { astrologo } from './classes/codex-extra/astrologo';
 import { bandoleiro } from './classes/codex-extra/bandoleiro';
 import { cavaleiroMagico } from './classes/codex-extra/cavaleiro-magico';
@@ -121,4 +122,6 @@ export const seedEntries: SeedEntry[] = [
     ...laminaCarmesim,
     ...malandro,
   ]),
+  // Bonus
+  ...inBook('bonus-ace-of-cards', [...carteador]),
 ];
