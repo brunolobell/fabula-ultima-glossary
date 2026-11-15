@@ -9,7 +9,7 @@ export const cavaleiroMagico: SeedEntry[] = [
     page: 48,
     summary:
       'Herói raro escolhido por uma relíquia mágica pelo coração bondoso e senso de justiça; invoca formas mágicas que lhe dão armas, armaduras e poderes movidos por seus Laços.',
-    body: `Cavaleiros mágicos são raros. Suas relíquias, artefatos misteriosos de eras passadas, os escolhem pelo coração bondoso e pelo senso de justiça. Seja um objeto místico ou tecnológico, cada relíquia é única e permite invocar trajes que concedem armas e poderes incríveis. Por serem versáteis e raros, esses cavaleiros costumam ocupar postos de destaque, como líderes justos e astutos ou como inimigos de impérios tirânicos.
+    body: `Poucos nascem para ser cavaleiros mágicos. A relíquia, um artefato enigmático de eras esquecidas, é quem escolhe o portador, atraída por um coração generoso e um forte senso de justiça. Pode ser um objeto místico ou uma peça de tecnologia, mas cada relíquia é única e deixa o portador invocar trajes que trazem armas e poderes extraordinários. Versáteis e raros como são, esses cavaleiros costumam assumir lugares de liderança, como chefes justos e espertos, ou se erguer contra impérios tirânicos.
 
 ## Para pensar no personagem
 

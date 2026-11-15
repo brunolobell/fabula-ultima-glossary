@@ -20,7 +20,7 @@ export const astrologo: SeedEntry[] = [
 
 ## Cargas
 
-Quase todas as Constelações (exceto a da Rasga-mortalha) fazem duas coisas: o efeito principal da constelação e a **geração de cargas**. As cargas duram **até o fim da cena** e existem em quatro tipos:
+Todas as Constelações, menos a da Rasga-mortalha, têm um efeito principal e **geram cargas**. As cargas duram **até o fim da cena** e são de quatro tipos:
 
 | Carga | Gerada por | Consumida em |
 | --- | --- | --- |

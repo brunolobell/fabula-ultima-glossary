@@ -9,7 +9,7 @@ export const forjadorDeAlmas: SeedEntry[] = [
     page: 52,
     summary:
       'Artesão capaz de moldar a energia mágica do rio das almas em armas e feitiços; fortalece seus Poderes com Pontos de Alma, fragmentos extraídos de inimigos derrotados.',
-    body: `Forjadores de almas sabem converter a energia mágica do rio das almas em objetos poderosos, ou guardá-la dentro de itens comuns. Ninguém duvida do talento deles, mas os grandes mestres das artes mágicas desconfiam. A alma é parte essencial de cada ser: será que o forjador entrega pedaços da própria alma a cada obra, ou será que ele aprendeu a se servir das almas dos inimigos?
+    body: `O forjador de almas dá forma à energia mágica do rio das almas, seja num objeto poderoso, seja escondida num item qualquer. Ninguém nega a habilidade e o capricho dele, mas os grandes nomes da magia torcem o nariz. Afinal, a alma é o que há de mais essencial em qualquer ser, e fica a pergunta: ele paga cada obra com um pedaço da própria alma ou descobriu como usar a dos inimigos?
 
 ## Para pensar no personagem
 
@@ -20,7 +20,7 @@ export const forjadorDeAlmas: SeedEntry[] = [
 
 ## Pontos de Alma
 
-Todo forjador de almas manifesta seus Poderes com a energia da própria alma. Alguns, por desejo sincero de fazer o bem ou por ambição sombria, aprendem a ir além e a extrair um fragmento da alma de outros seres: o **Ponto de Alma**. Para guardá-los, é preciso ter o Poder [[coletar-almas]], que limita o total a **(NP + 1)** Pontos de Alma.
+Todo forjador de almas manifesta seus Poderes com a energia da própria alma. Alguns, por desejo sincero de fazer o bem ou por ambição sombria, aprendem a ir além e a extrair um fragmento da alma de outros seres: o **Ponto de Alma**. O Poder [[coletar-almas]] limita o total que você pode ter a **(NP + 1)** Pontos de Alma.
 
 ### Como obter
 

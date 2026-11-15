@@ -56,7 +56,7 @@ Além disso, enquanto houver um **curinga** na sua **pilha de descarte**, todo o
       alsoRequires: ['Cartas Mágicas'],
       summary:
         'Ao resolver Par Mágico com uma arma arcana ou de arremesso, causa dano adicional igual ao valor comum das cartas e recupera PM igual ao dobro desse valor.',
-      body: `Ao resolver o efeito **Par Mágico**, se o ataque for feito com uma arma da categoria **Armas Arcanas** ou **Armas de Arremesso**, você causa **dano adicional** igual ao **valor comum das cartas usadas** e **recupera PM** igual ao **dobro desse valor**.
+      body: `Ao resolver o efeito **Par Mágico**, se o ataque for feito com uma arma da categoria **Arcana** ou **Arremesso**, você causa **dano adicional** igual ao **valor comum das cartas usadas** e **recupera PM** igual ao **dobro desse valor**.
 
 > **Exemplo:** ao resolver um par de 5, você causa **5 pontos de dano adicional** e recupera **10 PM**.`,
     }),

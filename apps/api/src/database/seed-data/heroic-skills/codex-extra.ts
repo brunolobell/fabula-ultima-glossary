@@ -10,9 +10,9 @@ export const poderesHeroicosCodexExtra: SeedEntry[] = [
     classes: ['Bandoleiro'],
     summary:
       'Ao ser alvo de novo de um poder ou feitiço que já o atingiu na cena, gaste 1 Ponto de Fabula para ficar imune a ele; com 1 Ponto de Ultima, também recupera 20 PV.',
-    body: `Quando você for alvo de um poder ou feitiço que **já tenha sido usado contra você** nesta cena, pode gastar **1 Ponto de Fabula** para ficar **imune ao efeito e ao dano** desse poder ou feitiço. A imunidade dura até o fim da cena ou até você usar este poder de novo, o que vier primeiro.
+    body: `Se um poder ou feitiço que **já o atingiu** antes nesta cena voltar a ter você como alvo, você pode gastar **1 Ponto de Fabula** e ficar **imune ao efeito e ao dano** dele. A imunidade termina no fim da cena ou quando você usar este poder outra vez, o que ocorrer primeiro.
 
-Se você pagar com **1 Ponto de Ultima** no lugar do Ponto de Fabula, também **recupera 20 PV**.`,
+Se pagar com **1 Ponto de Ultima** em vez do Ponto de Fabula, você também **recupera 20 PV**.`,
   }),
 
   heroicSkill({
@@ -21,9 +21,9 @@ Se você pagar com **1 Ponto de Ultima** no lugar do Ponto de Fabula, também **
     classes: ['Astrólogo'],
     summary:
       'Ao gerar cargas, gaste 5 PM para converter uma delas em carga cósmica (vale como qualquer tipo); consumi-la amplia em 5 os PV perdidos ou recuperados por uma criatura.',
-    body: `Sempre que você **gerar cargas** de qualquer tipo (celeste, estelar, meteórica ou solar), pode gastar **5 PM** para transformar uma das cargas geradas em uma **carga cósmica**. Ela pode ser consumida como se fosse uma carga de **qualquer tipo** que você escolher.
+    body: `Ao **gerar cargas** de qualquer tipo (celeste, estelar, meteórica ou solar), você pode pagar **5 PM** para converter uma dessas cargas em **carga cósmica**, que na hora de ser consumida vale como uma carga de **qualquer tipo** à sua escolha.
 
-Além disso, quando você fizer uma criatura **perder ou recuperar PV**, pode consumir uma carga cósmica: nesse caso, a quantidade de PV perdida ou recuperada pela criatura **aumenta em 5**.`,
+Além disso, ao fazer uma criatura **perder ou recuperar PV**, você pode consumir uma carga cósmica; se o fizer, o total de PV perdidos ou recuperados por ela **sobe em 5**.`,
   }),
 
   heroicSkill({
@@ -154,7 +154,7 @@ Este poder heroico pode ser adquirido **até três vezes**.`,
     alsoRequires: ['Golpe das Sombras'],
     summary:
       'Ao usar Golpe das Sombras, converte todo o dano em fogo ou gelo e fica Resistente ao outro tipo; o ataque corpo a corpo livre pode alcançar inimigos só atingíveis à distância.',
-    body: `Ao usar [[golpe-das-sombras]], você pode escolher **fogo** ou **gelo**. Se escolher, todo o dano causado por esse ataque passa a ser do tipo escolhido, no lugar de trevas (esse tipo não pode ser alterado por outros efeitos), e você fica **Resistente** ao tipo de dano que **não** escolheu até o início do seu próximo turno.
+    body: `Ao usar [[golpe-das-sombras]], você pode escolher **fogo** ou **gelo**. Se escolher, todo o dano causado por esse ataque passa a ser do tipo escolhido, no lugar de trevas (esse tipo não pode mudar, como de costume), e você fica **Resistente** ao tipo de dano que **não** escolheu até o início do seu próximo turno.
 
 Além disso, quando você fizer um ataque livre com uma arma **corpo a corpo** como parte de Golpe das Sombras, esse ataque pode atingir inimigos que normalmente só poderiam ser escolhidos como alvo de ataques **à distância**.`,
   }),
@@ -188,7 +188,7 @@ Além disso, quando o companheiro causar dano e **não tiver armas equipadas**, 
     classes: ['Entropista', 'Gourmet', 'Mutante', 'Quimerista'],
     summary:
       'Dissipar custa 10 × A e atinge até três criaturas; ao encerrar feitiços de duração Cena em inimigos, você recupera 20 PM por feitiço ou copia seu efeito em si mesmo.',
-    body: `Quando você lança **Dissipar**, o custo em PM desse feitiço passa a ser **"10 × A"** e o alvo passa a ser **"até três criaturas"**.
+    body: `Quando você lança [[dissipar]], o custo em PM desse feitiço passa a ser **"10 × A"** e o alvo passa a ser **"até três criaturas"**.
 
 Sempre que você fizer um ou mais inimigos deixarem de ser afetados por feitiços de duração **Cena**, escolha um efeito:
 
@@ -215,7 +215,7 @@ Quando você fizer um ataque livre com uma arma **corpo a corpo** como parte do 
     page: 23,
     classes: ['Andarilho', 'Floralista', 'Mutante', 'Quimerista'],
     alsoRequires: ['Companheiro Fiel'],
-    note: 'Companheiro Fiel da espécie construto.',
+    note: 'Companheiro Fiel da espécie construto (a tabela do Codex cita planta).',
     summary:
       'Ao recuperar PV, você pode recuperar só metade e seu companheiro recupera o mesmo tanto; no fim do seu turno, um companheiro com PV cheios e que não agiu pode fazer um ataque livre.',
     body: `Ao recuperar PV, você pode escolher recuperar **apenas a metade**. Se fizer isso, o seu [[companheiro-fiel]] recupera **a mesma quantidade de PV**.
@@ -229,9 +229,9 @@ No fim do seu turno em um conflito, se os **PV atuais** do companheiro forem igu
     classes: ['Arcanista', 'Guardião'],
     summary:
       'Uma vez por cena, se você está fundido a um Arcano e você e/ou aliados visíveis cairiam a 0 PV, todos ficam com 1 PV; em troca você dispensa o Arcano e não pode invocá-lo até o fim da cena.',
-    body: `**Uma vez por cena**, quando você e/ou um ou mais aliados que você veja forem reduzidos a **0 PV** e você estiver **fundido a um Arcano**, todos eles podem, em vez disso, ficar com **exatamente 1 PV**.
+    body: `**Uma vez por cena**, se você estiver **fundido a um Arcano** e você e/ou aliados que você enxergue fossem cair a **0 PV**, todos esses personagens ficam, em vez disso, com **exatamente 1 PV**.
 
-Se fizer isso, você deve **dispensar esse Arcano imediatamente** (sem usar qualquer efeito de dispensar) e não pode invocá-lo de novo até o fim da cena.`,
+O preço é **dispensar o Arcano na hora** (sem ativar nenhum efeito de dispensa dele); você não pode invocá-lo de novo até o fim da cena.`,
   }),
 
   heroicSkill({
@@ -242,7 +242,7 @@ Se fizer isso, você deve **dispensar esse Arcano imediatamente** (sem usar qual
     note: 'Engenhocas com Alquimia no nível superior.',
     summary:
       'Ao criar uma poção por Alquimia, você pode tratar o resultado do dado que define o alvo como 13 ou 17, qualquer que seja o número rolado.',
-    body: `Ao criar uma poção por meio de **Alquimia**, você pode considerar que o resultado do dado que define o **alvo** da poção é **13 ou 17**, mesmo que o dado mostre outro número.`,
+    body: `Quando a **Alquimia** produzir uma poção, você pode escolher **13 ou 17** como o valor do dado que determina o **alvo** dela, seja qual for o número que saiu na rolagem.`,
   }),
 
   heroicSkill({
@@ -251,12 +251,12 @@ Se fizer isso, você deve **dispensar esse Arcano imediatamente** (sem usar qual
     classes: ['Comandante', 'Guardião'],
     summary:
       'Depois que um inimigo faz teste de Precisão ou de Magia para feitiço ofensivo, você dá +3 ao resultado e escolhe: você e aliados que o ouvem ficam Resistentes a tudo, ou causam 5 de dano adicional, até o fim do turno.',
-    body: `Depois que um inimigo que você veja fizer um teste de **Precisão** ou um teste de **Magia** para um **feitiço ofensivo** (O) durante o turno dele em um conflito, você pode dar **+3** ao resultado desse teste. Se fizer isso, escolha um efeito:
+    body: `No turno de um inimigo que você enxergue, em um conflito, logo após ele fazer um teste de **Precisão** ou um teste de **Magia** para um **feitiço ofensivo** (O), você pode somar **+3** ao resultado. Ao fazer isso, escolha uma opção:
 
-- você e cada aliado que consiga ouvi-lo ficam **Resistentes a todos os tipos de dano** até o fim deste turno; ou
-- você e cada aliado que consiga ouvi-lo causam **5 pontos de dano adicional** até o fim deste turno.
+- você e todo aliado que possa ouvi-lo ficam **Resistentes a todos os tipos de dano** até o fim desse turno; ou
+- você e todo aliado que possa ouvi-lo causam **5 pontos de dano adicional** até o fim desse turno.
 
-Depois de usar este poder, você não pode usá-lo de novo até o início do seu próximo turno.`,
+Depois de usar este poder, só poderá usá-lo outra vez a partir do início do seu próximo turno.`,
   }),
 
   heroicSkill({
@@ -277,8 +277,8 @@ Depois de usar este poder, você não pode usá-lo de novo até o início do seu
     classes: ['Orador', 'Virtuoso'],
     summary:
       'Inimigos que sofrerem condições por um verso seu ou por Condenar também ficam enfeitiçados e precisam incluir você entre os alvos de ataques e feitiços ofensivos, se puderem.',
-    body: `Depois que um ou mais inimigos sofrerem uma ou mais condições por causa de um **verso** que você cantou ou do seu **Condenar**, cada um deles também fica **enfeitiçado**. Isso não afeta criaturas imunes nem as que já sofriam todas as condições que podem ser causadas dessa forma.
+    body: `Quando inimigos sofrem condições por um **verso** que você cantou ou pelo seu **Condenar**, cada um deles fica também **enfeitiçado**. Ficam de fora as criaturas imunes e as que já estavam sob todas as condições que aquele efeito poderia causar.
 
-Uma criatura que você deixou enfeitiçada assim deve **sempre incluir você** entre os alvos de seus ataques e feitiços ofensivos (O), se puder. Ela deixa de estar enfeitiçada no **início do próximo turno dela** ou assim que se recuperar de uma ou mais condições.`,
+Quem você enfeitiçou desse modo precisa **incluir você** entre os alvos dos próprios ataques e feitiços ofensivos (O) sempre que puder. O enfeitiçamento acaba no **início do próximo turno da criatura** ou quando ela se recuperar de uma ou mais condições, o que vier antes.`,
   }),
 ];

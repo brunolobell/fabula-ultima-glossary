@@ -9,12 +9,12 @@ export const carteador: SeedEntry[] = [
       name: CLASS,
       page: 2,
       summary:
-        'Usa um baralho pessoal para sentir as flutuações do rio das almas: combinando cartas na hora certa, produz efeitos sobrenaturais de cura, dano e condições. Versão do suplemento Bônus (inglês), traduzida e não oficial.',
+        'Usa um baralho pessoal para sentir as flutuações do rio das almas: combinando cartas na hora certa, produz efeitos sobrenaturais de cura, dano e condições. Regras do suplemento Fabula Bonus (em inglês), traduzidas por nós e não oficiais.',
       body: `Carteadores usam baralhos especiais para perceber as constantes flutuações do rio das almas. Cada baralho está preso ao seu dono e reflete o gosto e a personalidade dele: ao sacar certas combinações no momento certo, o carteador manipula a energia mágica e gera efeitos sobrenaturais.
 
 Em alguns mundos, carteadores duelam entre si com seus baralhos pessoais, em busca de glória ou de artefatos preciosos.
 
-Esta é a versão do suplemento Bônus gratuito do Carteador (em inglês), traduzida por nós e não oficial. Ela é a referência de regras da classe neste glossário; o Codex Extra imprime uma versão anterior.
+Regras do suplemento Fabula Bonus (em inglês), traduzidas por nós e não oficiais; o texto do Codex Extra pode diferir em detalhes.
 
 ## Para pensar no personagem
 

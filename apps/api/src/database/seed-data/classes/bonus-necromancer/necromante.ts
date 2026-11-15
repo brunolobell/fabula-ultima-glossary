@@ -9,12 +9,12 @@ export const necromante: SeedEntry[] = [
       name: CLASS,
       page: 2,
       summary:
-        'Ceifa a energia espiritual de quem está à beira da morte e a acumula como Pontos de Túmulo, que alimentam o controle sobre vida e morte: volta de 0 PV, cura, dano extra e feitiços em área. Versão do suplemento Bônus (inglês), traduzida e não oficial.',
+        'Ceifa a energia espiritual de quem está à beira da morte e a acumula como Pontos de Túmulo, que alimentam o controle sobre vida e morte: volta de 0 PV, cura, dano extra e feitiços em área. Regras do suplemento Fabula Bonus (em inglês), traduzidas por nós e não oficiais.',
       body: `As artes de manipular almas já tiveram os usos mais variados, mas poucas despertam um medo tão instintivo quanto a necromancia.
 
 Necromantes ceifam a energia espiritual instantes antes da morte, quando ela brilha com mais força. Esse poder precioso alimenta o controle deles sobre o equilíbrio entre a vida e a morte, ou até serve para habitar um cadáver e fazê-lo voltar a se mover. Ainda assim, como se zombasse dos esforços sombrios deles, a verdadeira ressurreição de um ente perdido continua sendo uma miragem.
 
-Esta é a versão do suplemento Fabula Bonus (em inglês), traduzida por nós e não oficial. Ela é a referência de regras da classe neste glossário.
+Regras do suplemento Fabula Bonus (em inglês), traduzidas por nós e não oficiais; o texto do Codex Extra pode diferir em detalhes.
 
 ## Para pensar no personagem
 

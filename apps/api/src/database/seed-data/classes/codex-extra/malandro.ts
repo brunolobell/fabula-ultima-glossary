@@ -67,7 +67,7 @@ A cada **2 PI** gastos, escolha uma modificação:
 - a arma fornece **+1** em testes da ação **Objetivo**;
 - ataques com a arma causam dano de **veneno**.
 
-Todas as modificações improvisadas duram **até o fim da cena**, quando a arma se desfaz em vários pedacinhos de material inútil.`,
+Todas as modificações improvisadas duram **até o fim da cena**, quando a arma volta a ser um monte de sucata sem serventia.`,
   ),
 
   skill(

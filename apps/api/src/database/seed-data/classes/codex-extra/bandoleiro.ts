@@ -9,9 +9,9 @@ export const bandoleiro: SeedEntry[] = [
     page: 42,
     summary:
       'Figura dos agrestes e sertões, mestre da emboscada e da fuga a galope; reúne-se em bando para vingar injustiças, combatendo violência com violência por uma honra e crenças próprias.',
-    body: `Bandoleiros vêm dos agrestes e dos sertões. São mestres da emboscada, especialistas em sumir a galope por trilhas secretas e em abrir caminho na faca e na bala. Muitos são capangas que se rebelaram contra os antigos senhores e se juntaram em bandos para vingar injustiças. Combatem violência com violência, mas guiados por uma honra e por crenças que são só deles.
+    body: `O bandoleiro é gente dos agrestes e dos sertões: arma emboscadas, some a galope por trilhas que só ele conhece e abre passagem à faca e à bala. Muitos começaram como capangas, se voltaram contra os antigos patrões e formaram bandos para fazer justiça a quem foi lesado. Respondem à violência na mesma moeda, mas seguem uma honra e crenças próprias.
 
-Para as autoridades, são mercenários que podem ser contratados. Para o povo, são heróis temidos e admirados, eternizados em canções e histórias.
+Aos olhos de quem manda, não passam de mercenários à venda. Aos olhos do povo, são heróis que dão medo, mas também encantam, e rendem canções e causos.
 
 ## Para pensar no personagem
 
