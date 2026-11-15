@@ -9,8 +9,8 @@ export const poderesHeroicosCodexExtra: SeedEntry[] = [
     page: 17,
     classes: ['Bandoleiro'],
     summary:
-      'Ao ser alvo de novo de um poder ou feitiço que já o atingiu na cena, gaste 1 Ponto de Fabula para ficar imune a ele; com 1 Ponto de Ultima, também recupera 20 PV.',
-    body: `Se um poder ou feitiço que **já o atingiu** antes nesta cena voltar a ter você como alvo, você pode gastar **1 Ponto de Fabula** e ficar **imune ao efeito e ao dano** dele. A imunidade termina no fim da cena ou quando você usar este poder outra vez, o que ocorrer primeiro.
+      'Ao ser alvo de novo de um poder ou feitiço que já teve você como alvo nesta cena, você pode gastar 1 Ponto de Fabula para ficar imune a ele; com 1 Ponto de Ultima, também recupera 20 PV.',
+    body: `Se um poder ou feitiço que **já teve você como alvo** nesta cena voltar a ter você como alvo, você pode gastar **1 Ponto de Fabula** e ficar **imune ao efeito e ao dano** dele. A imunidade termina no fim da cena ou quando você usar este poder outra vez, o que ocorrer primeiro.
 
 Se pagar com **1 Ponto de Ultima** em vez do Ponto de Fabula, você também **recupera 20 PV**.`,
   }),
@@ -165,7 +165,7 @@ Além disso, quando você fizer um ataque livre com uma arma **corpo a corpo** c
     classes: ['Comandante', 'Guerreiro Sombrio'],
     alsoRequires: ['Carga de Cavalaria', 'Golpe das Sombras'],
     summary:
-      'Ao usar Golpe das Sombras com RA tratada como 0 no dano, você usa Carga de Cavalaria logo depois, sem gastar ação (pagando o PM).',
+      'Ao usar Golpe das Sombras com RA tratada como 0 no dano, você pode usar Carga de Cavalaria logo depois, sem gastar ação (pagando o PM).',
     body: `Ao usar [[golpe-das-sombras]], você pode considerar sua **RA como 0** ao determinar o dano do ataque. Se fizer isso, assim que o ataque de Golpe das Sombras for resolvido você pode usar [[carga-de-cavalaria]] **imediatamente e sem gastar uma ação**, pagando normalmente o custo em PM.`,
   }),
 
@@ -204,7 +204,7 @@ A cópia não usa ações, PM nem testes, e não conta como lançar um feitiço.
     classes: ['Arcanista', 'Mercador', 'Simbolista'],
     alsoRequires: ['Simbolismo'],
     summary:
-      'Em conflito, você paga 20 PM para ignorar o custo em PI de Simbolismo; o ataque corpo a corpo livre do poder pode alcançar inimigos só atingíveis à distância.',
+      'Em conflito, você pode gastar 20 PM para ignorar o custo em PI de Simbolismo; o ataque corpo a corpo livre do poder pode alcançar inimigos só atingíveis à distância.',
     body: `Ao usar [[simbolismo]] durante um conflito, você pode gastar **20 PM** para **ignorar o custo normal em PI** desse poder.
 
 Quando você fizer um ataque livre com uma arma **corpo a corpo** como parte do uso de Simbolismo, esse ataque pode atingir inimigos que normalmente só poderiam ser escolhidos como alvo de ataques **à distância**.`,

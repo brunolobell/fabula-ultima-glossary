@@ -29,15 +29,14 @@ Seu baralho é um baralho de verdade, que você monta como preferir, desde que o
 
 - O baralho tem exatamente **30 cartas**: **2 curingas** e **28 cartas** divididas em quatro tipos, chamados de **naipes** (num baralho de pôquer comum, os naipes são paus, ouros, copas e espadas). Ao criar o baralho do seu personagem, associe cada naipe a um tipo de dano diferente entre **ar**, **terra**, **fogo** e **gelo**.
 - Cada naipe tem **7 cartas**, com valores de **1 a 7**.
-
-O jeito mais simples é usar um baralho de pôquer, tirando as figuras e as cartas de 8 a 10. Mas você também pode usar arcanos menores do tarô, cartas de jogos colecionáveis e o que mais quiser, desde que as combinações sejam fáceis de identificar.
-
 - **Início do conflito:** embaralhe as 30 cartas, ponha o baralho com a face para baixo à sua frente e **compre 5 cartas** para formar a sua **mão** inicial.
 - **Baralho vazio:** se precisar comprar mais cartas do que o baralho tem, compre as que houver, embaralhe a **pilha de descarte** de volta no baralho, ponha-o com a face para baixo e continue comprando.
 - **Comprar:** as cartas compradas vão para a sua mão. Em geral só você vê a mão, mas pode mostrá-la a outros se quiser.
 - **Descartar:** as cartas descartadas da mão vão com a face para cima para a pilha de descarte, na ordem que você preferir. Depois disso, a ordem das cartas na pilha não pode mais ser mudada.
 
 O baralho, a mão e a pilha de descarte (e todos os Poderes e efeitos ligados a eles) só existem em **cenas de conflito**. Ao fim de cada conflito, embaralhe as 30 cartas de volta no baralho e deixe-o de lado.
+
+O jeito mais simples é usar um baralho de pôquer, tirando as figuras e as cartas de 8 a 10. Mas você também pode usar arcanos menores do tarô, cartas de jogos colecionáveis e o que mais quiser, desde que as combinações sejam fáceis de identificar.
 
 ### Naipes sugeridos para um baralho de pôquer
 
@@ -120,7 +119,7 @@ Você faz um **ataque livre** com uma arma que tenha equipada. Se o ataque causa
     'Carta Armadilha',
     3,
     4,
-    'Após a ação de um inimigo, declare um naipe e descarte a primeira carta do fundo do baralho; se for curinga ou do naipe, lance de graça um feitiço de custo total até (NP × 5) PM.',
+    'Após a ação de um inimigo, declare um naipe e descarte a primeira carta do fundo do baralho; se for curinga ou do naipe, lance, sem gastar ação, um feitiço de custo total até (NP × 5) PM.',
     `Depois que um inimigo que você consiga ver realizar uma ação em um conflito (e depois que a ação for resolvida), você pode **declarar um dos naipes** do seu baralho e pôr a **primeira carta do fundo do baralho** na sua pilha de descarte, com a face para cima.
 
 Se essa carta for um **curinga** ou for do **naipe declarado**, você pode realizar imediatamente a ação **Feitiço** sem custo de ação, lançando um feitiço cujo custo total em PM seja igual ou menor que **(NP × 5)**. Você ainda precisa pagar esse custo em PM.`,

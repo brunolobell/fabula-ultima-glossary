@@ -32,7 +32,7 @@ Além disso, enquanto houver um **curinga** na sua **pilha de descarte**, todo o
       classes: ['Carteador'],
       alsoRequires: ['Cartas Mágicas'],
       summary:
-        'Em conflito, uma ação põe uma carta da mão virada para baixo como carta de vanguarda (e compra 1); ao sofrer dano, revelá-la e descartá-la pode anular o dano e converter o valor em PM.',
+        'Em conflito, uma ação põe uma carta da mão virada para baixo como carta de vanguarda (e compra 1); ao sofrer dano, revelá-la e descartá-la pode anular o dano e recuperar, em PM, o dano evitado.',
       body: `**Pôr uma carta de vanguarda.** Durante um conflito, se você tiver **duas ou menos cartas de vanguarda em jogo**, pode usar uma ação para escolher **1 carta da sua mão** e colocá-la **virada para baixo** como carta de vanguarda. Se fizer isso, **compre 1 carta** do baralho.
 
 **Proteger-se.** Quando você sofrer dano e tiver uma ou mais cartas de vanguarda em jogo, pode **revelar uma delas** e colocá-la **no topo da sua pilha de descarte**. Se essa carta for um **curinga** ou se o naipe dela corresponder ao **tipo do dano** sofrido, você **não sofre o dano** e **recupera PM** na mesma quantidade.
@@ -69,7 +69,7 @@ Além disso, enquanto houver um **curinga** na sua **pilha de descarte**, todo o
       page: 7,
       classes: ['Carteador', 'Arcanista'],
       alsoRequires: ['Cartas Mágicas'],
-      note: 'É preciso ter 3 Níveis de Habilidade (NP 3) em Cartas Mágicas.',
+      note: 'Exige NP 3 ou mais em Cartas Mágicas.',
       summary:
         'Você resiste ao tipo de dano do naipe da carta no topo da sua pilha de descarte (a todos, se for curinga) e ganha o efeito de conjunto Monarca Proibido: 777 de dano a cada inimigo.',
       body: `**Resistência.** Enquanto houver uma ou mais cartas na sua **pilha de descarte**, você tem **Resistência** ao tipo de dano correspondente ao **naipe da carta no topo** dela. Se essa carta for um **curinga**, você tem Resistência aos **quatro tipos de dano**: ar, terra, fogo e gelo.

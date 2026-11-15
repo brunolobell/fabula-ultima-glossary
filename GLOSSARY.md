@@ -119,7 +119,7 @@ One of the three Jambô supplement books, "Atlas High Fantasy", "Atlas Natural F
 _Avoid_: Expansion, supplement (in the UI), setting book
 
 **Bestiary Vol. I**:
-The English-language "Fabula Ultima Bestiary, Volume I" (Need Games and Rooster Games, 2026), a fifth **Source** for Creatures. It has no Brazilian edition, so every Entry from it is the app's own translation into Portuguese: unofficial terms are marked as such, the original English name is kept and searchable, and the Page Reference is the page printed in the English book.
+The English-language "Fabula Ultima Bestiary, Volume I" (Need Games and Rooster Games, 2026), the translated **Source** for Creatures. It has no Brazilian edition, so every Entry from it is the app's own translation into Portuguese: unofficial terms are marked as such, the original English name is kept and searchable, and the Page Reference is the page printed in the English book.
 _Avoid_: Bestiário (the Core Rulebook's own, shorter Bestiário is a different Source), Vol. 1
 
 **Codex Extra**:

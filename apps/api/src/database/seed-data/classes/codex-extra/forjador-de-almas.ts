@@ -13,10 +13,10 @@ export const forjadorDeAlmas: SeedEntry[] = [
 
 ## Para pensar no personagem
 
-- Como você enxerga as implicações éticas de forjar almas?
-- Qual é a aparência das suas runas espirituais?
-- Como você aprendeu a forjar almas em formas de armas poderosas?
-- O que você sacrifica para continuar aprimorando almas?
+- O que você pensa dos dilemas morais envolvidos em forjar almas?
+- Que aspecto têm as suas runas espirituais?
+- De que modo você aprendeu a transformar almas em armas poderosas?
+- Que preço você paga para seguir aperfeiçoando as almas?
 
 ## Pontos de Alma
 
@@ -108,11 +108,11 @@ Ela dura **até o fim da cena**, e um mesmo item só pode ter **uma** caracterí
     53,
     5,
     'A cada nível, escolha um feitiço ofensivo de elementalista. Com a ação Inventário e 10 PM ou 1 Ponto de Alma, infunda-o numa arma ao alcance; até o fim da cena, quem a empunhar pode lançá-lo uma vez com a Precisão da arma.',
-    `Sempre que adquirir este Poder, escolha um dos **feitiços ofensivos** de elementalista (Livro Básico, páginas 188 e 189).
+    `A cada vez que você adquirir este Poder, escolha um **feitiço ofensivo** de elementalista (Livro Básico, páginas 188 e 189).
 
-Você pode usar a ação **Inventário** e gastar **10 PM** ou **1 Ponto de Alma** para **infundir** um desses feitiços numa arma ao seu alcance.
+Usando a ação **Inventário** e pagando **10 PM** ou **1 Ponto de Alma**, você **imbui** um desses feitiços numa arma que esteja ao seu alcance.
 
-**Até o fim da cena**, um PJ equipado com essa arma pode fazer a ação **Feitiço** para lançar o feitiço infundido **uma única vez**. O teste de Magia usa a **fórmula do teste de Precisão da arma**.`,
+**Até o fim da cena**, quem a estiver empunhando (qualquer PJ) pode usar a ação **Feitiço** para conjurar o feitiço imbuído, mas **só uma vez**. No teste de Magia, em vez da fórmula usual, aplica-se a **fórmula do teste de Precisão da arma**.`,
   ),
 
   skill(

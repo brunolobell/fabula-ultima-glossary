@@ -13,10 +13,10 @@ export const cavaleiroMagico: SeedEntry[] = [
 
 ## Para pensar no personagem
 
-- Como é a sua relíquia mágica? Como você a obteve?
-- Como acontece sua transformação? Como ela afeta seus equipamentos?
-- Qual é a aparência da sua forma mágica?
-- Que valores você deve seguir para continuar usando sua relíquia?
+- Que aspecto tem a sua relíquia mágica, e como ela veio parar nas suas mãos?
+- De que jeito você se transforma, e o que acontece com o seu equipamento nesse momento?
+- Como a sua forma mágica se parece?
+- Que princípios você precisa respeitar para manter o direito de usar a relíquia?
 
 ## Forma Mágica
 

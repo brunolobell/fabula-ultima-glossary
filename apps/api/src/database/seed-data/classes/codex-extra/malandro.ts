@@ -15,10 +15,10 @@ Outros acreditam na força, na justiça, no trabalho sem fim ou em feitiços e f
 
 ## Para pensar no personagem
 
-- Qual é a maior mentira que você já contou e que todo mundo acredita?
-- Existe alguém que sempre cai nas suas lorotas. Quem é, e por quê?
-- O que você responde quando perguntam em que você trabalha?
-- A quantas pessoas você deve algo?`,
+- Qual a maior mentira que você já inventou e que todos ainda tomam por verdade?
+- Quem é a pessoa que sempre acredita nas suas histórias, e por que ela cai?
+- Que resposta você dá quando alguém quer saber qual é o seu ofício?
+- Quantas pessoas têm algum favor ou dívida para cobrar de você?`,
     otherNames: ['Pícaro', 'Espertalhão', 'Raposa'],
     quote: 'Quem tem jogo de cintura nunca fica encurralado.',
     traits: ['ip', 'ranged-weapon'],
@@ -67,7 +67,7 @@ A cada **2 PI** gastos, escolha uma modificação:
 - a arma fornece **+1** em testes da ação **Objetivo**;
 - ataques com a arma causam dano de **veneno**.
 
-Todas as modificações improvisadas duram **até o fim da cena**, quando a arma volta a ser um monte de sucata sem serventia.`,
+Todas as modificações improvisadas duram **até o fim da cena**; então se desfazem em pedaços de material inútil, e a arma fica como era antes.`,
   ),
 
   skill(

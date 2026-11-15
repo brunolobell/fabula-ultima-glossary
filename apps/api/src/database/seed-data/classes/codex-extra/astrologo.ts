@@ -13,10 +13,10 @@ export const astrologo: SeedEntry[] = [
 
 ## Para pensar no personagem
 
-- Qual constelação rege a sua sorte? Em outras palavras, qual é o seu signo?
-- Quem ensinou você a interpretar e domar as constelações do céu?
-- Qual previsão das estrelas mudou a vida de alguém?
-- O que você responde quando perguntam sobre as suas tatuagens?
+- Qual constelação guia o seu destino? Dito de outro modo, qual é o seu signo?
+- Quem lhe ensinou a ler e a dominar as constelações do firmamento?
+- Que profecia lida nos astros virou a vida de alguém de cabeça para baixo?
+- Como você explica as tatuagens que carrega, quando alguém pergunta?
 
 ## Cargas
 
@@ -55,11 +55,11 @@ Você também gera **(NP) cargas solares**, que duram até o fim da cena.`,
     41,
     3,
     'Ação, 5 PM: um aliado visível pode, até o fim da cena, trocar um atributo de um teste por AST ou VON; consumir uma carga solar dá +1 no teste. Gera (NP) cargas estelares.',
-    `Você pode usar uma ação e gastar **5 PM** para alinhar os astros de um aliado que você possa ver. Até o fim da cena, o alvo pode **trocar um atributo** de um teste por **AST** ou **VON**.
+    `Como uma ação, e pagando **5 PM**, você posiciona os astros a favor de um aliado que esteja à vista. Até o fim da cena, o alvo pode **substituir um atributo** de um teste por **AST** ou **VON**.
 
-Se você **consumir uma carga solar**, o alvo recebe **+1** no teste.
+Se, ao usar o poder, você **consumir uma carga solar**, o alvo ainda ganha **+1** nesse teste.
 
-Você também gera **(NP) cargas estelares**, que duram até o fim da cena.`,
+O poder também lhe dá **(NP) cargas estelares**, que duram até o fim da cena.`,
   ),
 
   skill(
@@ -68,11 +68,11 @@ Você também gera **(NP) cargas estelares**, que duram até o fim da cena.`,
     41,
     3,
     'Ação, 10 PM: amaldiçoa um inimigo visível; até o início do seu próximo turno, toda fonte de dano de luz contra ele causa (NP) de dano adicional, e consumir uma carga estelar faz esse dano ignorar Imunidades e Resistências. Gera (NP) cargas meteóricas.',
-    `Você pode usar uma ação e gastar **10 PM** para amaldiçoar um inimigo que você possa ver. Até o início do seu próximo turno, **todas as fontes** que causarem dano de **luz** a ele causam **(NP)** pontos de dano adicional.
+    `Como uma ação, e pagando **10 PM**, você lança uma maldição sobre um inimigo que esteja à vista. Até o início do seu próximo turno, **qualquer fonte** de dano de **luz** contra ele causa **(NP)** pontos de dano a mais.
 
-Se você **consumir uma carga estelar**, todo dano de luz causado ao alvo **ignora Imunidades e Resistências**.
+Se, ao usar o poder, você **consumir uma carga estelar**, todo dano de luz que o alvo sofrer **ignora Imunidades e Resistências**.
 
-Você também gera **(NP) cargas meteóricas**, que duram até o fim da cena.`,
+O poder também lhe dá **(NP) cargas meteóricas**, que duram até o fim da cena.`,
   ),
 
   skill(

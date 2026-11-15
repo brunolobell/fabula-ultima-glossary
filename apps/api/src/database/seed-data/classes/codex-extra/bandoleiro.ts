@@ -15,10 +15,10 @@ Aos olhos de quem manda, não passam de mercenários à venda. Aos olhos do povo
 
 ## Para pensar no personagem
 
-- Qual é o nome do seu bando? Como você entrou para ele?
-- Quem está atrás de você, e por que motivo o persegue?
-- Qual foi o seu primeiro contato com os sertões? O que você sentiu?
-- Qual é a crença, religiosa ou não, que guia todas as suas ações?`,
+- Como se chama o seu bando, e de que maneira você se juntou a ele?
+- Quem anda no seu encalço, e o que essa pessoa quer de você?
+- Como foi a sua primeira vez nos sertões, e o que passou pela sua cabeça?
+- Que fé ou convicção, religiosa ou não, orienta tudo o que você faz?`,
     otherNames: ['Lampião', 'Renegado', 'Vaqueiro'],
     quote: 'Hoje, é dia de festa! Estamos entendidos, seu barão?!',
     traits: ['ip', 'melee-weapon', 'ranged-weapon'],

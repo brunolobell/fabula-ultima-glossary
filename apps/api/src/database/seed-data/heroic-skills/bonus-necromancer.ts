@@ -32,7 +32,6 @@ export const poderesHeroicosNecromancer: SeedEntry[] = [
       page: 4,
       classes: ['Entropista', 'Necromante'],
       alsoRequires: ['Drenar Espírito', 'Drenar Vigor'],
-      note: 'É preciso ter aprendido os feitiços Drenar Espírito e Drenar Vigor.',
       summary:
         'Com Drenar Espírito ou Drenar Vigor, você recupera PM ou PV iguais à perda total do alvo, em vez da metade; Drenar Espírito passa a tirar (RA + 20) PM do 20º nível e (RA + 25) PM do 40º.',
       body: `Ao lançar **Drenar Espírito** ou **Drenar Vigor**, a quantidade de **PM** (Drenar Espírito) ou de **PV** (Drenar Vigor) que você recupera é **igual à perda sofrida pelo alvo**, e não à metade dela.

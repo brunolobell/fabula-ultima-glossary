@@ -15,10 +15,10 @@ Ninguém sabe ao certo de onde vem o dom. Há lendas que o ligam a uma descendê
 
 ## Para pensar no personagem
 
-- Como você aprendeu a dominar o sangue?
-- Você sente uma sede insaciável por sangue. Como lida com ela?
-- Como você reage ao preconceito que as pessoas têm sobre as suas habilidades?
-- Algo corre nas suas veias além de sangue quente. O quê?`,
+- De que forma você aprendeu a controlar o sangue?
+- A sede de sangue nunca passa. Como você convive com ela?
+- O que você faz diante do medo e do preconceito que as pessoas têm dos seus dons?
+- Além de sangue quente, o que mais corre nas suas veias?`,
     otherNames: ['Cavaleiro Vermelho', 'Dampiro', 'Hemomante'],
     quote: 'Sangue é vivo!',
     traits: ['hp', 'melee-weapon', 'shield'],
@@ -34,11 +34,11 @@ Ninguém sabe ao certo de onde vem o dom. Há lendas que o ligam a uma descendê
     57,
     1,
     'Ação e 5 PV: cobre uma arma corpo a corpo equipada de sangue até o fim da cena; ela passa a disparar cortes que atingem alvos fora do alcance corpo a corpo e força a pousar quem voa. Em crise, não custa PV e inclui um ataque livre.',
-    `Você pode usar uma ação e gastar **5 PV** para cobrir uma **arma corpo a corpo** equipada com uma camada do seu próprio sangue, até o **fim da cena**.
+    `Com uma ação e **5 PV**, você banha uma **arma corpo a corpo** que esteja equipada em sangue seu, e o efeito dura até o **fim da cena**.
 
-Enquanto a cobertura durar, a arma passa a **disparar cortes de sangue em alta velocidade**. Eles atingem alvos que ataques corpo a corpo comuns não alcançariam. Um alvo que esteja **voando** e seja atingido por um ataque dessa arma é imediatamente forçado a **pousar**.
+Nesse período, a arma lança **lâminas de sangue em grande velocidade**, o que a deixa acertar alvos fora do alcance de um ataque corpo a corpo comum. Se um alvo **em pleno voo** for atingido por um ataque da arma, ele é **forçado a pousar** na hora.
 
-Se estiver em **crise**, você **não gasta PV** para usar este poder e pode fazer um **ataque livre** como parte da mesma ação.`,
+Quando você estiver em **crise**, usar o poder **não custa PV** e você ainda pode fazer um **ataque livre** dentro da mesma ação.`,
   ),
 
   skill(
