@@ -24,6 +24,7 @@ import { mercador } from './classes/natural-fantasy/mercador';
 import { astrologo } from './classes/codex-extra/astrologo';
 import { bandoleiro } from './classes/codex-extra/bandoleiro';
 import { cavaleiroMagico } from './classes/codex-extra/cavaleiro-magico';
+import { forjadorDeAlmas } from './classes/codex-extra/forjador-de-almas';
 import { laminaCarmesim } from './classes/codex-extra/lamina-carmesim';
 import { malandro } from './classes/codex-extra/malandro';
 import { esper } from './classes/techno-fantasy/esper';
@@ -116,6 +117,7 @@ export const seedEntries: SeedEntry[] = [
     ...astrologo,
     ...bandoleiro,
     ...cavaleiroMagico,
+    ...forjadorDeAlmas,
     ...laminaCarmesim,
     ...malandro,
   ]),

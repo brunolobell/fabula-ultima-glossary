@@ -217,6 +217,34 @@ describe('Codex Extra and Bonus content', () => {
     }
   });
 
+  it('seeds Forjador de Almas', () => {
+    const forjador = classOf('Forjador de Almas');
+    expect(forjador?.source).toBe('codex-extra');
+    expect(forjador?.page).toBe(52);
+    expect(forjador?.details).toMatchObject({ traits: ['ip'] });
+    expect(skillsOf('Forjador de Almas')).toEqual([
+      ['Animar Arma', 4, 53],
+      ['Coletar Almas', 5, 53],
+      ['Forjar Característica', 1, 53],
+      ['Forjar Feitiço', 5, 53],
+      ['Manifestar Arma', 1, 53],
+    ]);
+    const body = forjador?.body ?? '';
+    expect(body).toContain('Pontos de Alma');
+    for (const species of [
+      'Construto',
+      'Demônio',
+      'Elemental',
+      'Fera',
+      'Humanoide',
+      'Monstro',
+      'Morto-vivo',
+      'Planta',
+    ]) {
+      expect(body).toContain(species);
+    }
+  });
+
   describe('the invariants can fail', () => {
     const bonusHeroic = (overrides: Partial<SeedEntry> = {}): SeedEntry =>
       ({
