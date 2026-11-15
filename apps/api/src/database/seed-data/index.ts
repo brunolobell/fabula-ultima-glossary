@@ -21,6 +21,8 @@ import { floralista } from './classes/natural-fantasy/floralista';
 import { gourmet } from './classes/natural-fantasy/gourmet';
 import { invocador } from './classes/natural-fantasy/invocador';
 import { mercador } from './classes/natural-fantasy/mercador';
+import { astrologo } from './classes/codex-extra/astrologo';
+import { bandoleiro } from './classes/codex-extra/bandoleiro';
 import { esper } from './classes/techno-fantasy/esper';
 import { mutante } from './classes/techno-fantasy/mutante';
 import { piloto } from './classes/techno-fantasy/piloto';
@@ -106,4 +108,6 @@ export const seedEntries: SeedEntry[] = [
   ...inBook('techno-fantasy', poderesHeroicosTechnoFantasy),
   ...itensRarosTechnoFantasy,
   ...inBook('techno-fantasy', servicesAndTransportTechnoFantasy),
+  // Codex Extra
+  ...inBook('codex-extra', [...astrologo, ...bandoleiro]),
 ];

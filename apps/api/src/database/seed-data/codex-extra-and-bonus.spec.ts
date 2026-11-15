@@ -121,6 +121,36 @@ describe('Codex Extra and Bonus content', () => {
     expect(validateSeed(seedEntries)).toEqual([]);
   });
 
+  it('seeds Astrólogo', () => {
+    const astrologo = classOf('Astrólogo');
+    expect(astrologo?.source).toBe('codex-extra');
+    expect(astrologo?.page).toBe(40);
+    expect(astrologo?.details).toMatchObject({ traits: ['mp'] });
+    expect(skillsOf('Astrólogo')).toEqual([
+      ['Constelação da Rasga-mortalha', 1, 41],
+      ['Constelação do Boitatá', 3, 41],
+      ['Constelação do Boto', 3, 41],
+      ['Constelação do Cão Dourado', 3, 41],
+      ['Constelação do Saci', 3, 41],
+    ]);
+  });
+
+  it('seeds Bandoleiro', () => {
+    const bandoleiro = classOf('Bandoleiro');
+    expect(bandoleiro?.source).toBe('codex-extra');
+    expect(bandoleiro?.page).toBe(42);
+    expect(bandoleiro?.details).toMatchObject({
+      traits: ['ip', 'melee-weapon', 'ranged-weapon'],
+    });
+    expect(skillsOf('Bandoleiro')).toEqual([
+      ['Cabra da Peste', 5, 43],
+      ['Líder de Bando', 1, 43],
+      ['Redistribuir Riquezas', 3, 43],
+      ['Sertanejo', 1, 43],
+      ['Valhacouto', 3, 43],
+    ]);
+  });
+
   describe('the invariants can fail', () => {
     const bonusHeroic = (overrides: Partial<SeedEntry> = {}): SeedEntry =>
       ({
