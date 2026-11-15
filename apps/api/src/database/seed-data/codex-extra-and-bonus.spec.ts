@@ -22,6 +22,7 @@ const BONUS_SOURCES: EntrySource[] = [
  */
 export const BONUS_ENGLISH_NAMES: Record<string, string> = {
   carteador: 'ace of cards',
+  necromante: 'necromancer',
 };
 
 /** Skills ("Poderes") of a class: [name, maxLevel, page], sorted by name. */
@@ -280,6 +281,31 @@ describe('Codex Extra and Bonus content', () => {
     ]) {
       expect(body).toContain(term);
     }
+  });
+
+  it('seeds Necromante (Bonus Necromancer, translated)', () => {
+    const necromante = classOf('Necromante');
+    expect(necromante?.source).toBe('bonus-necromancer');
+    expect(necromante?.page).toBe(2);
+    expect(necromante?.tags).toContain('necromancer');
+    expect(necromante?.details).toMatchObject({
+      traits: ['hp', 'mp'],
+      otherNames: ['Monarca Tumular', 'Reanimador', 'Vampiro'],
+      quote: 'Nunca desperdice, nunca precise.',
+    });
+    expect(skillsOf('Necromante')).toEqual([
+      ['Além do Reino da Morte', 5, 3],
+      ['Filhos da Sepultura', 1, 3],
+      ['Medo é a Chave', 3, 3],
+      ['Por Quem os Sinos Dobram', 3, 3],
+      ['Rondó do Pesadelo', 1, 3],
+    ]);
+    const text = seedEntries
+      .filter((e) => e.type === 'skill' && e.details.classSlug === 'necromante')
+      .map((e) => e.body)
+      .join('\n');
+    expect(text).toContain('Pontos de Túmulo');
+    expect(text).toContain('morto-vivo');
   });
 
   describe('the invariants can fail', () => {
