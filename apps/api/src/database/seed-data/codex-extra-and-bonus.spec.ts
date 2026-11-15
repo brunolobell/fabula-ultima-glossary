@@ -308,7 +308,7 @@ describe('Codex Extra and Bonus content', () => {
     expect(text).toContain('morto-vivo');
   });
 
-  it('seeds the Codex heroic skills that need the new classes', () => {
+  it('seeds the Codex heroic skills that need the new classes and those that need only existing ones', () => {
     const expected: [string, number, string[], string[]][] = [
       ['Cancela do Lampião', 17, ['bandoleiro'], []],
       ['Cargas Radiantes', 17, ['astrologo'], []],
@@ -336,6 +336,48 @@ describe('Codex Extra and Bonus content', () => {
         ['bandoleiro'],
         ['redistribuir-riquezas'],
       ],
+      [
+        'Anatomista',
+        17,
+        ['atirador', 'erudito', 'furioso', 'mestre-de-armas'],
+        ['conhecimento-e-poder'],
+      ],
+      [
+        'Corte Infernal',
+        18,
+        ['elementalista', 'guerreiro-sombrio', 'piloto'],
+        ['golpe-das-sombras'],
+      ],
+      [
+        'Dragão Empalador',
+        18,
+        ['comandante', 'guerreiro-sombrio'],
+        ['carga-de-cavalaria', 'golpe-das-sombras'],
+      ],
+      [
+        'Está Vivo!',
+        18,
+        ['andarilho', 'inventor'],
+        ['companheiro-fiel', 'visionario'],
+      ],
+      ['Fagomago', 19, ['entropista', 'gourmet', 'mutante', 'quimerista'], []],
+      [
+        'Maestria de Ofuda',
+        20,
+        ['arcanista', 'mercador', 'simbolista'],
+        ['simbolismo'],
+      ],
+      [
+        'Raízes Simbióticas',
+        23,
+        ['andarilho', 'floralista', 'mutante', 'quimerista'],
+        ['companheiro-fiel'],
+      ],
+      ['Sacrifício Arcano', 24, ['arcanista', 'guardiao'], []],
+      ['Segredo do Grande Caldeirão', 24, ['inventor'], ['engenhocas']],
+      ['Tática da Asa Quebrada', 24, ['comandante', 'guardiao'], []],
+      ['Truque do Caçador', 24, ['atirador', 'mestre-de-armas'], []],
+      ['Voz da Bruxaria', 25, ['orador', 'virtuoso'], []],
     ];
     const sorted = (list: string[]) => [...list].sort();
     expect(heroicOf('codex-extra')).toEqual(
@@ -348,6 +390,27 @@ describe('Codex Extra and Bonus content', () => {
         }))
         .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
     );
+  });
+
+  it('marks Anatomista repeatable and keeps the variant of a required skill in the note', () => {
+    const heroic = (name: string) =>
+      seedEntries.find(
+        (e) =>
+          e.type === 'heroic-skill' &&
+          e.source === 'codex-extra' &&
+          e.name === name,
+      ) as Extract<SeedEntry, { type: 'heroic-skill' }>;
+    expect(heroic('Anatomista').details.repeatable).toBe(true);
+    expect(heroic('Fagomago').details.repeatable).toBe(false);
+    expect(heroic('Está Vivo!').details.requirements.note).toContain(
+      'construto',
+    );
+    expect(heroic('Raízes Simbióticas').details.requirements.note).toContain(
+      'construto',
+    );
+    expect(
+      heroic('Segredo do Grande Caldeirão').details.requirements.note,
+    ).toContain('superior');
   });
 
   describe('the invariants can fail', () => {
