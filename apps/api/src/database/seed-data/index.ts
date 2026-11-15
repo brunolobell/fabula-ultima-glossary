@@ -23,6 +23,7 @@ import { invocador } from './classes/natural-fantasy/invocador';
 import { mercador } from './classes/natural-fantasy/mercador';
 import { astrologo } from './classes/codex-extra/astrologo';
 import { bandoleiro } from './classes/codex-extra/bandoleiro';
+import { cavaleiroMagico } from './classes/codex-extra/cavaleiro-magico';
 import { laminaCarmesim } from './classes/codex-extra/lamina-carmesim';
 import { malandro } from './classes/codex-extra/malandro';
 import { esper } from './classes/techno-fantasy/esper';
@@ -114,6 +115,7 @@ export const seedEntries: SeedEntry[] = [
   ...inBook('codex-extra', [
     ...astrologo,
     ...bandoleiro,
+    ...cavaleiroMagico,
     ...laminaCarmesim,
     ...malandro,
   ]),

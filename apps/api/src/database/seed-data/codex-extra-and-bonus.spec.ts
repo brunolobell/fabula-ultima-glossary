@@ -183,6 +183,40 @@ describe('Codex Extra and Bonus content', () => {
     ]);
   });
 
+  it('seeds Cavaleiro Mágico', () => {
+    const cavaleiro = classOf('Cavaleiro Mágico');
+    expect(cavaleiro?.source).toBe('codex-extra');
+    expect(cavaleiro?.page).toBe(48);
+    expect(cavaleiro?.details).toMatchObject({
+      traits: ['mp', 'armor', 'shield'],
+    });
+    expect(skillsOf('Cavaleiro Mágico')).toEqual([
+      ['Alma Ferida', 5, 49],
+      ['Coração Ardente', 3, 49],
+      ['Impulso do Coração', 1, 49],
+      ['Magitransformação', 3, 49],
+      ['Transformação Aprimorada', 3, 49],
+    ]);
+    const body = cavaleiro?.body ?? '';
+    for (const term of [
+      'Afeto',
+      'Raiva',
+      'Fraqueza',
+      'Coragem',
+      'Tolice',
+      'Zelo',
+      'Ardente',
+      'Brilhante',
+      'Celeste',
+      'Congelante',
+      'Eletrizante',
+      'Rochoso',
+      'Sombrio',
+    ]) {
+      expect(body).toContain(term);
+    }
+  });
+
   describe('the invariants can fail', () => {
     const bonusHeroic = (overrides: Partial<SeedEntry> = {}): SeedEntry =>
       ({
