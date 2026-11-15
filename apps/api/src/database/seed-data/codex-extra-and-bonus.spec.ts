@@ -23,6 +23,10 @@ const BONUS_SOURCES: EntrySource[] = [
 export const BONUS_ENGLISH_NAMES: Record<string, string> = {
   carteador: 'ace of cards',
   necromante: 'necromancer',
+  'preto-e-branco': 'black & white',
+  'vanguarda-das-cartas': 'card vanguard',
+  'mestre-de-duelos': 'duel master',
+  'rito-proibido': 'forbidden rite',
 };
 
 /** Skills ("Poderes") of a class: [name, maxLevel, page], sorted by name. */
@@ -280,6 +284,70 @@ describe('Codex Extra and Bonus content', () => {
       '30 cartas',
     ]) {
       expect(body).toContain(term);
+    }
+  });
+
+  it('seeds the Ace of Cards heroic skills (Bonus, translated)', () => {
+    expect(heroicOf('bonus-ace-of-cards')).toEqual([
+      {
+        name: 'Mestre de Duelos',
+        page: 6,
+        classes: [
+          'atirador',
+          'carteador',
+          'furioso',
+          'ladino',
+          'mestre-de-armas',
+        ],
+        alsoRequires: ['cartas-magicas'],
+      },
+      {
+        name: 'Preto e Branco',
+        page: 6,
+        classes: [
+          'carteador',
+          'entropista',
+          'espiritualista',
+          'guerreiro-sombrio',
+        ],
+        alsoRequires: ['cartas-magicas'],
+      },
+      {
+        name: 'Rito Proibido',
+        page: 7,
+        classes: ['arcanista', 'carteador'],
+        alsoRequires: ['cartas-magicas'],
+      },
+      {
+        name: 'Vanguarda das Cartas',
+        page: 6,
+        classes: ['carteador'],
+        alsoRequires: ['cartas-magicas'],
+      },
+    ]);
+    const heroic = (name: string) =>
+      seedEntries.find(
+        (e) =>
+          e.type === 'heroic-skill' &&
+          e.source === 'bonus-ace-of-cards' &&
+          e.name === name,
+      ) as Extract<SeedEntry, { type: 'heroic-skill' }>;
+    const rito = heroic('Rito Proibido');
+    expect(rito.details.requirements.note).toContain('NP 3');
+    expect(rito.details.requirements.note).toContain('Cartas Mágicas');
+    expect(rito.body).toContain('Monarca Proibido');
+    expect(rito.body).toContain('777');
+    expect(heroic('Mestre de Duelos').body).toContain('10 PM');
+    const codexSlugs = seedEntries
+      .filter((e) => e.source === 'codex-extra')
+      .map((e) => e.slug ?? slugify(e.name));
+    for (const slug of [
+      'preto-e-branco',
+      'vanguarda-das-cartas',
+      'mestre-de-duelos',
+      'rito-proibido',
+    ]) {
+      expect(codexSlugs).not.toContain(slug);
     }
   });
 
