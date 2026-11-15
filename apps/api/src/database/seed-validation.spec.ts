@@ -195,6 +195,20 @@ describe('validateSeed', () => {
     ]);
   });
 
+  it('accepts the Codex Extra and Fabula Bonus sources', () => {
+    for (const source of [
+      'codex-extra',
+      'bonus-ace-of-cards',
+      'bonus-necromancer',
+    ] as const) {
+      const entries = [
+        guardiao,
+        skill('Guardião', 'Escudo Firme', 203, 1, 'a'),
+      ].map((entry) => ({ ...entry, source }));
+      expect(validateSeed(entries)).toEqual([]);
+    }
+  });
+
   it('rejects duplicate slugs', () => {
     const errors = validateSeed([
       rule('Crise', 84, 'a', ''),

@@ -20,6 +20,9 @@ export const ENTRY_SOURCES = [
   'natural-fantasy',
   'techno-fantasy',
   'bestiary-vol-1',
+  'codex-extra',
+  'bonus-ace-of-cards',
+  'bonus-necromancer',
 ] as const;
 export type EntrySource = (typeof ENTRY_SOURCES)[number];
 

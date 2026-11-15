@@ -19,7 +19,10 @@ export type EntrySource =
   | 'high-fantasy'
   | 'natural-fantasy'
   | 'techno-fantasy'
-  | 'bestiary-vol-1';
+  | 'bestiary-vol-1'
+  | 'codex-extra'
+  | 'bonus-ace-of-cards'
+  | 'bonus-necromancer';
 
 export type EquipmentKind =
   | 'weapon'

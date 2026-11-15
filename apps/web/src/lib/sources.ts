@@ -7,4 +7,7 @@ export const SOURCE_LABEL: Record<EntrySource, string> = {
   'natural-fantasy': 'Atlas Natural Fantasy',
   'techno-fantasy': 'Atlas Techno Fantasy',
   'bestiary-vol-1': 'Bestiary Vol. I (inglês)',
+  'codex-extra': 'Codex Extra',
+  'bonus-ace-of-cards': 'Fabula Bonus: Ace of Cards (inglês)',
+  'bonus-necromancer': 'Fabula Bonus: Necromancer (inglês)',
 };
