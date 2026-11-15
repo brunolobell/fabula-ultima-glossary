@@ -1,7 +1,7 @@
 import { heroicSkill, withTags } from '../helpers';
 import { SeedEntry } from '../types';
 
-// "Novos Poderes Heroicos" do suplemento Bônus do Necromante (Necromancer, páginas 4–5),
+// "Novos Poderes Heroicos" do Fabula Bonus do Necromante (Necromancer, páginas 4–5),
 // traduzidos por nós; não oficiais. Os nomes seguem os do Codex Extra.
 // Aplique `inBook('bonus-necromancer', …)` ao registrar.
 export const poderesHeroicosNecromancer: SeedEntry[] = [

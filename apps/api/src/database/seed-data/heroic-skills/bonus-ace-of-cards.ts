@@ -1,7 +1,7 @@
 import { heroicSkill, withTags } from '../helpers';
 import { SeedEntry } from '../types';
 
-// "Novos Poderes Heroicos" do suplemento Bônus do Carteador (Ace of Cards, páginas 6–7),
+// "Novos Poderes Heroicos" do Fabula Bonus do Carteador (Ace of Cards, páginas 6–7),
 // traduzidos por nós; não oficiais. Os nomes seguem os do Codex Extra.
 // Aplique `inBook('bonus-ace-of-cards', …)` ao registrar.
 export const poderesHeroicosAceOfCards: SeedEntry[] = [

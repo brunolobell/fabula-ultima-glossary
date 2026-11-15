@@ -228,10 +228,10 @@ No fim do seu turno em um conflito, se os **PV atuais** do companheiro forem igu
     page: 24,
     classes: ['Arcanista', 'Guardião'],
     summary:
-      'Uma vez por cena, se você está fundido a um Arcano e você e/ou aliados visíveis cairiam a 0 PV, todos ficam com 1 PV; em troca você dispensa o Arcano e não pode invocá-lo até o fim da cena.',
-    body: `**Uma vez por cena**, se você estiver **fundido a um Arcano** e você e/ou aliados que você enxergue fossem cair a **0 PV**, todos esses personagens ficam, em vez disso, com **exatamente 1 PV**.
+      'Uma vez por cena, se você está fundido a um Arcano e você e/ou aliados visíveis cairiam a 0 PV, todos podem ficar com 1 PV; se o fizerem, você dispensa o Arcano e não pode invocá-lo até o fim da cena.',
+    body: `**Uma vez por cena**, se você estiver **fundido a um Arcano** e você e/ou aliados que você enxergue fossem cair a **0 PV**, todos esses personagens podem, em vez disso, ficar com **exatamente 1 PV**.
 
-O preço é **dispensar o Arcano na hora** (sem ativar nenhum efeito de dispensa dele); você não pode invocá-lo de novo até o fim da cena.`,
+Se fizer isso, o preço é **dispensar o Arcano na hora** (sem ativar nenhum efeito de dispensa dele); você não pode invocá-lo de novo até o fim da cena.`,
   }),
 
   heroicSkill({
