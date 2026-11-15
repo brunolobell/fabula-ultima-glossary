@@ -23,6 +23,8 @@ import { invocador } from './classes/natural-fantasy/invocador';
 import { mercador } from './classes/natural-fantasy/mercador';
 import { astrologo } from './classes/codex-extra/astrologo';
 import { bandoleiro } from './classes/codex-extra/bandoleiro';
+import { laminaCarmesim } from './classes/codex-extra/lamina-carmesim';
+import { malandro } from './classes/codex-extra/malandro';
 import { esper } from './classes/techno-fantasy/esper';
 import { mutante } from './classes/techno-fantasy/mutante';
 import { piloto } from './classes/techno-fantasy/piloto';
@@ -109,5 +111,10 @@ export const seedEntries: SeedEntry[] = [
   ...itensRarosTechnoFantasy,
   ...inBook('techno-fantasy', servicesAndTransportTechnoFantasy),
   // Codex Extra
-  ...inBook('codex-extra', [...astrologo, ...bandoleiro]),
+  ...inBook('codex-extra', [
+    ...astrologo,
+    ...bandoleiro,
+    ...laminaCarmesim,
+    ...malandro,
+  ]),
 ];

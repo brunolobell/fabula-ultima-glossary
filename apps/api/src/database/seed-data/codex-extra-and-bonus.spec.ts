@@ -151,6 +151,38 @@ describe('Codex Extra and Bonus content', () => {
     ]);
   });
 
+  it('seeds Lâmina Carmesim', () => {
+    const lamina = classOf('Lâmina Carmesim');
+    expect(lamina?.source).toBe('codex-extra');
+    expect(lamina?.page).toBe(56);
+    expect(lamina?.details).toMatchObject({
+      traits: ['hp', 'melee-weapon', 'shield'],
+    });
+    expect(skillsOf('Lâmina Carmesim')).toEqual([
+      ['Arsenal Vermelho', 1, 57],
+      ['Dobrar Sangue', 1, 57],
+      ['Escudo Escarlate', 2, 57],
+      ['Frenesi Sanguinolento', 4, 57],
+      ['Hemofagia', 5, 57],
+    ]);
+  });
+
+  it('seeds Malandro', () => {
+    const malandro = classOf('Malandro');
+    expect(malandro?.source).toBe('codex-extra');
+    expect(malandro?.page).toBe(58);
+    expect(malandro?.details).toMatchObject({
+      traits: ['ip', 'ranged-weapon'],
+    });
+    expect(skillsOf('Malandro')).toEqual([
+      ['Engabelar', 3, 59],
+      ['Explorar Fraqueza', 1, 59],
+      ['Gambiarra', 4, 59],
+      ['Golpe Aproveitador', 3, 59],
+      ['Jeitinho', 2, 59],
+    ]);
+  });
+
   describe('the invariants can fail', () => {
     const bonusHeroic = (overrides: Partial<SeedEntry> = {}): SeedEntry =>
       ({
