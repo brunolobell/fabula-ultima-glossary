@@ -308,6 +308,48 @@ describe('Codex Extra and Bonus content', () => {
     expect(text).toContain('morto-vivo');
   });
 
+  it('seeds the Codex heroic skills that need the new classes', () => {
+    const expected: [string, number, string[], string[]][] = [
+      ['Cancela do Lampião', 17, ['bandoleiro'], []],
+      ['Cargas Radiantes', 17, ['astrologo'], []],
+      ['Constelação da Cruz Austral', 18, ['astrologo'], []],
+      [
+        'Fluxo de Yin e Yang',
+        19,
+        ['astrologo', 'elementalista', 'esper', 'dancarino', 'invocador'],
+        [],
+      ],
+      ['Forja Entrelaçada', 19, ['forjador-de-almas'], []],
+      ['Instinto Assassino', 20, ['lamina-carmesim'], []],
+      [
+        'Lido Como um Livro',
+        20,
+        ['erudito', 'esper', 'ladino', 'malandro'],
+        ['roubo-de-alma'],
+      ],
+      ['Multifunção', 21, ['forjador-de-almas'], []],
+      ['Papinho Amigável', 22, ['malandro', 'orador'], []],
+      ['Poder da Amizade', 22, ['cavaleiro-magico'], []],
+      [
+        'Redistribuição Aprimorada',
+        23,
+        ['bandoleiro'],
+        ['redistribuir-riquezas'],
+      ],
+    ];
+    const sorted = (list: string[]) => [...list].sort();
+    expect(heroicOf('codex-extra')).toEqual(
+      expected
+        .map(([name, page, classes, alsoRequires]) => ({
+          name,
+          page,
+          classes: sorted(classes),
+          alsoRequires: sorted(alsoRequires),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR')),
+    );
+  });
+
   describe('the invariants can fail', () => {
     const bonusHeroic = (overrides: Partial<SeedEntry> = {}): SeedEntry =>
       ({
