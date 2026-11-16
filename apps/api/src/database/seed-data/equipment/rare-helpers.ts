@@ -62,10 +62,7 @@ export interface RareWeapon {
   body?: string;
 }
 
-export const rareWeapon = (
-  book: RareBook,
-  w: RareWeapon,
-): SeedEntry => {
+export const rareWeapon = (book: RareBook, w: RareWeapon): SeedEntry => {
   const martial = w.martial ?? false;
   const bonus = w.accuracyBonus ? ` +${w.accuracyBonus}` : '';
   const grip = w.module
@@ -143,10 +140,7 @@ export interface RareArmor {
 const initiativeLabel = (n: number) =>
   n === 0 ? 'sem modificador' : String(n);
 
-export const rareArmor = (
-  book: RareBook,
-  a: RareArmor,
-): SeedEntry => {
+export const rareArmor = (book: RareBook, a: RareArmor): SeedEntry => {
   const martial = a.martial ?? false;
   return {
     type: 'equipment',
@@ -155,7 +149,9 @@ export const rareArmor = (
     ...(a.slug ? { slug: a.slug } : {}),
     page: a.page,
     summary: `Armadura rara${martial ? ' marcial' : ''}. Defesa ${a.defense}, Def. Mágica ${a.magicDefense ?? 'sem bônus'}, Iniciativa ${initiativeLabel(a.initiative)}, ${zenites(a.cost)}. ${a.effect}`,
-    body: [martial ? MARTIAL_NOTE : '', a.body ?? ''].filter(Boolean).join('\n\n'),
+    body: [martial ? MARTIAL_NOTE : '', a.body ?? '']
+      .filter(Boolean)
+      .join('\n\n'),
     tags: ['equipamento', 'armadura', 'raro'],
     details: {
       kind: 'armor',
@@ -185,10 +181,7 @@ export interface RareShield {
   body?: string;
 }
 
-export const rareShield = (
-  book: RareBook,
-  s: RareShield,
-): SeedEntry => {
+export const rareShield = (book: RareBook, s: RareShield): SeedEntry => {
   const martial = s.martial ?? false;
   return {
     type: 'equipment',
@@ -197,7 +190,9 @@ export const rareShield = (
     ...(s.slug ? { slug: s.slug } : {}),
     page: s.page,
     summary: `${s.module ? 'Módulo de escudo raro' : 'Escudo raro'}${martial ? ' marcial' : ''}. Defesa ${s.defense}, Def. Mágica ${s.magicDefense ?? 'sem bônus'}, ${zenites(s.cost)}. ${s.effect}`,
-    body: [martial ? MARTIAL_NOTE : '', s.body ?? ''].filter(Boolean).join('\n\n'),
+    body: [martial ? MARTIAL_NOTE : '', s.body ?? '']
+      .filter(Boolean)
+      .join('\n\n'),
     tags: ['equipamento', 'escudo', 'raro', ...(s.module ? ['módulo'] : [])],
     details: {
       kind: 'shield',
@@ -221,10 +216,7 @@ export interface RareAccessory {
   body?: string;
 }
 
-export const rareAccessory = (
-  book: RareBook,
-  a: RareAccessory,
-): SeedEntry => ({
+export const rareAccessory = (book: RareBook, a: RareAccessory): SeedEntry => ({
   type: 'equipment',
   source: book,
   name: a.name,
@@ -251,10 +243,7 @@ export interface Artifact {
   body?: string;
 }
 
-export const artifact = (
-  book: RareBook,
-  a: Artifact,
-): SeedEntry => ({
+export const artifact = (book: RareBook, a: Artifact): SeedEntry => ({
   type: 'equipment',
   source: book,
   name: a.name,
