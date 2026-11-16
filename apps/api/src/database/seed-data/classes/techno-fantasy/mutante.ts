@@ -24,7 +24,7 @@ Cada mutante é único e capaz de metamorfosear o próprio corpo de formas estra
 
 **Terioformas** são mutações que dão poderosas habilidades. A aparência é por sua conta (Pterotéria, por exemplo, pode dar asas de penas ou transformar você num morcego do tamanho de uma pessoa). Veja [[teriomorfose]].
 
-- Depois de usar Teriomorfose, os efeitos da terioforma duram até o **fim da cena**, mas também terminam se você morrer ou ficar inconsciente, fizer a ação Guarda ou usar Teriomorfose de novo (inclusive por [[genoclepse]]).
+- Depois de usar Teriomorfose, os efeitos da terioforma duram até o **fim da cena**, mas também terminam se você morrer ou ficar inconsciente, fizer a ação [[guarda-acao]] ou usar Teriomorfose de novo (inclusive por [[genoclepse]]).
 - Você pode encerrar os efeitos a qualquer momento; em conflito, só no seu turno, antes ou depois de uma ação.
 - Ao fim de uma cena, se ainda estiver sob uma terioforma, você pode gastar **10 PM** para estendê-la à cena seguinte.
 

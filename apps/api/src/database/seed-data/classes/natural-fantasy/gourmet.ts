@@ -61,7 +61,7 @@ Com [[culinaria]], você combina **dois ou três ingredientes** numa **iguaria**
 | 4 | Cada alvo recupera 40 PM (50 a partir do 30º nível). |
 | 5 | Causa 20 de dano a cada alvo, de um tipo à escolha (30 a partir do 30º nível). |
 | 6 | Até o fim do seu próximo turno, cada fonte de dano de um tipo à escolha causa 5 de dano adicional a cada alvo. |
-| 7 | Cada alvo não pode fazer a ação Guarda no próximo turno. |
+| 7 | Cada alvo não pode fazer a ação [[guarda-acao]] no próximo turno. |
 | 8 | Cada alvo não pode fazer a ação Feitiço no próximo turno. |
 | 9 | Cada alvo não pode fazer a ação Poder no próximo turno. |
 | 10 | Até o fim do seu próximo turno, cada alvo fica Resistente a um tipo de dano à escolha. |

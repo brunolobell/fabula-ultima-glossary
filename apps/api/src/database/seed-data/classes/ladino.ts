@@ -34,7 +34,7 @@ export const ladino: SeedEntry[] = [
     `No início de um conflito, você pode gastar **10 PM**. Se fizer isso, escolha uma opção:
 
 - faça um **ataque livre** com uma arma equipada; ou
-- faça a ação **Impedimento** ou **Objetivo**.
+- faça a ação [[impedimento]] ou [[objetivo]].
 
 Isso acontece **antes da primeira rodada**. Você também recebe um bônus igual a **(NP)** nos testes feitos como parte da opção escolhida.`,
   ),

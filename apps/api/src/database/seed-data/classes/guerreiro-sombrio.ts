@@ -65,7 +65,7 @@ Esse ataque causa dano de **trevas**, e o tipo não pode ser alterado.`,
     205,
     3,
     'Quando outra criatura faz você perder PV, você pode fazer a ação Estudo imediatamente contra ela, com bônus de (NP) no teste; só se estuda a mesma informação de uma criatura uma vez.',
-    `Quando outra criatura faz você perder PV (com um ataque, feitiço ou qualquer outro método), você pode fazer a ação **Estudo** (veja a página 70) **imediatamente**, tendo-a como alvo. Se fizer isso, o teste recebe um bônus igual a **(NP)**.
+    `Quando outra criatura faz você perder PV (com um ataque, feitiço ou qualquer outro método), você pode fazer a ação [[estudo]] (veja a página 70) **imediatamente**, tendo-a como alvo. Se fizer isso, o teste recebe um bônus igual a **(NP)**.
 
 Lembre-se: só se pode estudar a mesma informação de uma criatura **uma vez**.`,
   ),

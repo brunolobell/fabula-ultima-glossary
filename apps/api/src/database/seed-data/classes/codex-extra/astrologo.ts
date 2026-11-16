@@ -94,7 +94,7 @@ Veja [[rituais]].`,
     41,
     3,
     'Ação, 10 PM: um aliado visível pode, no próximo turno dele, fazer uma ação Equipamento, Guarda, Estudo ou Objetivo sem gastar ação; consumir uma carga meteórica permite também um ataque livre (RA do teste de Precisão tratada como 0 no dano). Gera (NP) cargas celestes.',
-    `Você pode usar uma ação e gastar **10 PM** para acelerar um aliado que você possa ver. No **próximo turno do alvo**, ele pode fazer uma ação **Equipamento**, **Guarda**, **Estudo** ou **Objetivo** sem usar uma ação.
+    `Você pode usar uma ação e gastar **10 PM** para acelerar um aliado que você possa ver. No **próximo turno do alvo**, ele pode fazer uma ação [[equipamento-acao]], [[guarda-acao]], [[estudo]] ou [[objetivo]] sem usar uma ação.
 
 Se você **consumir uma carga meteórica**, ele também pode fazer um **ataque livre**, mas a RA do teste de Precisão desse ataque é considerada **0** para calcular o dano causado.
 

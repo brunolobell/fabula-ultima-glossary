@@ -101,6 +101,6 @@ Se você tiver uma **arma arcana** equipada, seus feitiços ofensivos também ca
     139,
     1,
     'Depois de apresentar uma dança, você faz a ação Equipamento sem gastar ação.',
-    `Depois de apresentar uma dança, você pode fazer a ação **Equipamento** sem usar nenhuma ação.`,
+    `Depois de apresentar uma dança, você pode fazer a ação [[equipamento-acao]] sem usar nenhuma ação.`,
   ),
 ];

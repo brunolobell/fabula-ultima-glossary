@@ -60,7 +60,7 @@ Ao fazer isso, você produz o **efeito básico** de cada um dos seus outros pode
     classes: ['Forjador de Almas'],
     summary:
       'Você faz as ações Inventário ou Equipamento sem gastar ação, desde que seja para usar um poder de forjador de almas.',
-    body: `Você pode fazer a ação **Inventário** ou **Equipamento** **sem gastar uma ação**, mas somente para ativar um dos **poderes de forjador de almas** que você possui.`,
+    body: `Você pode fazer a ação [[inventario]] ou [[equipamento-acao]] **sem gastar uma ação**, mas somente para ativar um dos **poderes de forjador de almas** que você possui.`,
   }),
 
   heroicSkill({
@@ -79,7 +79,7 @@ Ao fazer isso, você produz o **efeito básico** de cada um dos seus outros pode
     alsoRequires: ['Roubo de Alma'],
     summary:
       'Ao ter sucesso em Roubo de Alma, faz Estudo de graça contra um dos inimigos, reaproveitando a rolagem; contra elites e campeões cujo tesouro da alma você roubou, causa dano adicional igual ao NP.',
-    body: `Quando você tem sucesso em [[roubo-de-alma]] contra um ou mais inimigos, pode escolher um deles e fazer a ação **Estudo** contra ele **sem gastar uma ação**. Em vez de rolar o teste aberto, use o **resultado** e a **rolagem alta** do teste de Roubo de Alma como se fossem os do teste aberto.
+    body: `Quando você tem sucesso em [[roubo-de-alma]] contra um ou mais inimigos, pode escolher um deles e fazer a ação [[estudo]] contra ele **sem gastar uma ação**. Em vez de rolar o teste aberto, use o **resultado** e a **rolagem alta** do teste de Roubo de Alma como se fossem os do teste aberto.
 
 Além disso, ao causar dano a um inimigo de patente **elite** ou **campeão** cujo **tesouro da alma** você tenha roubado durante esta cena, você causa **dano adicional igual ao seu NP em Roubo de Alma** a ele.`,
   }),
@@ -90,7 +90,7 @@ Além disso, ao causar dano a um inimigo de patente **elite** ou **campeão** cu
     classes: ['Forjador de Almas'],
     summary:
       'Uma criatura que faz a ação Objetivo equipada com armas que carregam característica ou feitiço de forjador de almas ganha +1 no teste por arma assim (máximo +2).',
-    body: `Quando uma criatura faz a ação **Objetivo** enquanto empunha armas que tenham uma **característica** ou um **feitiço** concedido por algum dos seus poderes de forjador de almas, ela recebe **+1 no teste** da ação para cada uma dessas armas, até o **máximo de +2**.`,
+    body: `Quando uma criatura faz a ação [[objetivo]] enquanto empunha armas que tenham uma **característica** ou um **feitiço** concedido por algum dos seus poderes de forjador de almas, ela recebe **+1 no teste** da ação para cada uma dessas armas, até o **máximo de +2**.`,
   }),
 
   heroicSkill({

@@ -78,7 +78,7 @@ Você recebe um bônus igual a **(NP)** nos testes de (VIG + VON) feitos para es
     201,
     5,
     'Ao fazer a ação Guarda sem dar cobertura a outra criatura, você recupera PV igual a (NP × a maior força de Laço que tiver) e eleva um passo o dado de Vigor ou Vontade até o fim do próximo turno.',
-    `Quando você faz a ação **Guarda** e escolhe **não** dar cobertura a outra criatura:
+    `Quando você faz a ação [[guarda-acao]] e escolhe **não** dar cobertura a outra criatura:
 
 - você recupera PV igual a **(NP × a maior força de [[lacos]] que tiver)**; e
 - escolha **Vigor** ou **Vontade**: até o fim do seu próximo turno, o dado atual desse Atributo é considerado **um passo maior** (máximo de d12).`,

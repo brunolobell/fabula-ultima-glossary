@@ -95,7 +95,7 @@ Seu limite é de **(NP + 1) Pontos de Alma**. Os detalhes de como obtê-los e us
     53,
     1,
     'Com a ação Inventário e 10 PM ou 1 Ponto de Alma, molde numa arma ao seu alcance uma característica de arma de custo até (500z + nível × 40z); dura até o fim da cena, uma por item.',
-    `Você pode usar a ação **Inventário** e gastar **10 PM** ou **1 Ponto de Alma** para **moldar** uma característica de arma (Livro Básico, página 269) numa arma ao seu alcance.
+    `Você pode usar a ação [[inventario]] e gastar **10 PM** ou **1 Ponto de Alma** para **moldar** uma característica de arma (Livro Básico, página 269) numa arma ao seu alcance.
 
 A característica escolhida pode custar até **(500z + seu nível × 40z)**.
 
@@ -110,7 +110,7 @@ Ela dura **até o fim da cena**, e um mesmo item só pode ter **uma** caracterí
     'A cada nível, escolha um feitiço ofensivo de elementalista. Com a ação Inventário e 10 PM ou 1 Ponto de Alma, infunda-o numa arma ao alcance; até o fim da cena, quem a empunhar pode lançá-lo uma vez com a Precisão da arma.',
     `A cada vez que você adquirir este Poder, escolha um **feitiço ofensivo** de elementalista (Livro Básico, páginas 188 e 189).
 
-Usando a ação **Inventário** e pagando **10 PM** ou **1 Ponto de Alma**, você **imbui** um desses feitiços numa arma que esteja ao seu alcance.
+Usando a ação [[inventario]] e pagando **10 PM** ou **1 Ponto de Alma**, você **imbui** um desses feitiços numa arma que esteja ao seu alcance.
 
 **Até o fim da cena**, quem a estiver empunhando (qualquer PJ) pode usar a ação **Feitiço** para conjurar o feitiço imbuído, mas **só uma vez**. No teste de Magia, em vez da fórmula usual, aplica-se a **fórmula do teste de Precisão da arma**.`,
   ),
@@ -121,7 +121,7 @@ Usando a ação **Inventário** e pagando **10 PM** ou **1 Ponto de Alma**, voc�
     53,
     1,
     'No seu turno em conflito, com a ação Equipamento e 10 PM ou 1 Ponto de Alma, manifeste uma arma básica (destruindo a anterior); você pode trocar um Atributo do teste de Precisão por Vontade.',
-    `No seu turno em um conflito, você pode usar a ação **Equipamento** e gastar **10 PM** ou **1 Ponto de Alma** para **manifestar uma arma básica**. Qualquer arma que você já tenha manifestado assim é **destruída**.
+    `No seu turno em um conflito, você pode usar a ação [[equipamento-acao]] e gastar **10 PM** ou **1 Ponto de Alma** para **manifestar uma arma básica**. Qualquer arma que você já tenha manifestado assim é **destruída**.
 
 Se tiver espaços de mão livres, você pode equipar essa arma na hora.
 

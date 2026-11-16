@@ -69,7 +69,7 @@ Quem usa armas à distância deve ver [[equipamento]] para os itens marciais.
     185,
     5,
     'Ao fazer a ação Guarda sem dar cobertura a outra criatura, você escolhe entre dano adicional de (NP × 3) no próximo ataque à distância da cena ou um ataque livre com arco ou arma de fogo.',
-    `Quando você faz a ação **Guarda** e escolhe **não** dar cobertura a outra criatura, escolha uma opção:
+    `Quando você faz a ação [[guarda-acao]] e escolhe **não** dar cobertura a outra criatura, escolha uma opção:
 
 - o próximo ataque à distância que você fizer na cena atual causa **(NP × 3)** pontos de dano adicional; ou
 - você faz um **ataque livre** com um arco ou arma de fogo equipada, considerando sua RA como **0** ao calcular o dano desse ataque.`,

@@ -168,7 +168,7 @@ Com o grupo, crie o seu **núcleo**: uma **arma rara personalizada** ([[armas-pe
 - Seus **PV nunca caem abaixo de 1**: o dano excedente é sofrido pelo portador, a qualquer distância.
 - Quando o portador se **render**, você some na hora, recolhido no núcleo, e fica dormente até ele recobrar a consciência. O mestre pode impor as consequências da rendição a você ou a ele.
 - Quando o portador se **sacrificar**, escolha um:
-  - **Despertar** (só se a força somada dos seus Laços for **8 ou mais**): você perde esta peculiaridade e o núcleo aparece em suas mãos; você faz a ação Equipamento sem custo e o equipa.
+  - **Despertar** (só se a força somada dos seus Laços for **8 ou mais**): você perde esta peculiaridade e o núcleo aparece em suas mãos; você faz a ação [[equipamento-acao]] sem custo e o equipa.
   - **Legado** (só se outro personagem disposto que você veja estiver em cena): ele vira seu novo portador e o núcleo aparece na mochila dele.
   - **Estilhaçar:** você se sacrifica no lugar do portador, que recupera PV igual ao valor de crise e não precisa se render nem se sacrificar.
 - Sempre que **subir de nível**, se a força somada dos seus Laços for **10 ou mais**, você pode causar um Despertar como descrito acima, sem precisar do sacrifício.`,

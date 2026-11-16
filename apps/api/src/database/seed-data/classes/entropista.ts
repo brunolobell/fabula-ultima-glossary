@@ -83,7 +83,7 @@ Se fizer isso, o valor que foi substituído se torna o seu **novo número da sor
 
 - uma criatura fica **lenta**;
 - uma criatura **deixa de ficar lenta**;
-- uma criatura faz a ação **Equipamento** sem custo;
+- uma criatura faz a ação [[equipamento-acao]] sem custo;
 - um inimigo que esteja lento perde **(10 + (NP × 5))** Pontos de Vida; ou
 - um aliado que ainda não agiu nesta rodada faz o turno dele **imediatamente depois do seu** durante essa rodada.
 

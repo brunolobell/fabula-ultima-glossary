@@ -104,7 +104,7 @@ Os dois efeitos **não se acumulam**: se um ataque se enquadra nos dois, aplique
 
 > **Exemplo:** um inimigo de nível 25, Vulnerável a gelo e com adagas entre os pontos de pressão, sofre 30 de dano de gelo de um ataque com adaga. Como o limite de dano para esse nível é 22, enchem-se 2 seções. Aqui o ponto de pressão é irrelevante.
 
-O Relógio também pode ser preenchido por qualquer método que preencha seções de um Relógio, como a ação Objetivo, a oportunidade Progresso e Poderes como [[persuasivo]] do Orador.
+O Relógio também pode ser preenchido por qualquer método que preencha seções de um Relógio, como a ação [[objetivo]], a oportunidade Progresso e Poderes como [[persuasivo]] do Orador.
 
 ## Esvaziar o Relógio
 

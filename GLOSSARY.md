@@ -178,6 +178,26 @@ _Avoid_: Status effect, debuff
 A dice roll resolving an uncertain action. Shown to Readers as "Teste".
 _Avoid_: Roll, test
 
+**Action**:
+What a character does with its turn in a conflict: one of ten kinds (Attack, Skill, Spell, Study, Guard, Hinder, Objective, Inventory, Equipment, or Other), chosen as the focus of the turn. Shown to Readers as "ação". The Equipment action ("ação Equipamento") only swaps what a character has equipped; it is not Equipment.
+_Avoid_: Move, maneuver, turn (the turn is when a character acts; the Action is what it does)
+
+**Minor Action**:
+A small thing a character may do in its turn alongside its Action: picking up or dropping an item, throwing one to another character, or a brief interaction with the surroundings. The Game Master has the final word on what counts, and anything that needs a Check must be the turn's Action. Shown to Readers as "ação menor".
+_Avoid_: Free action (a "free attack" is a different thing: an Attack made as part of another effect), bonus action
+
+**Guard**:
+The Action in which a character braces to protect its allies: until the start of its next turn it is Resistant to every damage type, gains +2 on opposed Checks, and may give cover to another creature. It can be done only once per turn and its benefits never stack. Shown to Readers as "Guarda".
+_Avoid_: Defend, dodge, block, parry
+
+**Hinder**:
+The Action in which a character puts an opponent at a disadvantage (a feint, a distraction, a cutting remark) with a Check against a fixed difficulty of 10; on a success the opponent suffers one Condition of the character's choice from a short list. Shown to Readers as "Impedimento".
+_Avoid_: Debuff, taunt, disrupt
+
+**Objective**:
+The Action in which a character works toward a goal of the conflict, nearly always by moving a Clock with a Check. Shown to Readers as "Objetivo". It is the Action, not the conflict's goal itself and not the Clock that tracks it.
+_Avoid_: Goal, quest, mission (those name what is being pursued, not the Action)
+
 **Clock**:
 A circle divided into Clock Sections that tracks progress toward a goal or the approach of a danger. The Game Master creates and runs it, and everyone at the Table can see it. It is tied to a goal or danger, never to a method. Shown to Readers as "Relógio".
 _Avoid_: Timer, counter
@@ -217,7 +237,7 @@ How a Creature fares against one of the nine damage types: Vulnerable, Resistant
 _Avoid_: Weakness, resistance (alone; Resistant is one Affinity)
 
 **Study**:
-The action in which a character tries to learn about someone or something; a Creature's stat block may list what a successful Study reveals. Shown to Readers as "Estudo".
+The Action in which a character tries to learn about someone or something with an open Check, the result deciding how much it learns; a Creature's stat block may list what a successful Study reveals. Shown to Readers as "Estudo".
 _Avoid_: Scan, identify, lore check
 
 **Quick Assembly**:

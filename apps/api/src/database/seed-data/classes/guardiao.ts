@@ -58,7 +58,7 @@ A arma causa dano adicional igual ao seu NP em [[maestria-defensiva]].`,
     203,
     1,
     'Ao fazer a ação Guarda para dar cobertura a um aliado, essa criatura fica Resistente a todos os tipos de dano até o início do seu próximo turno.',
-    'Se você fizer a ação **Guarda** e escolher dar cobertura a um aliado, essa criatura torna-se **Resistente** a todos os tipos de dano até o início do próximo turno dela.',
+    'Se você fizer a ação [[guarda-acao]] e escolher dar cobertura a um aliado, essa criatura torna-se **Resistente** a todos os tipos de dano até o início do próximo turno dela.',
   ),
 
   skill(

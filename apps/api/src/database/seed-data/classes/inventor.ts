@@ -30,7 +30,7 @@ O Poder [[engenhocas]] dá acesso a três tipos de invenção: **alquimia**, **i
 
 *Outros nomes: Química, Bombas, Mutações.*
 
-Você faz a ação **Inventário** para criar rapidamente uma poção com efeitos poderosos e um tanto imprevisíveis. Escolha um tipo de mistura entre os que já desbloqueou (básica, avançada ou superior) e gaste os PI necessários.
+Você faz a ação [[inventario]] para criar rapidamente uma poção com efeitos poderosos e um tanto imprevisíveis. Escolha um tipo de mistura entre os que já desbloqueou (básica, avançada ou superior) e gaste os PI necessários.
 
 | Mistura | Custo de PI | Dados |
 | --- | --- | --- |

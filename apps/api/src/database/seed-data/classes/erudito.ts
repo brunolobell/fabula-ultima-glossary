@@ -62,7 +62,7 @@ Ao fazer um **teste aberto** usando **(AST + AST)**, você recebe um bônus igua
     195,
     3,
     'Ao tirar 13 ou mais num teste para investigar uma criatura, item ou local, você pode fazer até (NP) perguntas ao Mestre sobre o assunto; só uma vez por criatura, item ou local.',
-    `Quando você tira **13 ou mais** em um teste para investigar uma criatura, item ou local (inclusive na ação **Estudo**), pode fazer até **(NP)** perguntas ao Mestre sobre o tópico da investigação. As perguntas podem ser feitas na hora ou em um momento oportuno no futuro.
+    `Quando você tira **13 ou mais** em um teste para investigar uma criatura, item ou local (inclusive na ação [[estudo]]), pode fazer até **(NP)** perguntas ao Mestre sobre o tópico da investigação. As perguntas podem ser feitas na hora ou em um momento oportuno no futuro.
 
 O Mestre responde com informações verdadeiras, mas você deve descrever o **processo dedutivo** do seu personagem.
 

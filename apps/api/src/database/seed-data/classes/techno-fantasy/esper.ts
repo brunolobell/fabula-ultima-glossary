@@ -46,7 +46,7 @@ Nas fórmulas, **S** é o número de seções preenchidas no seu Relógio Mental
 | Termocinese | Quando você causa dano | O dano vira de **fogo ou gelo** e a fonte causa 2 + S de dano adicional. |
 | Clarividência | Quando um NPC vira seu foco, ou você cria um Laço com um NPC | Faça uma pergunta ao Mestre sobre esse NPC; a resposta deve ser verdadeira. Descreva a sensação que revelou a informação. Uma vez por NPC. |
 | Escudo Psíquico | Depois que um inimigo que você veja faz teste de Precisão ou de Magia | Para esse teste, sua Def. e Def.M valem seu dado atual de Vontade + 2 × S (se seus valores atuais forem melhores, use-os). |
-| Presença Reconfortante | Depois de dar cobertura a um aliado com a ação Guarda | O aliado recupera 10 + 5 × S PM. Se for seu foco, também se recupera de uma condição à sua escolha entre abalado, atordoado e enfurecido. |
+| Presença Reconfortante | Depois de dar cobertura a um aliado com a ação [[guarda-acao]] | O aliado recupera 10 + 5 × S PM. Se for seu foco, também se recupera de uma condição à sua escolha entre abalado, atordoado e enfurecido. |
 | Retaliação Psíquica | Depois que um inimigo vence um teste oposto contra você ou faz você perder PV | O inimigo perde 5 + 5 × S PM e depois fica abalado ou atordoado (à sua escolha). |
 | Transferência de Vida | Quando você faz inimigos perderem PV | Escolha você ou um aliado que seja seu foco: se estiver em crise, a criatura recupera 5 + 5 × S PV. |`,
     otherNames: ['Empata', 'Psiônico', 'Hacker de Almas'],

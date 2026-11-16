@@ -48,7 +48,7 @@ export const poderesHeroicosHighFantasy: SeedEntry[] = [
       'Seu espaço de armadura vira um terceiro espaço de mão para uma adaga ou espada corpo a corpo de uma mão, e você ataca uma vez com cada arma (regras de duas armas, RA 0).',
     body: `Se tiver uma espada ou adaga (corpo a corpo e de uma mão) equipada em **cada um dos seus espaços de mão**, você pode tratar o seu **espaço de armadura** como um segundo espaço de mão secundária. Esse espaço só aceita uma adaga ou espada corpo a corpo de uma mão. O poder heroico Mão de Gorila não transforma armas de duas mãos em armas de uma mão, então **não combina** com Corte Triplo.
 
-Ao fazer a ação Ataque com adagas e/ou espadas, você ataca **uma vez com cada arma**. Valem as regras de **combate com duas armas**: cada um dos três ataques perde a propriedade multi (sem poder recuperá-la) e você considera a **RA de cada teste de Precisão como 0** para calcular o dano.`,
+Ao fazer a ação [[ataque]] com adagas e/ou espadas, você ataca **uma vez com cada arma**. Valem as regras de **combate com duas armas**: cada um dos três ataques perde a propriedade multi (sem poder recuperá-la) e você considera a **RA de cada teste de Precisão como 0** para calcular o dano.`,
   }),
 
   heroicSkill({
@@ -131,7 +131,7 @@ Todas as fontes de dano adicional, inclusive a terceira opção de Trespassar, c
     classes: ['Elementalista', 'Entropista', 'Espiritualista', 'Quimerista'],
     summary:
       'Ao fazer Guarda sem cobrir outra criatura, pode interromper e negar um feitiço lançado por uma criatura que você veja, pagando (10 + o custo total do feitiço) PM.',
-    body: `Ao fazer a ação **Guarda** sem dar cobertura a outra criatura, você recebe este benefício até o início do seu próximo turno: quando uma criatura que você veja **lançar um feitiço**, depois que ela gastar os PM, você pode gastar **(10 + o custo total em PM do feitiço)** para **interromper o feitiço e negar seus efeitos**.
+    body: `Ao fazer a ação [[guarda-acao]] sem dar cobertura a outra criatura, você recebe este benefício até o início do seu próximo turno: quando uma criatura que você veja **lançar um feitiço**, depois que ela gastar os PM, você pode gastar **(10 + o custo total em PM do feitiço)** para **interromper o feitiço e negar seus efeitos**.
 
 O feitiço não é lançado, mas o alvo ainda gasta a ação.`,
   }),

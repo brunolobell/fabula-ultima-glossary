@@ -33,6 +33,20 @@ const GROUPS: { title: string; text: string; slugs: string[] }[] = [
     ],
   },
   {
+    title: 'Ações em conflito',
+    text: 'O que você pode fazer no seu turno em uma cena de conflito.',
+    slugs: [
+      'acoes',
+      'ataque',
+      'estudo',
+      'guarda-acao',
+      'impedimento',
+      'objetivo',
+      'inventario',
+      'equipamento-acao',
+    ],
+  },
+  {
     title: 'A mesa e a história',
     text: 'Como preparar a campanha e acompanhar o que acontece nela.',
     slugs: ['antes-de-comecar-sessao-zero', 'os-oito-pilares', 'projetos', 'relogios'],

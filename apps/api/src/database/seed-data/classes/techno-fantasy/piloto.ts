@@ -24,7 +24,7 @@ Transportes de todo tipo aparecem nos mundos de Fabula Ultima, mas o veículo de
 
 Regras especiais do veículo pessoal (veja [[veiculo-pessoal]]):
 
-- **Entrar** no veículo num conflito exige a ação **Objetivo**. Normalmente não pede teste, mas o Mestre pode usar um relógio se houver perigos ou obstáculos. Se o veículo estiver disponível no início do conflito, os PJs entram imediatamente antes do teste de Iniciativa.
+- **Entrar** no veículo num conflito exige a ação [[objetivo]]. Normalmente não pede teste, mas o Mestre pode usar um relógio se houver perigos ou obstáculos. Se o veículo estiver disponível no início do conflito, os PJs entram imediatamente antes do teste de Iniciativa.
 - **Sair** não exige ação, mas em conflito só pode ser feito no seu turno, antes ou depois de uma ação.
 - Só o piloto pode pilotar. Passageiros (número depende da estrutura e dos módulos) **não podem dar cobertura** com a ação Guarda.
 - O máximo de módulos ativos ao mesmo tempo é **3 + seu NP em Veículo Pessoal**. Fora de conflito você redistribui módulos ativos e inativos à vontade; esse limite sempre vale (inclusive ao ativar módulos com [[configuracao-flexivel]]).
@@ -134,7 +134,7 @@ O Mestre deve incluir módulos novos (ou versões melhoradas) entre as recompens
     'Sem ninguém a bordo, você faz seu veículo pessoal sumir do mundo; com a ação Inventário e 2 PI, ele reaparece perto de você e você embarca sem custo.',
     `Quando não houver ninguém a bordo do seu veículo pessoal, você pode fazê-lo **desaparecer do mundo de jogo** a qualquer momento. (O que permite isso? Fica a seu critério.)
 
-Se o veículo não estiver presente no mundo e você estiver num espaço grande o bastante para ele, pode usar a ação **Inventário** e gastar **2 PI** para fazê-lo aparecer perto de você, e embarcar sem custos.`,
+Se o veículo não estiver presente no mundo e você estiver num espaço grande o bastante para ele, pode usar a ação [[inventario]] e gastar **2 PI** para fazê-lo aparecer perto de você, e embarcar sem custos.`,
   ),
 
   skill(
@@ -143,7 +143,7 @@ Se o veículo não estiver presente no mundo e você estiver num espaço grande 
     159,
     4,
     'Ao usar Equipamento ou Guarda pilotando, desativa até NP módulos ativos e ativa até NP módulos inativos.',
-    `Ao usar a ação **Equipamento** ou **Guarda** enquanto pilota seu veículo pessoal, você pode escolher até **(NP)** dos seus módulos ativos e desativá-los. Se fizer isso, escolha até **(NP)** módulos inativos e ative-os.`,
+    `Ao usar a ação [[equipamento-acao]] ou [[guarda-acao]] enquanto pilota seu veículo pessoal, você pode escolher até **(NP)** dos seus módulos ativos e desativá-los. Se fizer isso, escolha até **(NP)** módulos inativos e ative-os.`,
   ),
 
   skill(

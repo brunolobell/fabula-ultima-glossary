@@ -47,7 +47,7 @@ Até o fim da cena, você pode usar o resultado trocado como a rolagem de um dos
     59,
     1,
     'No começo do seu turno, gaste 10 PM para usar a ação Estudo sem custo de ação, antes ou depois da sua ação, com (AST + DES) como fórmula do teste aberto.',
-    `No começo do seu turno, você pode gastar **10 PM** para usar a ação **Estudo** sem gastar uma ação. Você escolhe se a usa antes ou depois da sua ação do turno.
+    `No começo do seu turno, você pode gastar **10 PM** para usar a ação [[estudo]] sem gastar uma ação. Você escolhe se a usa antes ou depois da sua ação do turno.
 
 O teste aberto dessa ação usa **(AST + DES)** como fórmula.`,
   ),
@@ -58,7 +58,7 @@ O teste aberto dessa ação usa **(AST + DES)** como fórmula.`,
     59,
     4,
     'Uma vez por cena, com a ação Inventário, gaste até (NP × 2) PI para improvisar modificações em uma arma equipada, uma a cada 2 PI: +1 em Precisão, +2 de dano, +1 em testes da ação Objetivo ou dano de veneno. Duram até o fim da cena.',
-    `**Uma vez por cena**, você pode usar a ação **Inventário** e gastar até **(NP × 2) PI** para fazer uma **modificação improvisada** em uma arma equipada, usando os materiais que houver à mão na cena.
+    `**Uma vez por cena**, você pode usar a ação [[inventario]] e gastar até **(NP × 2) PI** para fazer uma **modificação improvisada** em uma arma equipada, usando os materiais que houver à mão na cena.
 
 A cada **2 PI** gastos, escolha uma modificação:
 

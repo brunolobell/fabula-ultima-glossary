@@ -362,6 +362,57 @@ describe('validateSeed', () => {
     });
   });
 
+  describe('actions', () => {
+    const rule = (slug: string) =>
+      seedEntries.find((e) => resolveSlug(e) === slug && e.type === 'rule');
+
+    it('seeds the hub and one Rule per Action, on the printed pages', () => {
+      expect(
+        [
+          'acoes',
+          'ataque',
+          'estudo',
+          'guarda-acao',
+          'impedimento',
+          'objetivo',
+          'inventario',
+          'equipamento-acao',
+        ].map((slug) => [slug, rule(slug)?.page]),
+      ).toEqual([
+        ['acoes', 66],
+        ['ataque', 68],
+        ['estudo', 70],
+        ['guarda-acao', 71],
+        ['impedimento', 71],
+        ['objetivo', 72],
+        ['inventario', 74],
+        ['equipamento-acao', 74],
+      ]);
+    });
+
+    it('keeps the Equipamento Rule and the Equipamento action apart', () => {
+      expect(rule('equipamento')?.page).not.toBe(
+        rule('equipamento-acao')?.page,
+      );
+      expect(rule('equipamento-acao')?.name).toBe('Equipamento (ação)');
+    });
+
+    it('lists every Action in the hub, linking the ones with their own Rule', () => {
+      const body = rule('acoes')?.body ?? '';
+      for (const slug of [
+        'ataque',
+        'estudo',
+        'guarda-acao',
+        'impedimento',
+        'objetivo',
+        'inventario',
+        'equipamento-acao',
+      ]) {
+        expect(body).toContain(`[[${slug}]]`);
+      }
+    });
+  });
+
   describe('heroic skills', () => {
     const heroicBy = (source: string) =>
       seedEntries.filter(

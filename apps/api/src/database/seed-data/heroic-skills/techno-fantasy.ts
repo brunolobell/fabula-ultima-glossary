@@ -108,7 +108,7 @@ A isca não recupera PV e é destruída no fim da cena. Descreva a aparência de
       'Ataques com o magicanhão causam 5 de dano adicional; sem outra arma, o ataque pode recriar o magicanhão de graça, ganhar multi (3) ou virar dois ataques.',
     body: `Seus ataques com o magicanhão causam **5 pontos de dano adicional**.
 
-Ao fazer a ação Ataque com o magicanhão, se não tiver outra arma equipada, você pode escolher um:
+Ao fazer a ação [[ataque]] com o magicanhão, se não tiver outra arma equipada, você pode escolher um:
 
 - destruir o magicanhão e **criar e equipar um novo sem custo** (ignore o custo de PI), usando o novo no ataque; ou
 - o ataque ganha **multi (3)**; ou
@@ -149,7 +149,7 @@ Ao fazer a ação Ataque com o magicanhão, se não tiver outra arma equipada, v
     body: `Ao atacar com uma arma, você pode declarar "**ou vai ou racha!**" antes do teste de Precisão. Se fizer isso, a **RA do teste é dobrada** para determinar o dano, e você aplica as seguintes penalidades se o resultado for um **número par**:
 
 - se a arma for **mutável** (página 113), ela muda de forma imediatamente e não pode mudar de novo até o fim da cena;
-- se a arma não for mutável (ou for mutável sem poder mudar de forma), ela vai para a sua **mochila** e não pode ser equipada até o fim da cena, mas você pode fazer a ação Equipamento imediatamente, sem custo.
+- se a arma não for mutável (ou for mutável sem poder mudar de forma), ela vai para a sua **mochila** e não pode ser equipada até o fim da cena, mas você pode fazer a ação [[equipamento-acao]] imediatamente, sem custo.
 
 Não vale para ataques desarmados, armas improvisadas, módulos de arma (página 161) nem escudos gêmeos (Livro Básico, página 203).`,
   }),
@@ -239,7 +239,7 @@ Então, se esse valor for **8 ou mais**, você pode escolher uma criatura atingi
     classes: ['Erudito'],
     summary:
       'Na ação Estudo, examina as fichas de todos os inimigos que você veja com um único teste aberto (AST + AST), aplicado a cada um; esse teste não ativa Lampejo de Saber.',
-    body: `Ao fazer a ação **Estudo** em um conflito, você pode examinar as fichas de **todos os inimigos que veja**. Se fizer isso, faz **um único teste aberto (AST + AST)** e aplica o resultado separadamente a cada inimigo (Livro Básico, página 319).
+    body: `Ao fazer a ação [[estudo]] em um conflito, você pode examinar as fichas de **todos os inimigos que veja**. Se fizer isso, faz **um único teste aberto (AST + AST)** e aplica o resultado separadamente a cada inimigo (Livro Básico, página 319).
 
 Se você tiver Lampejo de Saber, esse teste **não** pode ativá-lo.`,
   }),

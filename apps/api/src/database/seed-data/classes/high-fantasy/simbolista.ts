@@ -94,7 +94,7 @@ Veja [[rituais]].`,
 
 Você pode ter até **(NP + 1)** símbolos ativos ao mesmo tempo. Se criar mais que isso, antes precisa escolher um símbolo ativo seu para destruir.
 
-Você pode fazer a ação **Inventário** e gastar **2 PI** para criar um dos símbolos que aprendeu e escolher uma opção:
+Você pode fazer a ação [[inventario]] e gastar **2 PI** para criar um dos símbolos que aprendeu e escolher uma opção:
 
 - aplicá-lo em **você mesmo**;
 - aplicá-lo num **aliado** que você veja; **ou**

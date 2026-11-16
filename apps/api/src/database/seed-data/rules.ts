@@ -468,7 +468,7 @@ Se o conjurador oferecer um ingrediente particularmente raro ou poderoso, o cust
 
 É possível fazer rituais numa cena de conflito, mas primeiro é preciso juntar energia mágica suficiente:
 
-1. Inicie o ritual com a ação **Objetivo** e siga os passos 1 e 2 acima, definindo disciplina, área e potência.
+1. Inicie o ritual com a ação [[objetivo]] e siga os passos 1 e 2 acima, definindo disciplina, área e potência.
 2. Cria-se na hora um **Relógio de ritual** ([[relogios]]) com um número de seções igual ao da potência (tabela abaixo).
 3. Qualquer um pode interagir com esse Relógio usando a ação Objetivo. Como sempre nessa ação, o mestre define os Atributos do teste e se o ND é fixo ou um teste oposto. O conjurador pode fazer o primeiro teste, preenchendo seções como parte da ação que iniciou o ritual.
 4. Quando o Relógio se completa, quem iniciou o ritual usa uma ação para fazer o passo 3: gasta o PM adequado e faz o teste de Magia, com o ND da potência. O resultado diz se o ritual deu certo ou se foi distorcido de forma catastrófica.
@@ -700,7 +700,7 @@ Uma cena centrada num único Relógio que avança e recua o tempo todo tende a v
 
 ## Cenas de conflito
 
-Em perseguições, batalhas, audiências e outras cenas de conflito, PJs e NPCs agem uns contra os outros, e os Relógios acompanham o progresso de todos. O livro explica isso na ação Objetivo (p. 72) e na seção sobre cenas de conflito (a partir da p. 58).
+Em perseguições, batalhas, audiências e outras cenas de conflito, PJs e NPCs agem uns contra os outros, e os Relógios acompanham o progresso de todos. O livro explica isso na ação [[objetivo]] (p. 72) e na seção sobre cenas de conflito (a partir da p. 58).
 
 > **Exemplo:** num duelo entre Bertrand e Duma, o mestre dá um Relógio de **6 seções** a cada um. Quem completar o seu primeiro vence.
 
