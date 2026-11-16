@@ -12,7 +12,7 @@ export const rules: SeedEntry[] = [
 - **Tema.** Um ideal ou sentimento forte que move as ações do personagem, como Raiva, Justiça ou Ambição. Também pode mudar ao longo do jogo.
 - **Origem.** A terra natal do personagem.
 
-Você escolhe os Traços na criação do personagem. Durante o jogo, pode **evocá-los** para aumentar sua chance de sucesso ao rolar dados, gastando [[pontos-de-fabula]].
+Você escolhe os Traços na criação do personagem. Durante o jogo, pode **evocá-los** para aumentar sua chance de sucesso ao rolar dados, gastando [[pontos-de-fabula]] (veja [[evocando-tracos-e-lacos]]).
 
 Os [[lacos]] funcionam de forma parecida.`,
     ['personagem', 'criação'],
@@ -38,7 +38,7 @@ A **força** de um Laço é o número de emoções que ele tem, até o máximo d
 
 ## Evocar e limite
 
-Assim como os [[tracos]], os Laços podem ser **evocados** para melhorar suas rolagens e sua capacidade de ajudar companheiros. Um personagem pode ter até **seis** Laços ao mesmo tempo.
+Assim como os [[tracos]], os Laços podem ser **evocados** para melhorar suas rolagens e sua capacidade de ajudar companheiros (veja [[evocando-tracos-e-lacos]]). Um personagem pode ter até **seis** Laços ao mesmo tempo.
 
 O livro trata dos Laços em detalhe na página 56.`,
     ['personagem', 'criação', 'narrativa'],
@@ -53,7 +53,7 @@ O livro trata dos Laços em detalhe na página 56.`,
 Cada personagem recém-criado começa com **3** Pontos de Fabula. Depois disso, ganha-se assim:
 
 - **Sessão sem pontos.** Se um PJ começa a sessão sem nenhum Ponto de Fabula, recebe **1**.
-- **Falha crítica.** Sempre que um PJ rola uma falha crítica, recebe **1**.
+- **Falha crítica.** Sempre que um PJ rola uma falha crítica (veja [[testes]]), recebe **1**.
 - **Vilão em cena.** Sempre que um vilão entra em cena, cada PJ recebe **1**, mesmo em cenas do mestre sem PJs presentes (veja "Vilões e Pontos de Fabula" abaixo).
 - **Rendição.** Um PJ que chega a 0 [[pontos-de-vida]] e decide se render recebe **2** (veja [[zero-ponto-de-vida]]).
 - **Falha automática (regra opcional, p. 47).** Se um PJ evoca um Laço ou Traço para falhar automaticamente em um teste, recebe **1**.
@@ -65,7 +65,7 @@ Não há limite máximo de Pontos de Fabula. Mas gastá-los é uma das principai
 | Efeito | Custo | O que faz |
 | --- | --- | --- |
 | Mudar a história | 1 | Muda um fato existente ou acrescenta um novo. |
-| Evocar [[lacos]] | 1 | Soma a força do Laço a um teste (p. 47). |
+| Evocar [[lacos]] | 1 | Soma a força do Laço a um teste (p. 47; veja [[evocando-tracos-e-lacos]]). |
 | Evocar [[tracos]] | 1 | Rola novamente os dados de um teste (p. 46). |
 | Usar um Poder | varia | Ativa um [[classes-e-poderes]] que exige Pontos de Fabula. |
 
@@ -187,7 +187,7 @@ As classes e seus Poderes começam na página 176.`,
   rule(
     'Testes',
     38,
-    'Um teste é uma rolagem de exatamente dois dados de Atributo, somados e ajustados por um modificador; é exigido pelas regras ou pedido pelo mestre, e jogadores nunca o pedem.',
+    'Um teste é uma rolagem de exatamente dois dados de Atributo, somados e ajustados por um modificador, comparada a um ND; dois resultados iguais de 6 ou mais são sucesso crítico e dois 1 são falha crítica. É exigido pelas regras ou pedido pelo mestre, e jogadores nunca o pedem.',
     `Um **teste** é uma rolagem feita com os dados de [[atributos]] do personagem: Destreza, Vigor, Astúcia e Vontade.
 
 ## Quando fazer um teste
@@ -199,6 +199,17 @@ Em geral, um personagem faz um teste:
 
 **Só o mestre pode pedir testes; os jogadores nunca fazem isso.**
 
+## Quando pedir um teste
+
+Saber quando pedir (e quando não pedir) um teste é uma habilidade que o mestre desenvolve com a prática. O livro dá estas diretrizes:
+
+- **PJs são heróis.** Sem oposição competente ou ameaça imediata, as ações deles têm sucesso. Achar a taverna não pede teste; chegar lá sem ser notado pela gangue de bandidos da região, sim.
+- **Contexto e circunstâncias.** A mesma ação pode ou não exigir um teste. Nadar em um rio calmo não exige; nadar durante uma inundação, sim.
+- **Antecedente relevante.** Se os Traços ou o antecedente do personagem bastam para o sucesso, o mestre deve conceder o sucesso. Um aristocrata não tem problema para conseguir convites para um baile na corte.
+- **Ações impossíveis.** Algumas ações simplesmente não têm sucesso, mas esteja aberto à criatividade dos jogadores: ninguém pula da Terra para a Lua, mas pode construir uma nave mágica que o faça. Nada é de graça.
+- **Falha relevante.** Falhar em um teste sempre piora a situação. Se a falha não teria impacto relevante, o mestre só descreve o resultado e dispensa o teste. O mesmo vale quando o personagem não age sob pressão: pode levar tempo, mas ele chega lá.
+- **Atenha-se às regras.** Se as regras pedem um teste (ou não), há um bom motivo. Só faça diferente se todos à mesa concordarem.
+
 ## A fórmula
 
 Cada teste vem com uma fórmula que diz quais dados rolar e somar. Você **sempre rola exatamente dois dados**. A fórmula também pode somar ou subtrair um valor do total.
@@ -206,6 +217,94 @@ Cada teste vem com uma fórmula que diz quais dados rolar e somar. Você **sempr
 > **Exemplo:** um teste de (AST + VON) feito por um personagem com Astúcia d6 e Vontade d10 soma um d6 e um d10, com resultado entre 2 e 16.
 
 > **Exemplo:** num teste de (VIG + VIG) +5, o personagem rola o dado de Vigor duas vezes e soma 5 ao total.
+
+## Termos essenciais
+
+| Termo | O que é |
+| --- | --- |
+| Modificador | Qualquer valor numérico somado ou subtraído de um teste; num teste de (DES + VIG) +2, o modificador é +2. Positivos são bônus e negativos são penalidades. |
+| Resultado | O número do teste depois dos modificadores. Também pode se referir ao número tirado em cada dado. |
+| Nível de dificuldade (ND) | Se o resultado for **maior ou igual** ao ND, a ação tem sucesso. Veja [[nivel-de-dificuldade]]. |
+| Rolagem alta (RA) | O **maior** dos dois dados do teste, usado para calcular efeitos como o dano de armas e feitiços. Com d8 + d10 e resultados 6 e 9, a RA é 9. |
+
+## Sucesso crítico
+
+Quando **os dois dados** dão o mesmo número, igual ou superior a **6** (dois 6, dois 7, e assim até dois 12), o resultado é um sucesso crítico. Você tem **sucesso automático** no teste e pode aplicar os efeitos de uma oportunidade (veja [[oportunidades]]).
+
+## Falha crítica
+
+Quando **os dois dados** dão **1**, o resultado é uma falha crítica, o oposto do sucesso crítico. Quaisquer que sejam os modificadores, você **falha automaticamente**, não por incompetência, mas por uma reviravolta infeliz. Quem controla a oposição da cena recebe uma oportunidade (veja [[oportunidades]]).
+
+Quando o PJ faz uma falha crítica, ele recebe imediatamente **1 Ponto de Fabula** (veja [[pontos-de-fabula]]).
+
+## Como fazer um teste
+
+1. **Objetivo.** O personagem declara o que quer alcançar; o mestre também pode esclarecer o que um sucesso consegue. Às vezes o objetivo é usar um Poder em sua plenitude.
+2. **Abordagem.** O jogador descreve como o personagem quer alcançar o objetivo. Com base nisso, o mestre escolhe os Atributos, como (DES + VIG) ou (VON + VON). Às vezes uma regra já indica os Atributos (veja [[testes-frequentes]]).
+3. **ND.** O mestre declara o ND (veja [[nivel-de-dificuldade]]), que às vezes vem de uma regra específica, e diz quais são as consequências de uma falha, para que todos saibam o que está em risco.
+4. **Rolagem.** O personagem rola os dados, soma-os e aplica os modificadores de Poderes, feitiços, equipamentos e outros efeitos.
+5. **Críticos.** Se houve falha ou sucesso crítico, aplique os efeitos (inclusive a falha ou o sucesso automático). Do contrário, siga adiante.
+6. **Resultado.** Se o resultado for maior ou igual ao ND, o personagem passa; se for menor, falha.
+7. **Consequência.** O desenrolar do teste altera a situação: ou o personagem alcança o objetivo ou as coisas pioram. O mestre descreve o que acontece, e vale pedir sugestões do jogador sobre onde o personagem errou.
+
+> **Exemplo:** Brigid quer convencer o grão-mestre de Relde a fechar a passagem das montanhas ao exército da imperatriz. O mestre aceita (VON + VON) com ND 10, porque o pedido ameaça o povo de Relde, mas a aldeia tem segredos que não quer nas mãos do império. Com Vontade d10, ela rola 2d10 e soma apenas 5: falha, e o grupo é escoltado para fora da vila.
+
+## Sucesso e falha
+
+Ao descrever o resultado de um teste, lembre:
+
+- **Nunca subverta as consequências.** Ninguém pode transformar falha em sucesso ou o contrário; do contrário, para que rolar dados? Os PJs podem influenciar testes evocando Traços e Laços (veja [[evocando-tracos-e-lacos]]) ou com um sucesso custoso (abaixo).
+- **Sucesso relevante.** Se o personagem passou ao enfrentar as chances, o mestre não pede mais testes para "confirmar". Se o objetivo exige vários testes, use um [[relogios]].
+- **Nada de voltar atrás.** Também não dá para "tentar de novo" depois de uma falha, a menos que a situação mude drasticamente.
+
+### Regra opcional: sucesso custoso
+
+Quando o personagem de um jogador falha, o jogador pode propor um **sucesso custoso**. O mestre ajusta o custo como achar apropriado, e o jogador aceita ou recusa.
+
+- O custo deve colocar o personagem em uma situação complicada ou tirar algo importante dele. Se bastar pouco esforço para remediá-lo, algo está errado.
+- A rolagem alta e o resultado do teste continuam os mesmos.
+- **Não vale** se o PJ teve uma falha crítica.
+
+> **Exemplo:** no caso de Brigid, o grão-mestre pode aceitar a proposta, mas só se ela pedir desculpas e admitir que os estudiosos de Relde são melhores que ela.
+
+## Tipos de teste
+
+- **Testes de Precisão.** Funcionam como os normais, mas servem para atacar em cenas de conflito. Cada arma tem a sua fórmula (uma adaga de aço pede (DES + AST) +1) e, em geral, o ND é a **Defesa do alvo**. A RA do teste determina o dano. Veja [[ataque]].
+- **Testes de Magia.** Também como os normais, usados para lançar um feitiço ofensivo em conflito ou para fazer um ritual. Os Atributos dependem do tipo de magia, e a RA pode determinar a eficácia do feitiço. Veja [[como-lancar-um-feitico]] e [[rituais]].
+- **Testes opostos.** Competições entre personagens, sem ND: vence o maior resultado. Veja [[testes-opostos]].
+- **Testes abertos.** Não têm ND: o resultado mostra o quanto o personagem se saiu bem. Servem para pesquisar informações, examinar uma área ou lembrar coisas importantes (veja a tabela abaixo e [[estudo]]).
+- **Testes em grupo.** Os PJs cooperam, com um líder e apoiadores. Veja [[testes-em-grupo]].
+
+### Resultado de um teste aberto
+
+| Resultado | Igual... |
+| --- | --- |
+| 7+ | Ao que pode ser feito por alguém com algum treino ou talento. |
+| 10+ | Ao que pode ser feito por alguém competente ou muito talentoso. |
+| 13+ | Ao feito de um especialista ou de um verdadeiro prodígio. |
+| 16+ | A um resultado digno de ser lembrado ao longo das eras. |
+
+> **Exemplo:** ao estudar uma pintura antiga, um 13 extrai informações dignas de um arqueólogo especialista; um 8 dá só pistas básicas do que o artista quis representar.
+
+## Modificadores situacionais
+
+Em situações vantajosas ou desvantajosas, o mestre pode impor **+2** ou **-2** ao resultado do teste.
+
+- Na maior parte do tempo não são necessários, porque ajustar o ND (veja [[nivel-de-dificuldade]]) basta. Eles ajudam quando o ND é fixado pelas regras (como em um teste de Precisão) ou em um teste oposto.
+- O mestre deve usá-los para recompensar abordagens que aproveitem os Traços dos inimigos ou circunstâncias favoráveis. Em conflitos sem combate, eles substituem as Afinidades.
+
+> **Exemplo:** a princesa Camilla tenta convencer Remora, a rainha bandida, a parar de saquear uma aldeia. O teste é oposto, mas Camilla oferece um favor em nome da família dela, e o mestre lhe dá +2.
+
+## Mais sobre testes
+
+| Regra | O que traz |
+| --- | --- |
+| [[oportunidades]] | As 11 reviravoltas de um sucesso ou falha crítica. |
+| [[nivel-de-dificuldade]] | A tabela de ND 7, 10, 13 e 16. |
+| [[evocando-tracos-e-lacos]] | Como gastar Pontos de Fabula para virar um teste (e a regra opcional de evocar falhas). |
+| [[testes-opostos]] | Disputas entre personagens. |
+| [[testes-em-grupo]] | Líder, apoiadores e bônus. |
+| [[testes-frequentes]] | Atributos sugeridos para situações comuns (e a regra opcional de escolha compartilhada). |
 
 ## Resolver
 
@@ -394,7 +493,7 @@ Para lançar um feitiço, o personagem precisa cumprir **todos** estes requisito
 - Elementalismo, entropismo e espiritualismo usam **(AST + VON)**.
 - Quimerismo usa **(AST + VON)** ou **(VIG + VON)**, à sua escolha.
 - Feitiços **não ofensivos** têm sucesso automático, sem teste.
-- Falhas críticas e sucessos críticos no teste de Magia geram **oportunidades** normalmente.
+- Falhas críticas e sucessos críticos no teste de Magia geram oportunidades normalmente (veja [[oportunidades]]).
 
 ## Rituais
 
@@ -455,7 +554,7 @@ Fora isso, quase todo ritual é válido. Quanto mais forte o efeito, mais trági
 
 ## Rituais como testes em grupo
 
-Quando alguém começa um ritual, outras pessoas podem apoiá-lo, **mesmo sem saber fazer rituais**. O teste de Magia vira um **teste em grupo** (p. 50), e quem conduz o ritual é o líder. Veja [[testes]].
+Quando alguém começa um ritual, outras pessoas podem apoiá-lo, **mesmo sem saber fazer rituais**. O teste de Magia vira um teste em grupo (p. 50; veja [[testes-em-grupo]]), e quem conduz o ritual é o líder. Veja [[testes]].
 
 ## Rituais com custo reduzido
 
@@ -667,8 +766,8 @@ Em geral os Relógios avançam por **testes**.
 **Relógio de progresso** (enche com sucessos):
 
 - Preencha **1 seção** por sucesso.
-- Preencha **mais 1** se o resultado passou do ND (ou do resultado do oponente, em testes opostos) por **3 ou mais**, ou **mais 2** se passou por **6 ou mais**.
-- Num **sucesso crítico**, a oportunidade concedida pode pagar **mais 2 seções**.
+- Preencha **mais 1** se o resultado passou do ND (ou do resultado do oponente, em testes opostos; veja [[testes-opostos]]) por **3 ou mais**, ou **mais 2** se passou por **6 ou mais**.
+- Num **sucesso crítico**, a oportunidade concedida (veja [[oportunidades]]) pode pagar **mais 2 seções**.
 
 **Relógio de ameaça** (enche com falhas, sobretudo as grandes):
 

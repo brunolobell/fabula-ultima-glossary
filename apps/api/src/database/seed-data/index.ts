@@ -53,6 +53,7 @@ import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
 import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
 import { poderesHeroicosTechnoFantasy } from './heroic-skills/techno-fantasy';
 import { actionRules } from './actions';
+import { checkRules } from './checks';
 import { atlasMagicRule } from './atlas-magic';
 import { inBook } from './helpers';
 import { npcSpellsRule } from './npc-spells';
@@ -68,6 +69,7 @@ export const seedEntries: SeedEntry[] = [
   ...guides,
   ...rules,
   ...actionRules,
+  ...checkRules,
   ...gameSetupRules,
   ...inBook('high-fantasy', [peculiaritiesRule, atlasMagicRule]),
   // The 15 classes, in the book's (alphabetical) order.

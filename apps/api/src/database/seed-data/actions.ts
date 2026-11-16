@@ -78,7 +78,7 @@ O livro trata das ações nas páginas 66 a 75 e resume todas elas na tabela da 
 
 1. **Escolha o alvo.** Escolha um inimigo. Você precisa saber a posição dele, ser capaz de vê-lo e conseguir alcançá-lo com a arma em uso: inimigos voadores, por exemplo, não são alcançáveis por ataques corpo a corpo.
 2. **Faça o teste de Precisão.** Use a fórmula da arma. O **ND é a Defesa do alvo**. Em um sucesso você o atinge; em uma falha, ele prevê, esquiva ou neutraliza o golpe.
-   - Falha crítica é falha automática e sucesso crítico sempre atinge, seja qual for a Defesa. Ambos geram oportunidades.
+   - Falha crítica é falha automática e sucesso crítico sempre atinge, seja qual for a Defesa. Ambos geram [[oportunidades]].
    - O mestre pode aplicar modificadores situacionais de +2 ou -2 conforme as circunstâncias.
 3. **Calcule o dano.** Se atingiu, o dano segue a fórmula da arma. Em geral é a **rolagem alta (RA)** do teste de Precisão somada a um valor fixo da arma. A página 132 do livro lista as armas mais comuns.
 4. **Aplique o dano.** O alvo perde PV igual ao dano, ajustado pela Afinidade dele com o tipo de dano (o livro trata de Afinidades na página 92):
@@ -182,7 +182,7 @@ Veja também [[acoes]].`,
 ## Como funciona
 
 1. **Descreva a abordagem.**
-2. **Faça o teste.** O ND é **fixo em 10** contra o alvo, e o mestre define os Atributos relevantes a partir da sua descrição.
+2. **Faça o teste.** O ND (veja [[nivel-de-dificuldade]]) é **fixo em 10** contra o alvo, e o mestre define os Atributos relevantes a partir da sua descrição.
 3. **Em um sucesso,** o alvo sofre uma das seguintes [[condicoes]], à sua escolha: **abalado**, **atordoado**, **fraco** ou **lento**.
 
 > **Exemplo:** a princesa Camilla desafiou o cavaleiro sombrio Brandon a um duelo. Ela circunda o guerreiro e tenta ficar de costas para o sol para cegá-lo, e o mestre pede um teste de (DES + AST). Camilla tira um sucesso crítico e deixa Brandon lento. Ela também gera uma oportunidade, que gasta na hora para arremessar a espada dele aos ares.
@@ -201,7 +201,7 @@ Veja também [[acoes]].`,
 
 1. **Descreva o que quer fazer e como.** Você só pode perseguir um objetivo se tiver uma forma razoável de alcançá-lo. O mestre decide quais ações são possíveis, mas deve estar aberto a várias abordagens. Um objetivo **simples** (saltar um abismo, subir uma corda) costuma ser resolvido com um único teste; a maioria dos objetivos é **complexa** e pede um [[relogios]], sobretudo se levá-lo à vitória no conflito.
 2. **Faça um teste.** Como o Objetivo sempre o aproxima do que quer, ele **sempre exige um teste**:
-   - se o seu objetivo for **contrário ao de outro participante**, faça um **teste oposto** contra ele; mesmo que vários se oponham, só o mais capaz entre eles faz o teste;
+   - se o seu objetivo for **contrário ao de outro participante**, faça um teste oposto contra ele (veja [[testes-opostos]]); mesmo que vários se oponham, só o mais capaz entre eles faz o teste;
    - caso contrário, faça um **teste de Atributo**.
 3. **Mova o Relógio.** Em um sucesso, você altera o Relógio a seu favor, **preenchendo ou apagando seções**:
    - **1 seção** por sucesso;

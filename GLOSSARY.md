@@ -178,6 +178,38 @@ _Avoid_: Status effect, debuff
 A dice roll resolving an uncertain action. Shown to Readers as "Teste".
 _Avoid_: Roll, test
 
+**Difficulty Level**:
+The number a Check's result must equal or beat for the action to succeed, set by a rule or chosen by the Game Master (7 easy, 10 normal, 13 hard, 16 very hard; 10 when in doubt). Shown to Readers as "nível de dificuldade (ND)". A Check with no Difficulty Level is an Open Check or an Opposed Check.
+_Avoid_: DC, target number
+
+**High Roll**:
+The larger of the two dice of a Check, used to work out effects such as weapon and spell damage. Shown to Readers as "rolagem alta (RA)".
+_Avoid_: Highest die, best roll
+
+**Critical Success / Critical Failure**:
+A Critical Success is both dice showing the same number, 6 or higher; it always succeeds. A Critical Failure is both dice showing 1; it always fails, and a player character who rolls one gains a Fabula Point. Both give an Opportunity. Shown to Readers as "sucesso crítico" and "falha crítica".
+_Avoid_: Crit, natural 20, fumble
+
+**Opportunity**:
+A twist granted by a Critical Success (to the roller) or a Critical Failure (to whoever controls the opposition), spent on one of eleven listed options or an invented one that fits the scene. Shown to Readers as "oportunidade".
+_Avoid_: Bonus, boon, reward
+
+**Opposed Check**:
+A Check made by each side of a contest with the same Attributes and no Difficulty Level; the higher result wins and a tie is rerolled. Shown to Readers as "teste oposto".
+_Avoid_: Contested roll
+
+**Open Check**:
+A Check with no Difficulty Level, where the result says how well the character did (7+, 10+, 13+ or 16+). Shown to Readers as "teste aberto".
+_Avoid_: Knowledge check
+
+**Group Check**:
+A Check in which player characters cooperate: a leader makes the final Check and each supporter who passes a Support Check adds +1, plus the strongest Bond a supporter has with the leader. Shown to Readers as "teste em grupo".
+_Avoid_: Team roll, help action
+
+**Invoke**:
+To spend one Fabula Point to call on a Trait (reroll one or both dice) or a Bond (add its strength) during a Check. Shown to Readers as "evocar".
+_Avoid_: Use, activate, call
+
 **Action**:
 What a character does with its turn in a conflict: one of ten kinds (Attack, Skill, Spell, Study, Guard, Hinder, Objective, Inventory, Equipment, or Other), chosen as the focus of the turn. Shown to Readers as "ação". The Equipment action ("ação Equipamento") only swaps what a character has equipped; it is not Equipment.
 _Avoid_: Move, maneuver, turn (the turn is when a character acts; the Action is what it does)
