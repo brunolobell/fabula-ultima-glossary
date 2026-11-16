@@ -1,26 +1,10 @@
 import { peculiarity } from '../helpers';
 import { SeedEntry } from '../types';
-import { HEROICO_SEM_REQUISITOS } from './shared';
 
 // "Novas Peculiaridades" do Atlas Natural Fantasy (páginas 119–128).
-// Aplique `inBook('natural-fantasy', …)` ao registrar. Os slugs com sufixo
-// resolvem a colisão com a mesma peculiaridade do Atlas High Fantasy.
+// Aplique `inBook('natural-fantasy', …)` ao registrar. As que o High Fantasy já
+// trouxe não se repetem aqui: ficam em `REPRINTS`, no `index.ts`.
 export const peculiaridadesNaturalFantasy: SeedEntry[] = [
-  peculiarity({
-    name: 'Amaldiçoado',
-    slug: 'amaldicoado-natural-fantasy',
-    page: 120,
-    summary:
-      'Você carrega uma maldição ligada a uma ameaça do mundo: pode trocar um teste por falha crítica automática para ganhar 2 Pontos de Fabula e, ao quebrá-la, ganha um Poder Heroico.',
-    body: `Ao adquirir, descreva a **natureza da maldição** e ligue-a a uma das **ameaças** do mundo. Quando a ameaça for resolvida, você pode quebrar a maldição; descreva como espera que isso aconteça.
-
-> **Exemplo:** você erra os ataques com frequência; sua presença causa terror; sua magia dá resultados inesperados; criaturas próximas sentem dores intensas.
-
-Antes de fazer um teste, em vez de fazê-lo, você pode descrever como a maldição o atrapalha e sofrer uma **falha crítica automática** (ambos os dados contam como 1). Se fizer isso, recebe **2 Pontos de Fabula** em vez de 1 e gera uma oportunidade normalmente.
-
-Se conseguir **quebrar a maldição**, você recebe na hora um [Poder Heroico](/poderes-heroicos) à sua escolha, até de uma classe que você não aprendeu. ${HEROICO_SEM_REQUISITOS}`,
-  }),
-
   peculiarity({
     name: 'Arma Antiga',
     page: 120,
@@ -30,28 +14,6 @@ Se conseguir **quebrar a maldição**, você recebe na hora um [Poder Heroico](/
 
 - **Uma vez por sessão** (cerca de quatro horas de jogo), o mestre pode lhe conceder **1 Ponto de Fabula** para uma complicação inesperada causada pela natureza incomum da arma (máquinas estranhas que reagem à sua presença, monstros atraídos pela energia dela…).
 - A arma **não pode ser destruída, danificada, perdida ou roubada** sem a sua permissão.`,
-  }),
-
-  peculiarity({
-    name: 'Arbóreo',
-    slug: 'arboreo-natural-fantasy',
-    page: 121,
-    summary:
-      'Você é uma criatura botânica senciente: imune a uma condição à escolha, mas Vulnerável a um tipo de dano, e aprende um feitiço de NPC mais barato sob o sol.',
-    body: `- Escolha uma condição entre **atordoado, enfurecido ou abalado**: você é **imune** a ela, mas **Vulnerável** a um tipo de dano à sua escolha entre ar, raio, terra, fogo e gelo.
-- Você aprende um feitiço de NPC ([[feiticos-de-npc]]), exceto Devastação. Se ele pedir um teste de Magia, use (AST + VON). Personalize o feitiço (nome, tipo de dano, condição…). Ao lançá-lo **sob a luz do sol**, o custo total de PM cai em **5** (mínimo 0).`,
-  }),
-
-  peculiarity({
-    name: 'Cerne Elemental',
-    slug: 'cerne-elemental-natural-fantasy',
-    page: 121,
-    summary:
-      'Você é imerso no poder de um elemento: Resistente a ele, muda o tipo do seu dano para ele, é Vulnerável a outro e faz rituais de elementalismo do elemento.',
-    body: `- Escolha seu **tipo de dano elemental** entre ar, raio, terra, fogo e gelo. Você fica **Resistente** a ele.
-- Sempre que causar dano, você pode **mudar o tipo** dele para o escolhido.
-- Em troca, você fica **Vulnerável** a um tipo de dano **diferente** entre os cinco.
-- Você faz rituais de **elementalismo**, mas só os que manipulam o elemento escolhido (ar; eletricidade; terra/pedra; fogo; gelo/água, respectivamente).`,
   }),
 
   peculiarity({
@@ -155,17 +117,6 @@ Se um projeto ([[projetos]]) precisar de um ingrediente ou material especial, vo
   }),
 
   peculiarity({
-    name: 'Robô',
-    slug: 'robo-natural-fantasy',
-    page: 127,
-    summary:
-      'Você é um corpo artificial animado: não é um ser vivo, é imune a veneno, Resistente a terra, e ganha +2 em testes para examinar ou usar máquinas e tecnologia.',
-    body: `- Você **não é considerado um ser vivo**, é **imune** à condição envenenado, tem **Imunidade** a dano de veneno e **Resistência** a dano de terra.
-- Você não precisa respirar, comer nem beber, mas segue a regra de descanso normalmente. Recupera PV e se recupera de condições normalmente.
-- Você recebe **+2** em todos os testes para examinar ou interagir com **máquinas, tecnologia e construtos** (exceto testes de Precisão e de Magia).`,
-  }),
-
-  peculiarity({
     name: 'Sobrevivente',
     page: 127,
     summary:
@@ -191,19 +142,5 @@ No fim de uma cena em que você ignorou um custo, se o seu último adeus **já s
 > **Exemplo:** uma grande árvore guardiã, um rosto na face de um penhasco, uma rocha de formato peculiar, a estrela mais brilhante do céu.
 
 Um personagem cujo último adeus chegou é considerado **morto** e não pode ser trazido de volta. Mas, dali em diante, **todos os personagens da campanha** (inclusive um novo que você criar) recebem **1 Ponto de Fabula adicional** no início de cada sessão.`,
-  }),
-
-  peculiarity({
-    name: 'Voo',
-    slug: 'voo-natural-fantasy',
-    page: 128,
-    summary:
-      'Você sabe voar ou levitar: seus ataques corpo a corpo atingem criaturas voadoras e só voadores (ou quem os alcança) podem atacar você corpo a corpo; em crise ou sem espaço, você perde o benefício.',
-    body: `Você sabe voar. Além da mobilidade:
-
-- Seus **ataques corpo a corpo** podem acertar criaturas que estejam voando.
-- Você **não pode ser alvo** de ataque corpo a corpo, a menos que o atacante também esteja voando ou tenha como atingir criaturas voadoras.
-
-Você **perde todos os benefícios** enquanto estiver em **crise** ou não puder voar livremente (dentro de um veículo feito para criaturas de tamanho humano, num corredor estreito…). Ao sofrer dano de **ar, raio ou gelo** em uma cena de conflito, você também os perde até o início do seu próximo turno.`,
   }),
 ];

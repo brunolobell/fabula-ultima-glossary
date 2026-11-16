@@ -2,8 +2,8 @@ import { peculiarity } from '../helpers';
 import { SeedEntry } from '../types';
 
 // "Novas Peculiaridades" do Atlas Techno Fantasy (páginas 119–128).
-// Aplique `inBook('techno-fantasy', …)` ao registrar. Os slugs com sufixo
-// resolvem a colisão com a mesma peculiaridade de um Atlas anterior.
+// Aplique `inBook('techno-fantasy', …)` ao registrar. As que um Atlas anterior
+// já trouxe não se repetem aqui: ficam em `REPRINTS`, no `index.ts`.
 export const peculiaridadesTechnoFantasy: SeedEntry[] = [
   peculiarity({
     name: 'Agitador',
@@ -25,16 +25,6 @@ export const peculiaridadesTechnoFantasy: SeedEntry[] = [
       'O rio das almas fala por você: ao recuperar PV ou PM de aliados, eles recuperam 5 a mais (10 a partir do nível 30) e se livram de uma condição; você faz rituais de espiritualismo.',
     body: `- Quando você **recupera PV e/ou PM** de um ou mais aliados, cada um recupera **5 PV e/ou PM adicionais**, e você escolhe uma condição entre **abalado, atordoado, enfurecido, envenenado, fraco ou lento**: cada um desses aliados se recupera dela. A partir do **30º nível**, o efeito de recuperação passa a **10**.
 - Você faz rituais de **espiritualismo**.`,
-  }),
-
-  peculiarity({
-    name: 'De Um Mundo Distante',
-    slug: 'de-um-mundo-distante-techno-fantasy',
-    page: 120,
-    summary:
-      'Você é uma anomalia neste mundo: ganha 1 Ponto de Fabula ao entrar em um conflito e pode evocar um Traço para rolar de novo mesmo numa falha crítica.',
-    body: `- Você recebe **1 Ponto de Fabula** automaticamente ao participar de um conflito.
-- Você pode **evocar um Traço** para rolar de novo mesmo que o teste seja uma falha crítica. Se fizer isso, não recebe o Ponto de Fabula da falha.`,
   }),
 
   peculiarity({
@@ -74,19 +64,6 @@ No **20º nível**, o familiar recebe um poder adicional; no **40º**, outro. Co
       'Você nasceu na rede de almas, entre demônios e humanos: Resistente a dois tipos de dano e Vulnerável a um terceiro, e faz rituais de ritualismo na rede de almas.',
     body: `- Escolha **dois tipos de dano** entre ar, fogo, gelo, luz, raio, terra e trevas: você fica **Resistente** a eles. Escolha um **terceiro** tipo: você fica **Vulnerável** a ele.
 - Você faz rituais de **ritualismo** e pode usá-los para **transportar criaturas** para dentro e para fora da rede de almas, e para obter informações e **rastrear entidades** dentro dela.`,
-  }),
-
-  peculiarity({
-    name: 'Fera Falante',
-    slug: 'fera-falante-techno-fantasy',
-    page: 123,
-    summary:
-      'Você é uma fera inteligente que só usa acessórios e módulos, ganha +2 em Defesa e Defesa Mágica sem armadura e escolhe dois benefícios entre armas personalizadas, um feitiço de NPC e dano desarmado maior.',
-    body: `- Você **não pode usar nenhum item**, exceto **acessórios** e **módulos** de arma e de armadura. Em troca, enquanto o espaço de armadura estiver vazio, recebe **+2** em Defesa e Defesa Mágica.
-- Você também recebe **dois benefícios** à sua escolha entre:
-  - **Equipar armas personalizadas** ([[armas-personalizadas]]).
-  - **Aprender um feitiço de NPC** ([[feiticos-de-npc]]), menos Devastação. Se ele pedir um teste de Magia, use (VIG + VON). Personalize os efeitos (nome, tipo de dano, condições…).
-  - **Ataques desarmados** com **6 pontos de dano adicional**; a partir do **30º nível**, **10**.`,
   }),
 
   peculiarity({
@@ -164,30 +141,6 @@ Depois que a relíquia manifestar um poder nas mãos de um PJ, ela gera **1d6 Po
 - **5 ou 6:** a relíquia libera uma força terrível: morte e destruição, uma séria alteração do tempo e do espaço, ou o surgimento de uma nova ameaça (à escolha do mestre).
 
 Quando um **vilão** usa o poder da relíquia, ela nunca gera Pontos de Paradoxo. Se você se sacrificar e a relíquia não for destruída pelo sacrifício, ela continua na campanha com todas as regras intactas, podendo ser perdida como qualquer item (e só sendo destruída por um sacrifício).`,
-  }),
-
-  peculiarity({
-    name: 'Robô',
-    slug: 'robo-techno-fantasy',
-    page: 127,
-    summary:
-      'Você é um humanoide parcial ou totalmente mecânico: não é um ser vivo, é imune a veneno, Resistente a terra, e ganha +2 em testes para examinar ou usar máquinas e tecnologia.',
-    body: `- Você **não é considerado um ser vivo**, é **imune** à condição envenenado, tem **Imunidade** a dano de veneno e **Resistência** a dano de terra.
-- Você não precisa respirar, comer nem beber, mas segue a regra de descanso normalmente. Recupera PV e se recupera de condições normalmente.
-- Você recebe **+2** em todos os testes para examinar ou interagir com **máquinas, tecnologia e construtos** (exceto testes de Precisão e de Magia).`,
-  }),
-
-  peculiarity({
-    name: 'Sobrevivente',
-    slug: 'sobrevivente-techno-fantasy',
-    page: 127,
-    summary:
-      'Você sobreviveu a uma catástrofe, ataque militar ou invasão corporativa: PV e PM máximos +5 e uma opção entre equipamento marcial, um feitiço de elementalista ou espiritualista, ou +2 PI máximos.',
-    body: `- Seus **PV e PM máximos** aumentam em **5**.
-- Escolha uma opção:
-  - poder equipar **armas corpo a corpo e à distância, armaduras e escudos marciais**; ou
-  - aprender **qualquer feitiço** da lista de [[elementalista]] ou [[espiritualista]]; ou
-  - aumentar permanentemente seus **PI máximos em 2**.`,
   }),
 
   peculiarity({

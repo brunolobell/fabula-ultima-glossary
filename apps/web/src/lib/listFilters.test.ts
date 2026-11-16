@@ -108,6 +108,20 @@ describe('applyFilters', () => {
     ).toEqual(['voo', 'agitador']);
   });
 
+  it('offers every Fabula Bonus book as the single option "Fabula Bonus"', () => {
+    const list = [
+      entry('carteador', 'class', {}, 'bonus-ace-of-cards'),
+      entry('necromante', 'class', {}, 'bonus-necromancer'),
+      entry('arcanista', 'class', {}, 'livro-basico'),
+    ];
+    const row = buildRows('class', list, new Map()).find((r) => r.param === 'livro');
+    expect(row?.options.map((o) => o.label)).toEqual(['Livro Básico', 'Fabula Bonus']);
+    expect(row?.options.find((o) => o.value === 'fabula-bonus')?.count).toBe(2);
+    expect(
+      slugs(applyFilters('class', list, readSelection('class', new URLSearchParams('livro=fabula-bonus')))),
+    ).toEqual(['carteador', 'necromante']);
+  });
+
   it('filters equipment by kind, rarity and martial', () => {
     const item = (slug: string, kind: string, rarity: string, martial: boolean) =>
       entry(slug, 'equipment', { kind, rarity, martial, cost: null });

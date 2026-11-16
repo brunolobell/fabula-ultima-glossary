@@ -2091,11 +2091,12 @@ describe('validateSeed', () => {
     const inBookOf = (source: string) => all.filter((e) => e.source === source);
     const bySlug = (slug: string) => all.find((e) => resolveSlug(e) === slug);
 
-    it('seeds the 46 Peculiarities of the three Atlases, each in its own book', () => {
+    it('seeds 37 Peculiarities, one per name, in the earliest Atlas that prints it', () => {
       expect(inBookOf('high-fantasy')).toHaveLength(15);
-      expect(inBookOf('natural-fantasy')).toHaveLength(15);
-      expect(inBookOf('techno-fantasy')).toHaveLength(16);
-      expect(all).toHaveLength(46);
+      expect(inBookOf('natural-fantasy')).toHaveLength(10);
+      expect(inBookOf('techno-fantasy')).toHaveLength(12);
+      expect(all).toHaveLength(37);
+      expect(new Set(all.map((e) => e.name)).size).toBe(all.length);
     });
 
     it('keeps the book page of each one, inside the Peculiarities chapter', () => {
@@ -2103,28 +2104,32 @@ describe('validateSeed', () => {
       expect(Math.min(...(pages('high-fantasy') as number[]))).toBe(114);
       expect(Math.max(...(pages('high-fantasy') as number[]))).toBe(122);
       expect(Math.min(...(pages('natural-fantasy') as number[]))).toBe(120);
-      expect(Math.max(...(pages('natural-fantasy') as number[]))).toBe(128);
+      expect(Math.max(...(pages('natural-fantasy') as number[]))).toBe(127);
       expect(Math.min(...(pages('techno-fantasy') as number[]))).toBe(120);
       expect(Math.max(...(pages('techno-fantasy') as number[]))).toBe(128);
     });
 
-    it('gives a repeated name its own Entry, the earliest book keeping the plain slug', () => {
+    it('keeps a repeated name once, in the earliest book, with the plain slug', () => {
       expect(bySlug('robo')?.source).toBe('high-fantasy');
-      expect(bySlug('robo-natural-fantasy')?.source).toBe('natural-fantasy');
-      expect(bySlug('robo-techno-fantasy')?.source).toBe('techno-fantasy');
       expect(bySlug('fera-falante')?.source).toBe('natural-fantasy');
-      expect(bySlug('fera-falante-techno-fantasy')?.source).toBe(
-        'techno-fantasy',
-      );
-      expect(bySlug('voo-natural-fantasy')?.page).toBe(128);
+      expect(bySlug('voo')?.page).toBe(122);
+      for (const slug of [
+        'robo-natural-fantasy',
+        'robo-techno-fantasy',
+        'voo-natural-fantasy',
+        'fera-falante-techno-fantasy',
+        'sobrevivente-techno-fantasy',
+      ]) {
+        expect(bySlug(slug)).toBeUndefined();
+      }
     });
 
-    it('points each repeated Peculiarity to its other versions', () => {
-      expect(bySlug('robo')?.body).toContain('[[robo-natural-fantasy]]');
-      expect(bySlug('robo')?.body).toContain('[[robo-techno-fantasy]]');
-      expect(bySlug('robo-techno-fantasy')?.body).toContain('[[robo]]');
+    it('says in which other books a repeated Peculiarity appears', () => {
+      const robo = bySlug('robo')?.body;
+      expect(robo).toContain('Atlas Natural Fantasy (p. 127)');
+      expect(robo).toContain('Atlas Techno Fantasy (p. 127;');
       expect(bySlug('fera-falante')?.body).toContain(
-        '[[fera-falante-techno-fantasy]]',
+        'Atlas Techno Fantasy (p. 123)',
       );
       expect(bySlug('almas-entrelacadas')?.body).not.toContain('Também em');
     });

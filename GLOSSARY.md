@@ -35,7 +35,7 @@ An Entry for one Skill a character may take on mastering a Class. It belongs to 
 _Avoid_: Heroic power, epic skill, perk; never name the type `power` in code
 
 **Peculiarity**:
-An Entry for one option of an optional Atlas rule that gives a Player's character a single mechanical and thematic mark of what makes it unique (a curse, a prophecy, flight, an heirloom). A character has at most one, and no two characters in the same Party share one; it may be lost and replaced when the story calls for it. It belongs to no Class, has no Skill Level and comes from one Source; the same name can appear, with different wording, in more than one Atlas. Shown to Readers as "peculiaridade".
+An Entry for one option of an optional Atlas rule that gives a Player's character a single mechanical and thematic mark of what makes it unique (a curse, a prophecy, flight, an heirloom). A character has at most one, and no two characters in the same Party share one; it may be lost and replaced when the story calls for it. It belongs to no Class, has no Skill Level and comes from one Source; a name that several Atlases print again is a single Entry, kept in the earliest Atlas, and its page says where else it appears. Shown to Readers as "peculiaridade".
 _Avoid_: Quirk, flaw, Trait (a Trait is Identity, Theme or Origin), Skill, Heroic Skill
 
 **Mastery**:

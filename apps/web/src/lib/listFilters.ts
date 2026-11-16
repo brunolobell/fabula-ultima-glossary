@@ -83,12 +83,19 @@ export type Selection = Readonly<Record<string, readonly string[]>>;
 
 const className = (slug: string, index: Index) => index.get(slug)?.name ?? slug;
 
+// Every Fabula Bonus PDF (Ace of Cards, Necromancer, …) is one option, "Fabula Bonus".
+const BONUS_BOOK = 'fabula-bonus';
+const bookOf = (source: string) => (source.startsWith('bonus-') ? BONUS_BOOK : source);
+
 const bookRow: RowSpec = {
   param: 'livro',
   label: 'Livro',
-  values: (e) => [e.source],
-  labelOf: (value) => SOURCE_LABEL[value as keyof typeof SOURCE_LABEL] ?? value,
-  order: Object.keys(SOURCE_LABEL),
+  values: (e) => [bookOf(e.source)],
+  labelOf: (value) =>
+    value === BONUS_BOOK
+      ? 'Fabula Bonus'
+      : (SOURCE_LABEL[value as keyof typeof SOURCE_LABEL] ?? value),
+  order: [...new Set(Object.keys(SOURCE_LABEL).map(bookOf))],
 };
 
 const classRow = (label: string, values: (e: EntrySummary) => string[]): RowSpec => ({
