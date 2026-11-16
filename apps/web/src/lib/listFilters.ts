@@ -53,6 +53,11 @@ export interface RowSpec<T = EntrySummary> {
   order?: readonly string[];
   /** The side menu already offers these choices, so a wide screen hides the row. */
   menuRow?: boolean;
+  /**
+   * Whether the row makes sense for the chips chosen in the other rows. A row
+   * that does not apply is not shown and its chosen values are ignored.
+   */
+  appliesTo?: (selection: Selection) => boolean;
 }
 
 export interface FilterOption {
@@ -180,6 +185,12 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
       // drop out as soon as one is chosen.
       param: 'categoria',
       label: 'Tipo de arma',
+      // Only for all equipment or weapons: on armor, shields and the like the
+      // row would filter everything out.
+      appliesTo: (selection) => {
+        const kinds = selection.item ?? [];
+        return kinds.length === 0 || kinds.includes('armas');
+      },
       values: (e) => {
         const { category } = e.details as EquipmentDetails;
         return category ? [category] : [];
@@ -320,6 +331,7 @@ export function buildRowsFor<T>(
   selection: Selection = {},
 ): FilterRow[] {
   return specs
+    .filter((spec) => spec.appliesTo?.(selection) ?? true)
     .map((spec) => {
       // Options come from the whole list, so a chip never vanishes...
       const counts = new Map<string, number>();
@@ -328,7 +340,9 @@ export function buildRowsFor<T>(
       }
       // ...and its number comes from what the other rows already allow.
       const others = specs.filter(
-        (other) => other !== spec && (selection[other.param] ?? []).length > 0,
+        (other) =>
+          other !== spec &&
+          (other.appliesTo?.(selection) ?? true) && (selection[other.param] ?? []).length > 0,
       );
       for (const item of items) {
         const allowed = others.every((other) =>
@@ -367,14 +381,22 @@ export function buildRows(
 
 /** Reads the chosen values of this type's rows from the query string (`a,b`). */
 export function readSelection(type: EntryType, params: URLSearchParams): Selection {
-  return Object.fromEntries(
-    specsOf(type).map((spec) => {
+  const specs = specsOf(type);
+  const read: Selection = Object.fromEntries(
+    specs.map((spec) => {
       const values = (params.get(spec.param) ?? '')
         .split(',')
         .map((v) => v.trim())
         .filter(Boolean);
       return [spec.param, [...new Set(values)]];
     }),
+  );
+  // A row that does not apply (see RowSpec.appliesTo) keeps no chosen values.
+  return Object.fromEntries(
+    specs.map((spec) => [
+      spec.param,
+      spec.appliesTo?.(read) === false ? [] : read[spec.param],
+    ]),
   );
 }
 
@@ -387,7 +409,11 @@ export function applyRowSpecs<T>(
   items: readonly T[],
   selection: Selection,
 ): T[] {
-  const active = specs.filter((spec) => (selection[spec.param] ?? []).length > 0);
+  const active = specs.filter(
+    (spec) =>
+      (selection[spec.param] ?? []).length > 0 &&
+      (spec.appliesTo?.(selection) ?? true),
+  );
   return items.filter((item) =>
     active.every((spec) => {
       const chosen = selection[spec.param];

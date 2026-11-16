@@ -140,6 +140,32 @@ describe('applyFilters', () => {
     const row = rows.find((r) => r.param === 'categoria');
     expect(row?.options.map((o) => o.value)).toEqual(['Adagas', 'Espadas', 'Luta']);
   });
+
+  it('shows the weapon type row only for all equipment or weapons', () => {
+    const item = (slug: string, kind: string, category?: string) =>
+      entry(slug, 'equipment', { kind, rarity: 'basic', martial: false, cost: null, category });
+    const list = [
+      item('katana', 'weapon', 'Espadas'),
+      item('punhal', 'weapon', 'Adagas'),
+      item('escudo', 'shield'),
+    ];
+    const hasRow = (q: string) => {
+      const selection = readSelection('equipment', new URLSearchParams(q));
+      return buildRows('equipment', list, new Map(), selection).some(
+        (r) => r.param === 'categoria',
+      );
+    };
+    expect(hasRow('')).toBe(true);
+    expect(hasRow('item=armas')).toBe(true);
+    expect(hasRow('item=armas,escudos')).toBe(true);
+    expect(hasRow('item=escudos')).toBe(false);
+    // A leftover `categoria` does not empty a list it no longer applies to.
+    const selection = readSelection(
+      'equipment',
+      new URLSearchParams('item=escudos&categoria=Luta'),
+    );
+    expect(slugs(applyFilters('equipment', list, selection))).toEqual(['escudo']);
+  });
 });
 
 describe('buildRows', () => {
