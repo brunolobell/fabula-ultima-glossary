@@ -115,15 +115,23 @@ The Brazilian edition of the Fabula Ultima core rulebook ("Livro Básico", Jamb�
 _Avoid_: Livro (alone), manual, SRD
 
 **Atlas**:
-One of the three Jambô supplement books, "Atlas High Fantasy", "Atlas Natural Fantasy" and "Atlas Techno Fantasy" (1st edition, November 2025), which add Classes, rare Equipment and artifacts. Together with the Core Rulebook they are four of the five **Sources** of an Entry (the fifth is the Bestiary Vol. I).
+One of the three Jambô supplement books, "Atlas High Fantasy", "Atlas Natural Fantasy" and "Atlas Techno Fantasy" (1st edition, November 2025), which add Classes, rare Equipment and artifacts. Together with the Core Rulebook they are four of the eight **Sources** of an Entry (the others are the Bestiary Vol. I, the Codex Extra and the two Fabula Bonus PDFs).
 _Avoid_: Expansion, supplement (in the UI), setting book
 
 **Bestiary Vol. I**:
-The English-language "Fabula Ultima Bestiary, Volume I" (Need Games and Rooster Games, 2026), a fifth **Source** for Creatures. It has no Brazilian edition, so every Entry from it is the app's own translation into Portuguese: unofficial terms are marked as such, the original English name is kept and searchable, and the Page Reference is the page printed in the English book.
+The English-language "Fabula Ultima Bestiary, Volume I" (Need Games and Rooster Games, 2026), the translated **Source** for Creatures. It has no Brazilian edition, so every Entry from it is the app's own translation into Portuguese: unofficial terms are marked as such, the original English name is kept and searchable, and the Page Reference is the page printed in the English book.
 _Avoid_: Bestiário (the Core Rulebook's own, shorter Bestiário is a different Source), Vol. 1
 
+**Codex Extra**:
+The Brazilian "Codex Extra" (Jambô Editora, 2025), an official **Source** that adds six Classes (Astrólogo, Bandoleiro, Cavaleiro Mágico, Forjador de Almas, Lâmina Carmesim, Malandro) and a list of new Heroic Skills. Its Arcanos, Peculiaridades and "Novos Personagens Clássicos" are not in the app. Its own printed Carteador and Necromante are not used either: the Fabula Bonus versions are.
+_Avoid_: Codex (alone), Livro Extra
+
+**Fabula Bonus**:
+Two free English PDFs, "Fabula Ultima Bonus: Ace of Cards" and "Fabula Ultima Bonus 01: Necromancer" (Need Games), each a **Source** (`bonus-ace-of-cards`, `bonus-necromancer`) because both have a page 3. They give the Classes Carteador and Necromante and 7 Heroic Skills. There is no official Brazilian edition of them, so every Entry is the app's own translation, reusing the Codex Extra's Portuguese names; the original English name is kept and searchable, the label ends in "(inglês)", and the Page Reference is the page printed in the English PDF.
+_Avoid_: Bonus (alone), Ace of Cards and Necromancer as Class names (the Classes are "Carteador" and "Necromante")
+
 **Page Reference**:
-The page number printed on the page, in the Entry's Source (the Core Rulebook unless the Entry says otherwise), where its full rules appear, shown on every Entry with the book's name. It is not the PDF page index, which is 4 higher in the Core Rulebook, 2 higher in the Atlas books and 1 higher in the Bestiary Vol. I.
+The page number printed on the page, in the Entry's Source (the Core Rulebook unless the Entry says otherwise), where its full rules appear, shown on every Entry with the book's name. It is not the PDF page index, which is 4 higher in the Core Rulebook, 2 higher in the Atlas books and the Codex Extra, 1 higher in the Bestiary Vol. I; the two Fabula Bonus PDFs have no offset.
 _Avoid_: Source, citation, footnote
 
 **Summary**:

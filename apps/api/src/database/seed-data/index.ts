@@ -21,6 +21,14 @@ import { floralista } from './classes/natural-fantasy/floralista';
 import { gourmet } from './classes/natural-fantasy/gourmet';
 import { invocador } from './classes/natural-fantasy/invocador';
 import { mercador } from './classes/natural-fantasy/mercador';
+import { carteador } from './classes/bonus-ace-of-cards/carteador';
+import { necromante } from './classes/bonus-necromancer/necromante';
+import { astrologo } from './classes/codex-extra/astrologo';
+import { bandoleiro } from './classes/codex-extra/bandoleiro';
+import { cavaleiroMagico } from './classes/codex-extra/cavaleiro-magico';
+import { forjadorDeAlmas } from './classes/codex-extra/forjador-de-almas';
+import { laminaCarmesim } from './classes/codex-extra/lamina-carmesim';
+import { malandro } from './classes/codex-extra/malandro';
 import { esper } from './classes/techno-fantasy/esper';
 import { mutante } from './classes/techno-fantasy/mutante';
 import { piloto } from './classes/techno-fantasy/piloto';
@@ -37,6 +45,9 @@ import {
   servicesAndTransportTechnoFantasy,
 } from './services-transport';
 import { guides } from './guides';
+import { poderesHeroicosAceOfCards } from './heroic-skills/bonus-ace-of-cards';
+import { poderesHeroicosNecromancer } from './heroic-skills/bonus-necromancer';
+import { poderesHeroicosCodexExtra } from './heroic-skills/codex-extra';
 import { poderesHeroicosHighFantasy } from './heroic-skills/high-fantasy';
 import { poderesHeroicosLivroBasico } from './heroic-skills/livro-basico';
 import { poderesHeroicosNaturalFantasy } from './heroic-skills/natural-fantasy';
@@ -48,6 +59,7 @@ import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
 import { weaponForgeRules } from './weapon-forge';
 import { armorForgeRules } from './armor-forge';
+import { bestiaryOptionRules } from './bestiary-options';
 import { SeedEntry } from './types';
 
 export const seedEntries: SeedEntry[] = [
@@ -77,6 +89,7 @@ export const seedEntries: SeedEntry[] = [
   ...criaturasBestiaryVol1,
   npcSpellsRule,
   ...quickAssemblySeed,
+  ...bestiaryOptionRules,
   ...weaponForgeRules,
   ...armorForgeRules,
   ...servicesAndTransport,
@@ -106,4 +119,19 @@ export const seedEntries: SeedEntry[] = [
   ...inBook('techno-fantasy', poderesHeroicosTechnoFantasy),
   ...itensRarosTechnoFantasy,
   ...inBook('techno-fantasy', servicesAndTransportTechnoFantasy),
+  // Codex Extra
+  ...inBook('codex-extra', [
+    ...astrologo,
+    ...bandoleiro,
+    ...cavaleiroMagico,
+    ...forjadorDeAlmas,
+    ...laminaCarmesim,
+    ...malandro,
+  ]),
+  ...inBook('codex-extra', poderesHeroicosCodexExtra),
+  // Bonus
+  ...inBook('bonus-ace-of-cards', [...carteador]),
+  ...inBook('bonus-ace-of-cards', poderesHeroicosAceOfCards),
+  ...inBook('bonus-necromancer', [...necromante]),
+  ...inBook('bonus-necromancer', poderesHeroicosNecromancer),
 ];

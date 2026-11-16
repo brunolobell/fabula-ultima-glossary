@@ -67,6 +67,13 @@ describe('creatureToMarkdown', () => {
     );
   });
 
+  it('leaves Initiative out for a companion, which has none', () => {
+    const companion: CreatureDetails = { ...base, initiative: undefined };
+    const text = creatureToMarkdown('Tao', companion, null);
+    expect(text).toContain('**PV** 260 (Crise 130) · **PM** 70 · **Defesa** +0');
+    expect(text).not.toContain('Inic.');
+  });
+
   it('adds the Villain and its Ultima Points', () => {
     const text = creatureToMarkdown(
       'Juggernaut',

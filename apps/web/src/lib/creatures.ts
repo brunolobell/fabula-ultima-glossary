@@ -169,6 +169,7 @@ export const FLAG_LABEL: Record<CreatureFlag, string> = {
   solo: 'Solitário',
   unique: 'Único',
   part: 'Parte',
+  companion: 'Companheiro',
 };
 
 /** "Soldado", "Elite", or "Campeão 3" (a champion replaces that many soldiers). */

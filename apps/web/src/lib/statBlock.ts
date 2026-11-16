@@ -14,7 +14,9 @@ export function numberCells(d: CreatureDetails): Cell[] {
     { label: 'PV', value: d.hp, tone: 'hp' },
     { label: 'Crise', value: d.crisis },
     { label: 'PM', value: d.mp, tone: 'mp' },
-    { label: 'Inic.', value: d.initiative },
+    ...(d.initiative === undefined
+      ? []
+      : [{ label: 'Inic.', value: d.initiative }]),
     {
       label: 'Defesa',
       value: d.defense.fixed

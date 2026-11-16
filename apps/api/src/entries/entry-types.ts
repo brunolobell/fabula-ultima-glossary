@@ -20,6 +20,9 @@ export const ENTRY_SOURCES = [
   'natural-fantasy',
   'techno-fantasy',
   'bestiary-vol-1',
+  'codex-extra',
+  'bonus-ace-of-cards',
+  'bonus-necromancer',
 ] as const;
 export type EntrySource = (typeof ENTRY_SOURCES)[number];
 
@@ -235,8 +238,11 @@ export const ROLES = [
 ] as const;
 export type Role = (typeof ROLES)[number];
 
-/** The marks of a Bestiary Vol. I Creature: fights alone, one of a kind, part of a bigger creature. */
-export const CREATURE_FLAGS = ['solo', 'unique', 'part'] as const;
+/**
+ * The marks of a Bestiary Vol. I Creature: fights alone, one of a kind, part of a bigger
+ * creature, or a sample Faithful Companion (a Player's creature, not an enemy).
+ */
+export const CREATURE_FLAGS = ['solo', 'unique', 'part', 'companion'] as const;
 export type CreatureFlag = (typeof CREATURE_FLAGS)[number];
 
 /** An Attribute die as its number of sides, d6 to d12. */
@@ -300,7 +306,8 @@ export interface CreatureDetails {
   /** Half of `hp`, rounded down. */
   crisis: number;
   mp: number;
-  initiative: number;
+  /** Absent for a companion, which never rolls Initiative: it acts when its Wayfarer does. */
+  initiative?: number;
   /** A fixed number (martial armor) or a bonus to the current Destreza die. */
   defense: { value: number; fixed: boolean };
   /** Always a bonus to the current Astúcia die. */

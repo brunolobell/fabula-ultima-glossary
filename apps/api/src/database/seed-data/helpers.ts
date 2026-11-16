@@ -311,3 +311,9 @@ export const inBook = (
   source: EntrySource,
   entries: SeedEntry[],
 ): SeedEntry[] => entries.map((entry) => ({ ...entry, source }));
+
+/** The entry with `extra` tags appended to its own (e.g. a Bonus class's English name). */
+export const withTags = <T extends SeedEntry>(
+  entry: T,
+  ...extra: string[]
+): T => ({ ...entry, tags: [...(entry.tags ?? []), ...extra] });

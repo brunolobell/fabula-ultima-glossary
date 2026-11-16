@@ -107,7 +107,89 @@ Cada Arcano se associa a alguns conceitos-chave, os **domínios**. O Mestre os u
 - **Fundir.** Você tem Resistência a dano de trevas e sua Defesa Mágica aumenta em +1.
 - **Dispensar.** Escolha Oblívio ou Translocar:
   - **Oblívio.** Escolha qualquer número de criaturas que você veja; você causa 30 pontos de dano de trevas em cada uma (esse dano ignora Resistências).
-  - **Translocar.** Você e até cinco outras criaturas voluntárias são teletransportados para um local que você já visitou, a até 1 dia de Viagem.`,
+  - **Translocar.** Você e até cinco outras criaturas voluntárias são teletransportados para um local que você já visitou, a até 1 dia de Viagem.
+
+## Arcanos do Bestiary Vol. I
+
+Seis criaturas do Compêndio do Bestiary Vol. I (inglês, não oficial; tradução nossa) listam um Arcano entre as recompensas: a [[gorgona]], a [[harpia]], a [[fenix]], a [[ondina]], o [[unicornio]] e a [[zirnitra]]. As regras completas deles estão nas p. 338 a 343 desse livro, resumidas abaixo. Não é preciso enfrentar essas criaturas para vincular o Arcano delas; os perfis existem para o caso de elas estarem corrompidas, aliadas a um antagonista ou testando os heróis.
+
+Estes Arcanos são mais complexos e têm mais personalidade que os do Livro Básico. Se o grupo achar demais, pode simplificá-los: por exemplo, uma Harpia cujo efeito de fundir só dá Resistência a ar e aumenta a Destreza, e cujo efeito de dispensar causa direto 40 de dano, sem acúmulo de pontos. Quem joga o Arcanista tem a palavra final.
+
+Se o grupo concordar, a Górgona, a Harpia, a Fênix, a Ondina e o Unicórnio podem ser o Arcano inicial do Poder [[vincular-e-invocar]]. Zirnitra não é boa escolha inicial: sua natureza e seu poder combinam mais com o ápice da jornada de um Arcanista, talvez como um Arcano esquecido descoberto pelo Poder Heroico [[revelacao]].
+
+### Arcano da Górgona
+
+*Guardiã Cardeal do Deserto Ocidental.* **Domínios:** terra, meditação, compreensão.
+
+- **Fundir (Abraço Titânico).**
+  - Você tem Resistência a dano de terra.
+  - Ao causar dano, você pode fazer o tipo dele virar terra.
+  - Ao causar dano de terra, você causa 5 pontos de dano adicionais.
+  - Uma vez por turno em conflito, ao atacar com uma arma equipada, escolha uma opção: o ataque ganha **multi (2)**; ou, se for corpo a corpo, ele pode ter como alvo criaturas que normalmente não poderiam ser alvo de ataques corpo a corpo; ou todos os inimigos que perderem PV por esse ataque ficam atordoados.
+- **Dispensar (Força Emergente).** Escolha uma opção: você e cada aliado em cena tratam Vigor e Vontade como um passo maior (máximo d12) até o fim do seu próximo turno; ou você causa 30 pontos de dano de terra a cada inimigo que veja e que não esteja voando, flutuando, caindo ou de outro modo no ar (esse dano ignora as Resistências e Imunidades de criaturas atordoadas).
+
+### Arcano da Harpia
+
+*Guardiã Cardeal do Oceano Oriental.* **Domínios:** determinação, velocidade, vento.
+
+- **Fundir (Corrente Ascendente Turbulenta).**
+  - Você tem Resistência a dano de ar.
+  - Enquanto não tiver armadura marcial equipada, trate sua Destreza como um passo maior (máximo d12).
+  - Uma vez por turno em conflito, você pode usar a ação Poder para causar dano de ar igual a **(10 + o número de faces do seu dado de Destreza atual)** a até dois inimigos que veja; os que perderem PV assim também ficam fracos. Depois, você ganha 1 **Ponto de Turbulência** (2, se escolheu afetar só um inimigo). O dano aumenta em 5 a partir do 20º nível e em 10 a partir do 40º.
+  - Ao dispensar o Arcano, você perde todos os Pontos de Turbulência.
+- **Dispensar (Golpe de Furacão).** Escolha ar ou físico: você causa dano do tipo escolhido igual a **(10 + os Pontos de Turbulência que perdeu ao dispensar × 10)** a um inimigo que veja. Se perdeu 2 ou mais Pontos, o dano ignora Resistências. Se um inimigo voador perder PV por esse dano, é obrigado a pousar de imediato.
+
+### Arcano da Fênix
+
+*Guardiã Cardeal do Vulcão do Norte.* **Domínios:** purificação, fogo, renascimento.
+
+- **Fundir (Coroa Flamejante).**
+  - Você tem Resistência a dano de fogo.
+  - Uma vez por turno em conflito, você pode usar a ação Poder para escolher uma opção: causar dano de fogo igual a **(10 + (5 × a maior força entre seus Laços))** a até dois inimigos que veja; ou fazer uma criatura que veja se recuperar de todas as condições e, se você estiver em chamas, também recuperar 20 PV. O dano aumenta em 5 a partir do 20º nível e em 10 a partir do 40º.
+  - Quando você chega a 0 PV e não está em chamas, em vez disso fica de pé com exatamente 1 PV e passa a ficar em chamas.
+  - Ao dispensar o Arcano, se estiver em chamas, você deixa de estar.
+- **Dispensar (Bênçãos do Fogo).** Escolha uma opção:
+  - **Calor purificador.** Você e cada aliado em cena recuperam 30 PV e se recuperam de todas as condições. O valor sobe para 40 PV a partir do 30º nível e aumenta em mais 10 PV se você estava em chamas ao dispensar.
+  - **Chuva de plumas em brasa.** Você causa 20 pontos de dano de fogo a cada inimigo que veja (esse dano ignora Resistências), mais 10 de dano adicional se estava em chamas ao dispensar.
+
+### Arcano da Ondina
+
+*Guardiã Cardeal das Montanhas do Sul.* **Domínios:** gelo, percepção, proteção.
+
+- **Fundir (Imperatriz da Neve Eterna).**
+  - Você tem Resistência a dano de gelo.
+  - Ao se fundir, você ganha 5 **Pontos de Permafrost**. Nunca pode ter mais de 5, e perde os que restarem ao dispensar o Arcano.
+  - Uma vez por turno em conflito, você pode usar a ação Poder para causar dano de gelo igual a **(20 + seus Pontos de Permafrost atuais)** a um inimigo que veja; depois, perde 1 Ponto de Permafrost. O dano aumenta em 5 a partir do 20º nível e em 10 a partir do 40º.
+  - Quando você e/ou aliados em cena sofrem dano, ele diminui em um valor igual aos seus Pontos de Permafrost atuais (antes das Afinidades); em seguida, você perde 1 Ponto de Permafrost.
+- **Dispensar (Decreto Abaixo de Zero).** Escolha uma opção:
+  - **Fenda de avalanche.** Você causa 30 pontos de dano de gelo a cada inimigo que veja (esse dano ignora Resistências e diminui em 5 para cada Ponto de Permafrost perdido ao dispensar).
+  - **Barreira da alma de inverno.** Para cada Ponto de Permafrost perdido ao dispensar, escolha um tipo entre trevas, gelo, luz, físico e veneno. Até o fim do seu próximo turno, você e cada aliado em cena têm Resistência a cada tipo escolhido. Se perdeu menos de 2 Pontos, escolhe um único tipo, e o efeito dura até o fim da cena ou até você usar a Barreira da alma de inverno de novo.
+
+### Arcano do Unicórnio
+
+*Guardião Cardeal das Planícies Centrais.* **Domínios:** adivinhação, raios, punição.
+
+- **Fundir (Aura Crepitante).**
+  - Você tem Resistência a dano de raio.
+  - Ao sofrer dano de um tipo diferente de terra, você ganha 1 **Ponto de Raio** (2, se estiver em crise).
+  - Todo dano que você causa vira de raio, o tipo não pode mudar e o dano ignora Resistências.
+  - Ao causar dano de raio estando hipercondutor, você causa dano adicional igual aos seus Pontos de Raio.
+  - Ao dispensar o Arcano, você perde todos os Pontos de Raio.
+- **Dispensar (Descarga Trovejante).** Você causa 40 pontos de dano de raio a um inimigo que veja (o dano ignora Resistências se você estiver hipercondutor). Se uma criatura perder PV por esse dano e estiver afetada por feitiços de duração Cena, ela deixa de ser afetada por todos eles. Depois, se você perdeu 5 ou mais Pontos de Raio ao dispensar e não está hipercondutor, pode invocar este Arcano de novo na hora (sem ação e sem PM). Se fizer isso, você fica hipercondutor e não pode dispensá-lo por vontade própria até o início do seu próximo turno.
+
+### Arcano de Zirnitra
+
+*A antiga deusa-dragão das almas e da feitiçaria.* **Domínios:** energia, magia, renovação.
+
+- **Fundir (Halo de Luz e Sombra).**
+  - Você tem Resistência a dano de trevas e de luz.
+  - Você pode lançar [[dissipar]], [[fulgur]], [[glacies]], [[ignis]] e [[reforcar]], mesmo sem tê-los aprendido (listas do Elementalista, do Entropista e do Espiritualista do Livro Básico).
+  - Ao lançar um feitiço ofensivo, você pode usar **(VON + VON)** no teste de Magia; se fizer isso, também ganha um bônus nesse teste igual ao dobro do número de criaturas alvo do feitiço.
+  - Ao lançar um feitiço, você pode ignorar o custo em PM; depois de ignorar dois custos assim, o Arcano é dispensado automaticamente (depois de resolvido o feitiço; isso não conta como dispensa voluntária).
+- **Dispensar (Verdades da Destruição e da Criação).** Escolha uma opção:
+  - **Favor da Deusa-Dragão.** Uma criatura que você veja recupera 999 PV e se recupera de todas as condições.
+  - **Guardiã do Grande Ritual.** Até o fim da cena, você pode fazer rituais das disciplinas elementalismo, entropismo, ritualismo e espiritualismo. O primeiro ritual da cena custa metade dos PM, e esse custo não pode ser alterado por outro efeito. Só pode ser escolhida uma vez por cena e nunca em cena de conflito.
+  - **Nitraclismo.** Você causa 30 pontos de dano a cada inimigo que veja: de luz, se não estiver em crise, ou de trevas, se estiver. O dano ignora Resistências e também Imunidades e Absorções de inimigos de patente campeã.`,
     otherNames: ['Avatar', 'Escolhido', 'Invocador'],
     quote: 'Alguns destinos não podem ser evitados.',
     traits: ['mp'],
