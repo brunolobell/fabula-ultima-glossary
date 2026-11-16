@@ -265,6 +265,15 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
       labelOf: (value) => (value === 'sim' ? 'Vilão' : 'Não é vilão'),
       order: ['sim', 'nao'],
     }),
+    statRow({
+      param: 'companheiro',
+      label: 'Companheiro',
+      // The sample Faithful Companions of the Bestiary Vol. I (Andarilho).
+      values: (e) => [stats(e).flags?.includes('companion') ? 'sim' : 'nao'],
+      labelOf: (value) =>
+        value === 'sim' ? 'Companheiro Fiel' : 'Não é companheiro',
+      order: ['sim', 'nao'],
+    }),
     bookRow,
   ],
   service: [

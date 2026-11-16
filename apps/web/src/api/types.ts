@@ -204,7 +204,7 @@ export interface CreatureAbility {
   effect: string;
 }
 
-export type CreatureFlag = 'solo' | 'unique' | 'part';
+export type CreatureFlag = 'solo' | 'unique' | 'part' | 'companion';
 
 /** What the list endpoint sends for a Creature: the scalar stats, no abilities. */
 export interface CreatureSummaryDetails {
@@ -214,7 +214,7 @@ export interface CreatureSummaryDetails {
   role?: Role;
   /** A champion replaces this many soldiers; Bestiary Vol. I only. */
   championX?: number;
-  /** Solo, Unique, Part (Bestiary Vol. I only). */
+  /** Solo, Unique, Part, Companion (Bestiary Vol. I only). */
   flags?: CreatureFlag[];
   villain: boolean;
   /** English name of a Bestiary Vol. I Creature. */
@@ -227,7 +227,8 @@ export interface CreatureSummaryDetails {
   /** Half of `hp`, rounded down. */
   crisis: number;
   mp: number;
-  initiative: number;
+  /** Absent for a companion, which never rolls Initiative. */
+  initiative?: number;
   /** A fixed number (martial armor) or a bonus to the current Destreza die. */
   defense: { value: number; fixed: boolean };
   /** A bonus to the current Astúcia die. */

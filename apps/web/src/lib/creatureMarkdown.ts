@@ -44,7 +44,7 @@ export function creatureToMarkdown(
   }
   lines.push(
     ['DES', 'AST', 'VIG', 'VON'].map((l) => `**${l}** ${cell(l)}`).join(' · '),
-    `**PV** ${d.hp} (Crise ${d.crisis}) · **PM** ${d.mp} · **Inic.** ${d.initiative} · **Defesa** ${cell('Defesa')} · **Def. Mágica** ${cell('Def. Mágica')}`,
+    `**PV** ${d.hp} (Crise ${d.crisis}) · **PM** ${d.mp}${d.initiative === undefined ? '' : ` · **Inic.** ${d.initiative}`} · **Defesa** ${cell('Defesa')} · **Def. Mágica** ${cell('Def. Mágica')}`,
   );
   if (ultimaPoints !== null) {
     lines.push(`**Pontos de Ultima:** ${ultimaPoints}`);

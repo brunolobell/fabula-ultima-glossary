@@ -2,6 +2,7 @@ import { SeedEntry } from '../../types';
 import { criaturasVol1A } from './a';
 import { criaturasVol1B } from './b';
 import { criaturasVol1C } from './c';
+import { companionsVol1 } from './companions';
 import { criaturasVol1D } from './d';
 import { criaturasVol1E } from './e';
 import { criaturasVol1F } from './f';
@@ -30,4 +31,6 @@ export const criaturasBestiaryVol1: SeedEntry[] = [
   ...criaturasVol1L,
   ...criaturasVol1M,
   ...criaturasVol1N,
+  // "New Options" (printed p. 328-336): sample Faithful Companions, after the Compendium.
+  ...companionsVol1,
 ];

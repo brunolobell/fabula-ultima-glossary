@@ -98,8 +98,9 @@ export class CreatureStats {
   @Column({ type: 'int' })
   mp: number;
 
-  @Column({ type: 'int' })
-  initiative: number;
+  /** Null for a Faithful Companion, which has no Initiative. */
+  @Column({ type: 'int', nullable: true })
+  initiative: number | null;
 
   @Column({ type: 'int' })
   defense: number;

@@ -726,6 +726,20 @@ describe('validateSeed', () => {
           'cactonto: a Part must belong to a creature group',
         ]);
       });
+
+      it('lets a companion go without Initiative and requires it of everyone else', () => {
+        expect(
+          validateSeed([
+            volumeOne({ flags: ['companion'], initiative: undefined }),
+          ]),
+        ).toEqual([]);
+        expect(validateSeed([volumeOne({ flags: ['companion'] })])).toEqual([
+          'cactonto: a companion has no details.initiative',
+        ]);
+        expect(validateSeed([volumeOne({ initiative: undefined })])).toEqual([
+          'cactonto: details.initiative must be an integer',
+        ]);
+      });
     });
 
     it('requires the English name of a Bestiary Vol. I Creature', () => {
@@ -787,7 +801,10 @@ describe('validateSeed', () => {
 
   describe('quick assembly', () => {
     const rules = seedEntries.filter(
-      (e) => e.type === 'rule' && e.source === 'bestiary-vol-1',
+      (e) =>
+        e.type === 'rule' &&
+        e.source === 'bestiary-vol-1' &&
+        e.name.startsWith('Montagem Rápida'),
     );
     const role = (name: string) =>
       rules.find((e) => e.name === `Montagem Rápida: ${name}`);
@@ -2154,5 +2171,85 @@ describe('validateSeed', () => {
       summary: 'Voa.',
       body: 'Você voa.',
     };
+  });
+
+  describe('Bestiary Vol. I, "New Options"', () => {
+    const companions = seedEntries.filter(
+      (e) =>
+        e.type === 'creature' &&
+        (e.details as { flags?: string[] }).flags?.includes('companion'),
+    );
+
+    it('seeds the nine sample Faithful Companions, level 5, without Initiative', () => {
+      expect(companions.map((e) => [e.name, e.page])).toEqual([
+        ['Amagus', 328],
+        ['Buzzer', 329],
+        ['Freki', 330],
+        ['A Turma', 331],
+        ['Lumi', 332],
+        ['Mathim', 333],
+        ['Sr. Cog', 334],
+        ['Palupam', 335],
+        ['Tao', 336],
+      ]);
+      for (const e of companions) {
+        const d = e.details as CreatureDetails;
+        expect(e.source).toBe('bestiary-vol-1');
+        expect(d.level).toBe(5);
+        expect(d.initiative).toBeUndefined();
+      }
+    });
+
+    it('keeps the book numbers of two profiles', () => {
+      const tao = companions.find((e) => e.name === 'Tao')
+        ?.details as CreatureDetails;
+      expect(tao).toMatchObject({
+        hp: 26,
+        mp: 45,
+        defense: { value: 1, fixed: false },
+        magicDefense: 2,
+        attributes: { DES: 10, AST: 8, VIG: 8, VON: 6 },
+      });
+      const cog = companions.find((e) => e.name === 'Sr. Cog')
+        ?.details as CreatureDetails;
+      expect(cog.affinities).toEqual({
+        physical: 'resistant',
+        bolt: 'vulnerable',
+        earth: 'resistant',
+        ice: 'resistant',
+        poison: 'immune',
+      });
+    });
+
+    it('seeds the four optional rules of "Variants and Options"', () => {
+      const names = seedEntries
+        .filter((e) => e.type === 'rule' && e.source === 'bestiary-vol-1')
+        .map((e) => e.name)
+        .filter((n) => !n.startsWith('Montagem Rápida'));
+      expect(names).toEqual([
+        'Afinidades por Categoria',
+        'Trespassar (variante)',
+        'Acromorfose Maior (variante)',
+        'Pressão e Desestabilização',
+      ]);
+    });
+
+    it('puts the six new Arcana in the Arcanista body', () => {
+      const body = seedEntries.find(
+        (e) => e.type === 'class' && e.name === 'Arcanista',
+      )?.body;
+      for (const arcanum of [
+        'Górgona',
+        'Harpia',
+        'Fênix',
+        'Ondina',
+        'Unicórnio',
+        'Zirnitra',
+      ]) {
+        expect(body).toContain(
+          `### Arcano ${arcanum === 'Zirnitra' ? 'de' : arcanum === 'Unicórnio' ? 'do' : 'da'} ${arcanum}`,
+        );
+      }
+    });
   });
 });

@@ -59,6 +59,7 @@ import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
 import { weaponForgeRules } from './weapon-forge';
 import { armorForgeRules } from './armor-forge';
+import { bestiaryOptionRules } from './bestiary-options';
 import { SeedEntry } from './types';
 
 export const seedEntries: SeedEntry[] = [
@@ -88,6 +89,7 @@ export const seedEntries: SeedEntry[] = [
   ...criaturasBestiaryVol1,
   npcSpellsRule,
   ...quickAssemblySeed,
+  ...bestiaryOptionRules,
   ...weaponForgeRules,
   ...armorForgeRules,
   ...servicesAndTransport,

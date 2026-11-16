@@ -690,6 +690,14 @@ export function validateSeed(entries: SeedEntry[]): string[] {
         }
         if (flags?.includes('part') && !entry.details.groupSlug)
           fail('a Part must belong to a creature group');
+        if (flags?.includes('companion')) {
+          if (entry.details.initiative !== undefined)
+            fail('a companion has no details.initiative');
+          if (entry.details.groupSlug)
+            fail('a companion does not belong to a creature group');
+        } else if (!Number.isInteger(entry.details.initiative)) {
+          fail('details.initiative must be an integer');
+        }
         if ((entry.source ?? 'livro-basico') === 'livro-basico') {
           if (entry.details.role) fail('only the Bestiary Vol. I has a role');
           if (rank === 'champion')

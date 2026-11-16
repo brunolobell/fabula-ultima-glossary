@@ -238,7 +238,7 @@ export function creatureToFoundry(
   // Initiative = (DES + AST) / 2 + rank bonus + extra.extrainit.
   const baseInit =
     (attributes.dexterity + attributes.insight) / 2 + factor.init;
-  const extraInit = d.initiative - baseInit;
+  const extraInit = (d.initiative ?? baseInit) - baseInit;
   if (extraInit !== 0) extra.extrainit = extraInit;
 
   // A fixed Defense (martial armor) replaces the total; otherwise it is a bonus to the die.
