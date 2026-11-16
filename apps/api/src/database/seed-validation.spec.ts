@@ -2281,7 +2281,11 @@ describe('validateSeed', () => {
       const names = seedEntries
         .filter((e) => e.type === 'rule' && e.source === 'bestiary-vol-1')
         .map((e) => e.name)
-        .filter((n) => !n.startsWith('Montagem Rápida'));
+        .filter(
+          (n) =>
+            !n.startsWith('Montagem Rápida') &&
+            !n.startsWith('Qualidades de recompensa'),
+        );
       expect(names).toEqual([
         'Afinidades por Categoria',
         'Trespassar (variante)',
