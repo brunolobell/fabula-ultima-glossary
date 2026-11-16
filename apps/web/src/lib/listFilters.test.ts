@@ -129,11 +129,13 @@ describe('applyFilters', () => {
       item('katana', 'weapon', 'basic', true),
       item('escudo', 'shield', 'basic', false),
       item('relíquia', 'artifact', 'rare', false),
+      item('chave-de-latão', 'weapon', 'custom', false),
     ];
     const pick = (q: string) =>
       slugs(applyFilters('equipment', list, readSelection('equipment', new URLSearchParams(q))));
-    expect(pick('item=armas,escudos')).toEqual(['katana', 'escudo']);
+    expect(pick('item=armas,escudos')).toEqual(['katana', 'escudo', 'chave-de-latão']);
     expect(pick('raridade=raro')).toEqual(['relíquia']);
+    expect(pick('raridade=personalizada')).toEqual(['chave-de-latão']);
     expect(pick('marcial=nao&raridade=basico')).toEqual(['escudo']);
   });
 

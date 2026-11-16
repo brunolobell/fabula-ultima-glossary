@@ -105,7 +105,8 @@ export interface SpellDetails {
 
 export interface EquipmentDetails {
   kind: EquipmentKind;
-  rarity: 'basic' | 'rare';
+  /** `custom`: a basic Custom Weapon example of an Atlas (not offered as a forge base). */
+  rarity: 'basic' | 'rare' | 'custom';
   /** Marked with the "marcial" icon: only some Classes can equip it. */
   martial: boolean;
   /** Cost in zênites (z); null when the item has none. */

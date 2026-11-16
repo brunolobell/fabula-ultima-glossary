@@ -18,6 +18,14 @@ const CATEGORY = {
 } as const;
 export type WeaponCategory = keyof typeof CATEGORY;
 
+/** Books that print rare items (the Bestiary Vol. I prints three rewards). */
+export type RareBook =
+  | 'livro-basico'
+  | 'high-fantasy'
+  | 'natural-fantasy'
+  | 'techno-fantasy'
+  | 'bestiary-vol-1';
+
 const MARTIAL_NOTE =
   'Item **marcial**: só pode ser equipado por quem tem a classe adequada (veja [[equipamento]]).';
 
@@ -41,10 +49,21 @@ export interface RareWeapon {
   effect: string;
   /** A Piloto vehicle module rather than a hand-held weapon. */
   module?: boolean;
+  /**
+   * An Atlas basic Custom Weapon example (300 to 400z): rarity `custom`, so the
+   * Weapon Forge does not offer it as a base weapon.
+   */
+  custom?: boolean;
+  /** Slug of the basic Custom Weapon this Rare Evolution upgrades; adds a link. */
+  evolutionOf?: string;
+  /** Form II of a two-Form (Mutável) weapon, as Markdown with its own stat line. */
+  formII?: string;
+  /** Extra Markdown after the generated notes. */
+  body?: string;
 }
 
 export const rareWeapon = (
-  book: 'high-fantasy' | 'natural-fantasy' | 'techno-fantasy',
+  book: RareBook,
   w: RareWeapon,
 ): SeedEntry => {
   const martial = w.martial ?? false;
@@ -56,7 +75,23 @@ export const rareWeapon = (
     : `${w.hands === 1 ? 'uma mão' : 'duas mãos'}, ${
         w.range === 'melee' ? 'corpo a corpo' : 'à distância'
       }`;
-  const kind = w.module ? 'Módulo de arma raro' : 'Arma rara';
+  const kind = w.module
+    ? 'Módulo de arma raro'
+    : w.custom
+      ? 'Arma personalizada (exemplo)'
+      : w.evolutionOf
+        ? 'Arma rara (evolução rara)'
+        : 'Arma rara';
+  const body = [
+    martial ? MARTIAL_NOTE : '',
+    w.evolutionOf
+      ? `Evolução rara de [[${w.evolutionOf}]], a arma personalizada básica da mesma família.`
+      : '',
+    w.formII ? `**Forma II:** ${w.formII}` : '',
+    w.body ?? '',
+  ]
+    .filter(Boolean)
+    .join('\n\n');
   return {
     type: 'equipment',
     source: book,
@@ -64,17 +99,18 @@ export const rareWeapon = (
     ...(w.slug ? { slug: w.slug } : {}),
     page: w.page,
     summary: `${kind}${martial ? ' marcial' : ''} (${CATEGORY[w.category]}), ${grip}. Precisão (${w.accuracy})${bonus}, dano (RA + ${w.damage}) ${w.damageType}, ${zenites(w.cost)}. ${w.effect}`,
-    body: martial ? MARTIAL_NOTE : '',
+    body,
     tags: [
       'equipamento',
       'arma',
-      'raro',
+      ...(w.custom ? ['arma personalizada'] : ['raro']),
+      ...(w.evolutionOf ? ['evolução rara'] : []),
       ...(w.module ? ['módulo'] : []),
       CATEGORY[w.category].toLowerCase(),
     ],
     details: {
       kind: 'weapon',
-      rarity: 'rare',
+      rarity: w.custom ? 'custom' : 'rare',
       martial,
       cost: w.cost,
       category: CATEGORY[w.category],
@@ -100,13 +136,15 @@ export interface RareArmor {
   initiative: number;
   martial?: boolean;
   effect: string;
+  /** Extra Markdown after the generated notes. */
+  body?: string;
 }
 
 const initiativeLabel = (n: number) =>
   n === 0 ? 'sem modificador' : String(n);
 
 export const rareArmor = (
-  book: 'high-fantasy' | 'natural-fantasy' | 'techno-fantasy',
+  book: RareBook,
   a: RareArmor,
 ): SeedEntry => {
   const martial = a.martial ?? false;
@@ -117,7 +155,7 @@ export const rareArmor = (
     ...(a.slug ? { slug: a.slug } : {}),
     page: a.page,
     summary: `Armadura rara${martial ? ' marcial' : ''}. Defesa ${a.defense}, Def. Mágica ${a.magicDefense ?? 'sem bônus'}, Iniciativa ${initiativeLabel(a.initiative)}, ${zenites(a.cost)}. ${a.effect}`,
-    body: martial ? MARTIAL_NOTE : '',
+    body: [martial ? MARTIAL_NOTE : '', a.body ?? ''].filter(Boolean).join('\n\n'),
     tags: ['equipamento', 'armadura', 'raro'],
     details: {
       kind: 'armor',
@@ -143,10 +181,12 @@ export interface RareShield {
   effect: string;
   /** A Piloto vehicle module that acts as a shield. */
   module?: boolean;
+  /** Extra Markdown after the generated notes. */
+  body?: string;
 }
 
 export const rareShield = (
-  book: 'high-fantasy' | 'natural-fantasy' | 'techno-fantasy',
+  book: RareBook,
   s: RareShield,
 ): SeedEntry => {
   const martial = s.martial ?? false;
@@ -157,7 +197,7 @@ export const rareShield = (
     ...(s.slug ? { slug: s.slug } : {}),
     page: s.page,
     summary: `${s.module ? 'Módulo de escudo raro' : 'Escudo raro'}${martial ? ' marcial' : ''}. Defesa ${s.defense}, Def. Mágica ${s.magicDefense ?? 'sem bônus'}, ${zenites(s.cost)}. ${s.effect}`,
-    body: martial ? MARTIAL_NOTE : '',
+    body: [martial ? MARTIAL_NOTE : '', s.body ?? ''].filter(Boolean).join('\n\n'),
     tags: ['equipamento', 'escudo', 'raro', ...(s.module ? ['módulo'] : [])],
     details: {
       kind: 'shield',
@@ -177,10 +217,12 @@ export interface RareAccessory {
   page: number;
   cost: number;
   effect: string;
+  /** Extra Markdown (for example a link to the feature rule). */
+  body?: string;
 }
 
 export const rareAccessory = (
-  book: 'high-fantasy' | 'natural-fantasy' | 'techno-fantasy',
+  book: RareBook,
   a: RareAccessory,
 ): SeedEntry => ({
   type: 'equipment',
@@ -189,7 +231,7 @@ export const rareAccessory = (
   ...(a.slug ? { slug: a.slug } : {}),
   page: a.page,
   summary: `Acessório raro, ${zenites(a.cost)}. ${a.effect}`,
-  body: '',
+  body: a.body ?? '',
   tags: ['equipamento', 'acessório', 'raro'],
   details: {
     kind: 'accessory',
@@ -210,7 +252,7 @@ export interface Artifact {
 }
 
 export const artifact = (
-  book: 'high-fantasy' | 'natural-fantasy' | 'techno-fantasy',
+  book: RareBook,
   a: Artifact,
 ): SeedEntry => ({
   type: 'equipment',

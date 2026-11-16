@@ -87,7 +87,7 @@ export interface SpellDetails {
 
 export interface EquipmentDetails {
   kind: EquipmentKind;
-  rarity: 'basic' | 'rare';
+  rarity: 'basic' | 'rare' | 'custom';
   martial: boolean;
   cost: number | null;
   defense?: string;

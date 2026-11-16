@@ -207,11 +207,23 @@ const ROWS: Partial<Record<EntryType, RowSpec[]>> = {
     {
       param: 'raridade',
       label: 'Raridade',
-      values: (e) => [
-        (e.details as EquipmentDetails).rarity === 'rare' ? 'raro' : 'basico',
-      ],
-      labelOf: (value) => (value === 'raro' ? 'Raro' : 'Básico'),
-      order: ['basico', 'raro'],
+      values: (e) => {
+        const { rarity } = e.details as EquipmentDetails;
+        return [
+          rarity === 'rare'
+            ? 'raro'
+            : rarity === 'custom'
+              ? 'personalizada'
+              : 'basico',
+        ];
+      },
+      labelOf: (value) =>
+        value === 'raro'
+          ? 'Raro'
+          : value === 'personalizada'
+            ? 'Personalizada'
+            : 'Básico',
+      order: ['basico', 'raro', 'personalizada'],
     },
     {
       param: 'marcial',

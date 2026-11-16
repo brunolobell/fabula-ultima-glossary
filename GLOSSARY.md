@@ -67,12 +67,20 @@ A Creature Entry with no stat block of its own that gathers the Creatures that f
 _Avoid_: Family (one kind of Creature Group), Party (the heroes' group)
 
 **Custom Weapon**:
-A weapon a Reader assembles from a base weapon category plus customizations, following the Atlas High Fantasy rules. It is not an Entry. Shown to Readers as "arma personalizada".
+A weapon a Reader assembles from a base weapon category plus customizations, following the Atlas High Fantasy rules. One a Reader builds is not an Entry, but the three Atlases print basic examples (300 to 400z), and those are Equipment Entries. Shown to Readers as "arma personalizada".
 _Avoid_: Homebrew weapon, crafted weapon
 
 **Rare Weapon**:
 A weapon with a special effect beyond a basic weapon's. Either an Equipment Entry from the books or one a Reader designs in the Weapon Forge; "rare" is a rarity, not an Equipment Kind. Shown to Readers as "arma rara".
 _Avoid_: Magic weapon, unique weapon
+
+**Rare Evolution**:
+A Rare Weapon the Atlas prints as the "possible rare evolution" of one of its basic Custom Weapon examples, with its own price; its Entry links to that example. Shown to Readers as "evolução rara". A Rare Evolution may have two Forms (the Mutável Customization).
+_Avoid_: Upgrade, variant
+
+**Quality**:
+An add-on property priced separately (for example +1.000z) that a Bestiary Vol. I Creature's reward lets a Game Master attach to a piece of gear it fits. It is not an Equipment Entry and not an Armor or Weapon Feature. Shown to Readers as "qualidade" (unofficial translation).
+_Avoid_: Feature, trait, enchantment
 
 **Rare Armor / Rare Shield**:
 An armor or shield with a special effect beyond a basic one's: a basic armor or shield from the Core Rulebook plus a single Armor Feature, and the feature's cost added to the base price. Either an Equipment Entry from the books or one a Reader designs in the Armor Forge. Shown to Readers as "armadura rara" and "escudo raro".

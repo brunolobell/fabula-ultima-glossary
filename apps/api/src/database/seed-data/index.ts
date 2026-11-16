@@ -39,6 +39,14 @@ import { armadurasEscudosBasicos } from './equipment/armaduras-escudos-basicos';
 import { itensRarosHighFantasy } from './equipment/high-fantasy/itens-raros';
 import { itensRarosNaturalFantasy } from './equipment/natural-fantasy/itens-raros';
 import { itensRarosTechnoFantasy } from './equipment/techno-fantasy/itens-raros';
+import { armasRarasLivroBasico1 } from './equipment/livro-basico/armas-raras-1';
+import { armasRarasLivroBasico2 } from './equipment/livro-basico/armas-raras-2';
+import { armadurasEscudosRarosLivroBasico } from './equipment/livro-basico/armaduras-escudos';
+import { acessoriosArtefatosLivroBasico } from './equipment/livro-basico/acessorios-artefatos';
+import { armasPersonalizadasHighFantasy } from './equipment/high-fantasy/armas-personalizadas';
+import { armasPersonalizadasNaturalFantasy } from './equipment/natural-fantasy/armas-personalizadas';
+import { armasPersonalizadasTechnoFantasy } from './equipment/techno-fantasy/armas-personalizadas';
+import { recompensasBestiaryVol1 } from './equipment/bestiary-vol-1/recompensas';
 import { gameSetupRules } from './game-setup';
 import {
   servicesAndTransport,
@@ -92,8 +100,14 @@ export const seedEntries: SeedEntry[] = [
   ...quimerista,
   ...armasBasicas,
   ...armadurasEscudosBasicos,
+  // Livro Básico: armas, armaduras, escudos, acessórios e artefatos raros
+  ...armasRarasLivroBasico1,
+  ...armasRarasLivroBasico2,
+  ...armadurasEscudosRarosLivroBasico,
+  ...acessoriosArtefatosLivroBasico,
   ...criaturasLivroBasico,
   ...criaturasBestiaryVol1,
+  ...recompensasBestiaryVol1,
   npcSpellsRule,
   ...quickAssemblySeed,
   ...bestiaryOptionRules,
@@ -112,6 +126,7 @@ export const seedEntries: SeedEntry[] = [
   ]),
   ...inBook('high-fantasy', poderesHeroicosHighFantasy),
   ...itensRarosHighFantasy,
+  ...armasPersonalizadasHighFantasy,
   // Atlas Natural Fantasy
   ...inBook('natural-fantasy', [
     ...floralista,
@@ -121,10 +136,12 @@ export const seedEntries: SeedEntry[] = [
   ]),
   ...inBook('natural-fantasy', poderesHeroicosNaturalFantasy),
   ...itensRarosNaturalFantasy,
+  ...armasPersonalizadasNaturalFantasy,
   // Atlas Techno Fantasy
   ...inBook('techno-fantasy', [...esper, ...mutante, ...piloto]),
   ...inBook('techno-fantasy', poderesHeroicosTechnoFantasy),
   ...itensRarosTechnoFantasy,
+  ...armasPersonalizadasTechnoFantasy,
   ...inBook('techno-fantasy', servicesAndTransportTechnoFantasy),
   // Codex Extra
   ...inBook('codex-extra', [
