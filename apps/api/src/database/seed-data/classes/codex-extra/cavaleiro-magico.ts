@@ -113,6 +113,6 @@ Você pode usar uma **ação** e gastar **25 PM** para assumir uma forma mágica
     'Cada vez que adquire este Poder, escolha a arma ou a armadura de uma forma mágica. Ao fim de cada descanso, troque ou aplique uma característica de item raro (valor máximo 40 × seu nível em zênites).',
     `Sempre que adquirir este Poder, escolha a **arma** ou a **armadura** de uma das suas formas mágicas.
 
-No fim de cada **descanso**, para cada item escolhido, você pode **substituir** a característica dele ou **aplicar uma nova** (se o item não tiver características) como se fosse um **item raro** (Livro Básico, a partir da página 266). A característica escolhida deve ser aprovada pelo mestre e ter valor em zênites **igual ou menor que (40 × seu nível)**.`,
+No fim de cada **descanso** (veja [[descanso]]), para cada item escolhido, você pode **substituir** a característica dele ou **aplicar uma nova** (se o item não tiver características) como se fosse um **item raro** (Livro Básico, a partir da página 266). A característica escolhida deve ser aprovada pelo mestre e ter valor em zênites **igual ou menor que (40 × seu nível)**.`,
   ),
 ];

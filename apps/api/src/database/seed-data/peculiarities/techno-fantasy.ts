@@ -10,7 +10,7 @@ export const peculiaridadesTechnoFantasy: SeedEntry[] = [
     page: 120,
     summary:
       'Você atiça o povo contra os opressores: ao descansar perto de um assentamento, descobre do que os moradores têm medo ou cria um contato local.',
-    body: `Quando você **descansa dentro ou perto de um assentamento**, escolha um:
+    body: `Quando você **descansa** (veja [[descanso]]) **dentro ou perto de um assentamento**, escolha um:
 
 - descobrir **do que os habitantes têm medo** (ou raiva); ou
 - criar um **contato** que vive e atua na região: dê a ele um nome e uma especialização, e o mestre define o que ele pede em troca (ajuda, pagamento…).

@@ -203,12 +203,12 @@ export const servicesAndTransport: SeedEntry[] = [
 
 Um **serviço** se paga e não se guarda: o dinheiro compra um favor por uma noite, um dia ou uma recarga.
 
-- **Serviços de vila:** [[recarga-de-pi]] (10z) e o descanso de uma noite numa aldeia, numa vila ou numa cidade ([[descanso-aldeia]], [[descanso-vila]], [[descanso-cidade]]).
-- **Serviços de Viagem:** a passagem de uma pessoa por um dia de Viagem, por terra, água ou ar ([[viagem-terrestre]], [[viagem-aquatica]], [[viagem-aerea]]).
+- **Serviços de vila:** [[recarga-de-pi]] (10z) e o [[descanso]] de uma noite numa aldeia, numa vila ou numa cidade ([[descanso-aldeia]], [[descanso-vila]], [[descanso-cidade]]).
+- **Serviços de Viagem:** a passagem de uma pessoa por um dia de Viagem (veja [[jornadas-e-viagens]]), por terra, água ou ar ([[viagem-terrestre]], [[viagem-aquatica]], [[viagem-aerea]]).
 
 ## Transportes
 
-A lista traz versões **genéricas** de montarias, carros, embarcações, aeronaves e afins. Cada transporte leva um número de passageiros e **multiplica a distância** percorrida em um dia de Viagem.
+A lista traz versões **genéricas** de montarias, carros, embarcações, aeronaves e afins. Cada transporte leva um número de passageiros e **multiplica a distância** percorrida em um dia de Viagem (veja [[jornadas-e-viagens]]).
 
 ${transportTable(transports, (d) => scale(d.planetary))}
 
@@ -227,7 +227,7 @@ ${transportTable(transports, (d) => scale(d.planetary))}
     cost: 10,
     group: 'settlement',
     summary: 'Por 10z, um personagem recupera 1 PI.',
-    body: `Pague **10z** e um personagem recupera **1 PI** (Pontos de Inventário).\n\n${see(CORE_RULE)}`,
+    body: `Pague **10z** e um personagem recupera **1 PI** (veja [[pontos-de-inventario]]).\n\n${see(CORE_RULE)}`,
   }),
   service({
     name: 'Descanso (aldeia)',
@@ -235,7 +235,7 @@ ${transportTable(transports, (d) => scale(d.planetary))}
     cost: 5,
     group: 'settlement',
     summary: 'Por 5z, uma pessoa descansa uma noite numa aldeia.',
-    body: `Pague **5z** para uma pessoa descansar por uma noite numa aldeia.\n\n${see(CORE_RULE)}`,
+    body: `Pague **5z** para uma pessoa descansar por uma noite numa aldeia (veja [[descanso]]).\n\n${see(CORE_RULE)}`,
   }),
   service({
     name: 'Descanso (vila)',
@@ -243,7 +243,7 @@ ${transportTable(transports, (d) => scale(d.planetary))}
     cost: 10,
     group: 'settlement',
     summary: 'Por 10z, uma pessoa descansa uma noite numa vila.',
-    body: `Pague **10z** para uma pessoa descansar por uma noite numa vila.\n\n${see(CORE_RULE)}`,
+    body: `Pague **10z** para uma pessoa descansar por uma noite numa vila (veja [[descanso]]).\n\n${see(CORE_RULE)}`,
   }),
   service({
     name: 'Descanso (cidade)',
@@ -251,7 +251,7 @@ ${transportTable(transports, (d) => scale(d.planetary))}
     cost: 20,
     group: 'settlement',
     summary: 'Por 20z, uma pessoa descansa uma noite numa cidade.',
-    body: `Pague **20z** para uma pessoa descansar por uma noite numa cidade.\n\n${see(CORE_RULE)}`,
+    body: `Pague **20z** para uma pessoa descansar por uma noite numa cidade (veja [[descanso]]).\n\n${see(CORE_RULE)}`,
   }),
   service({
     name: 'Viagem terrestre',
@@ -294,6 +294,9 @@ export const servicesAndTransportTechnoFantasy: SeedEntry[] = [
 
 ## Escala do mapa e propulsão
 
+- As fichas de mapa mostram a superfície de um planeta e precisam de ajustes numa campanha entre sistemas solares ou galáxias. Primeiro, decidam se a campanha usa a **mesma escala** ou **escalas diferentes** e se cada uma precisa de um mapa. Há fichas interestelares e interplanetárias para baixar no site da editora.
+- Nas fichas **interestelares**, determine a duração de um dia de Viagem como de costume (veja [[jornadas-e-viagens]]). Nas fichas de **sistema**, a posição dos planetas muda o tempo todo: viajar **entre planetas** leva **1d6+1 dias**, e ir **entre um planeta e seus satélites** leva **1 dia**.
+- Em viagens interplanetárias e interestelares, o **nível de ameaça** é mais alto nas áreas mais próximas ou mais distantes da estrela do sistema ou do centro da galáxia, e menor nas áreas intermediárias.
 - Uma campanha de *space opera* pode usar só mapas de escala **interplanetária**: cada planeta é um único local, e a viagem **interestelar** acontece por "saltos instantâneos" entre antigos portais de origem desconhecida.
 - A tecnologia de propulsão é decisiva para o cenário. Pode ser um combustível raro, monólitos alienígenas que ligam regiões da galáxia, distorções do espaço-tempo criadas com entropismo ou até "saltos" por dimensões paralelas, psíquicas ou espirituais.
 

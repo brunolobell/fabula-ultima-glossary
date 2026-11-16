@@ -52,7 +52,7 @@ Para um Andarilho, a natureza não é inimiga nem aliada: é uma professora seve
 
 - Você pode gastar sua **ação** para fazê-lo realizar uma ação no seu turno (uma vez por turno). Ele não age de nenhuma outra forma.
 - Se ele for afetado por efeitos de turno (página 77), é afetado no **seu** turno.
-- Ele entra e sai de cena com você e recebe os mesmos benefícios de descanso.
+- Ele entra e sai de cena com você e recebe os mesmos benefícios de [[descanso]].
 - Se ficar com 0 PV, ele foge e reencontra você no início da próxima cena em que você estiver, reaparecendo com **metade dos PV máximos**.`,
   ),
 

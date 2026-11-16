@@ -23,7 +23,7 @@ export const peculiaridadesNaturalFantasy: SeedEntry[] = [
       'Você acordou no subsolo ligado a tecnologias antigas: ignora um custo de até 100 PV, PM ou PI por descanso e faz perguntas ao mestre sobre dispositivos e criaturas do passado.',
     body: `Você tem uma reserva interna de energia e uma ligação espontânea com tecnologias antigas.
 
-- Quando uma regra ou habilidade pedir que você gaste **até 100 PV, PM ou PI** em um conflito, você pode **ignorar o custo**. Se fizer isso, não pode ignorar nenhum outro custo até o **fim do próximo descanso**. Descreva de onde vem essa energia.
+- Quando uma regra ou habilidade pedir que você gaste **até 100 PV, PM ou PI** em um conflito, você pode **ignorar o custo**. Se fizer isso, não pode ignorar nenhum outro custo até o **fim do próximo descanso** (veja [[descanso]]). Descreva de onde vem essa energia.
 
 > **Exemplo:** uma joia mágica escondida no olho esquerdo, um gerador incrustado no braço, um circuito arcano que parece uma tatuagem.
 
@@ -50,7 +50,7 @@ export const peculiaridadesNaturalFantasy: SeedEntry[] = [
       'Você tem um grimório indestrutível que responde a perguntas após testes de Viagem; ao responder 10, vira um NPC que lança dois feitiços ou lhe dá um Poder Heroico.',
     body: `Enquanto tiver esta peculiaridade, o seu grimório é um **artefato indestrutível** que só se perde ou é roubado por meio de uma rendição.
 
-Quando o grupo esbarrar em um **perigo ou descoberta após um teste de Viagem**, você pode fazer ao mestre **uma pergunta** sobre isso (na hora ou depois). Ele responde com informação verdadeira e descreve como a resposta surge no grimório.
+Quando o grupo esbarrar em um **perigo ou descoberta após um teste de Viagem** (veja [[jornadas-e-viagens]]), você pode fazer ao mestre **uma pergunta** sobre isso (na hora ou depois). Ele responde com informação verdadeira e descreve como a resposta surge no grimório.
 
 Quando o grimório tiver respondido a **10 perguntas**, ele já dividiu quase tudo o que sabe. Escolha um:
 
@@ -72,7 +72,7 @@ Seja qual for a escolha, o grimório vira um livro comum e o mestre escolhe um: 
 Você tem **dois guarda-costas** muito leais. Dê nome e aparência a eles. Eles não têm ficha e nunca participam de testes ou conflitos, mas aparecem sempre que você precisa de ajuda. Seus benefícios:
 
 - **Cuidado!** Ao sofrer dano, você pode reduzi-lo à **metade**.
-- **Segue a informação que o senhor pediu.** Em um descanso, você pode fazer **uma pergunta** ao mestre, que responde com informação verdadeira.
+- **Segue a informação que o senhor pediu.** Em um [[descanso]], você pode fazer **uma pergunta** ao mestre, que responde com informação verdadeira.
 - **Esconda-se, eu cuido disso!** Ao criar um fragmento elemental, você pode fazê-lo causar dano adicional igual a **(5 + metade do seu nível)**.
 
 Cada vez que usa um benefício, os guarda-costas sofrem **1d6 Pontos de Exaustão**. Com **10 ou mais** desses pontos, você não pode contar com a ajuda deles. A Exaustão é dividida entre os dois, sem contar individualmente. No **fim de cada sessão** (cerca de quatro horas de jogo), eles recuperam até **1d6** Pontos de Exaustão (mínimo 0).`,
@@ -83,7 +83,7 @@ Cada vez que usa um benefício, os guarda-costas sofrem **1d6 Pontos de Exaustã
     page: 125,
     summary:
       'Você cuida do grupo no acampamento: ganha acesso a três atividades de acampamento (ou mais uma, se a mesa já usa a regra) e faz duas por descanso.',
-    body: `Esta peculiaridade se apoia na regra opcional de **atividades de acampamento** (Atlas Natural Fantasy, p. 130).
+    body: `Esta peculiaridade se apoia na regra opcional de **atividades de acampamento** (Atlas Natural Fantasy, p. 130; veja [[atividades-de-acampamento]]).
 
 - Se a campanha **não usa** essa regra, o seu personagem ainda tem acesso a ela, com **três** atividades de acampamento em vez de duas.
 - Se você receber a peculiaridade numa campanha que **já usa** a regra, ganha apenas **mais uma** atividade à sua escolha.

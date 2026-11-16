@@ -15,7 +15,7 @@ export const peculiaridadesHighFantasy: SeedEntry[] = [
 - Vocês se comunicam por telepatia (para as regras, são "capazes de ouvir um ao outro").
 - **Fora de conflito**, você entra ou sai do corpo do hospedeiro quando quiser, aparecendo ao lado dele. Se estiver a mais de **1 dia de viagem**, você desaparece e reaparece ao lado dele. **Em conflito**, entra ou sai no início do seu turno, sem gastar ação.
 - Dentro do corpo dele, você não percebe o mundo nem interage com ele, e as criaturas também não percebem você. Quem sente almas (por rituais ou habilidades parecidas) nota que há **duas almas** naquele corpo.
-- Você só recebe os benefícios de um descanso se o hospedeiro **também** descansar.
+- Você só recebe os benefícios de um [[descanso]] se o hospedeiro **também** descansar.
 - Quando **você** se render, entra no corpo do hospedeiro (e a rendição nunca o separa dele). Quando o **hospedeiro** se render, você entra no corpo dele e só sai quando ele recobrar a consciência.
 - Quando o hospedeiro se **sacrificar**, escolha um:
   - **Sobrevivência:** você sai do corpo, perde esta peculiaridade, seus PV vão a 0 e você deve se render. Depois disso, seus PV e PM máximos aumentam em **10**.
@@ -101,7 +101,7 @@ Ao adquirir, crie um Laço ([[lacos]]) com o **NPC ou instituição** que moldou
 > **Exemplo:** o Lorde dos Dragões (sempre obedeça aos dragões, nunca demonstre fraqueza, nunca apague o fogo); a Igreja Alva (sempre fique ao lado dos fiéis, nunca duvide da palavra de um Sacerdote, nunca ouça um demônio).
 
 - Na **primeira vez** que quebrar um mandamento em uma cena, você fica **fraco e abalado** e perde **metade dos PV e PM atuais** (arredondando para baixo), mas recebe **2 Pontos de Fabula**.
-- Se quebrar um mandamento em uma cena de descanso, sofre as penalidades depois de recuperar. Quebrar vários na mesma cena conta só a primeira violação.
+- Se quebrar um mandamento em uma cena de descanso (veja [[descanso]]), sofre as penalidades depois de recuperar. Quebrar vários na mesma cena conta só a primeira violação.
 - Depois de **6 violações**, ignore as seguintes, a menos que aconteçam diante de um vilão que siga ou personifique os mandamentos.
 - Se houver dúvida sobre uma situação cumprir esta peculiaridade, a **palavra final é sempre sua**; seja o mais honesto possível.
 - Na **sétima violação**, você perde a peculiaridade e seu Tema muda para **Pertencimento, Culpa, Justiça ou Vingança**. Você recebe na hora um [Poder Heroico](/poderes-heroicos) dentre os disponíveis para suas classes, recupera todos os PV e PM e se recupera de todas as condições. Dali em diante, a força dos seus Laços conta **1 ponto a mais** (um Laço com três emoções passa a ter força 4). ${HEROICO_SEM_REQUISITOS}`,

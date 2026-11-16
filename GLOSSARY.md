@@ -170,9 +170,25 @@ _Avoid_: Race, kind, creature type
 The pool a character spends to pull items from the backpack during play. Shown to Readers as "Pontos de Inventário (PI)".
 _Avoid_: Item slots, carry weight
 
+**Magic Tent**:
+An item a character creates by spending 4 Inventory Points; it is big enough for the whole Party and lets it Rest in the wilderness. Shown to Readers as "barraca mágica".
+_Avoid_: Camp, shelter (a safe place is another way to Rest)
+
 **Condition**:
 A temporary status, such as Abalado or Lento, that lowers one or more Attribute dice. Shown to Readers as "Condição".
 _Avoid_: Status effect, debuff
+
+**Rest**:
+Hours of inactivity (four to six) in a safe place, after which a Player's character recovers all Hit Points and Mana Points and all Conditions. The Party needs a Magic Tent, a friendly host or a safe place in the wilderness, or an inn or a host in a settlement. NPCs do not use the rule. Shown to Readers as "descanso".
+_Avoid_: Sleep, long rest, short rest (the game has one kind of Rest)
+
+**Rest Scene**:
+The quiet, in-character scene played during a Rest, at the end of which each Player's character may create a Bond, add an emotion to one or replace one. Shown to Readers as "cena de descanso".
+_Avoid_: Downtime, interlude (an Interlude is a different kind of scene)
+
+**Camp Activity**:
+An optional Natural Fantasy rule: each Player's character has two Camp Activities and may do one per Rest Scene, giving a benefit that lasts until the next Rest. Shown to Readers as "atividade de acampamento".
+_Avoid_: Camp action, downtime activity
 
 **Check**:
 A dice roll resolving an uncertain action. Shown to Readers as "Teste".
@@ -311,8 +327,24 @@ The currency of the game, written as a number followed by "z". Shown to Readers 
 _Avoid_: Gold, coin, money
 
 **Travel**:
-Moving the Party across the World's map, counted in days of Travel; a Transport multiplies how far one day takes the Party. Shown to Readers as "Viagem".
-_Avoid_: Journey, trip
+Moving the Party across the World's map, counted in days of Travel; a Transport multiplies how far one day takes the Party. Shown to Readers as "Viagem". The Rule that explains it keeps the book's own title, "Jornadas e viagens"; the term stays Travel.
+_Avoid_: Journey, trip (as the term; "Jornadas e viagens" is only that Rule's title)
+
+**Travel Check**:
+The roll the Game Master makes for each day of Travel, with a die set by the Threat Level: 6 or more is a Danger, a 1 is a Discovery. Shown to Readers as "teste de Viagem".
+_Avoid_: Travel roll, journey check
+
+**Threat Level**:
+How hostile the area crossed in a day of Travel is, from minimal to very high; it sets the die of the Travel Check (d6 to d20). When a day crosses several levels only the highest counts. Shown to Readers as "nível de ameaça".
+_Avoid_: Danger level, difficulty
+
+**Danger**:
+A problem the Party meets on a day of Travel (a storm, a toxic swamp, a territorial monster, a rival) that it must avoid with a group check, a series of checks or, rarely, a conflict; it deals weak, strong or intense damage by level. Shown to Readers as "perigo".
+_Avoid_: Hazard, encounter, trap
+
+**Discovery**:
+A good thing the Party finds on a day of Travel (a hidden ruin, a caravan, a refuge, a precious item or piece of information); it is always worth the trouble. Shown to Readers as "descoberta".
+_Avoid_: Find, loot, reward
 
 **Service**:
 Something a Party pays Zeniths for and does not keep, such as a night's rest, a recharge of Inventory Points, or a fare for a day of Travel. Shown to Readers as "serviço".
@@ -329,6 +361,10 @@ _Avoid_: Pet, companion (the Andarilho's "Companheiro Fiel" is a Skill)
 **Vehicle**:
 A Transport that is a built craft, such as a cart, boat or aircraft, bigger than a Mount and carrying more passengers. Shown to Readers as "veículo".
 _Avoid_: Car, ship
+
+**Group Vehicle**:
+An optional Techno Fantasy rule: a medium or large Transport the Party owns that fights as a single construct, built together by the players and the Game Master, with the crew taking turns through it. Shown to Readers as "veículo de grupo".
+_Avoid_: Party ship, mech (a Mecha is a Piloto's personal vehicle)
 
 **Medium**:
 Where a Transport or a Travel Service can go: land, water, underwater, air, or, in Techno Fantasy, between planets or stars. Shown to Readers as "meio" in list filters.

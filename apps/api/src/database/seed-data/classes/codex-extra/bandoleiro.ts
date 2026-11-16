@@ -78,10 +78,10 @@ Essa região conta como uma **segunda Origem** para você. Se usar um Ponto de F
     43,
     3,
     'Ao fim de um descanso, 1 Ponto de Fabula: seu bando traz (NP + 1) Suprimentos, que duram até o próximo uso; gaste 1 para rerrolar um teste de Viagem ou criar uma barraca mágica. Com 1 Ponto de Ultima, +2 Suprimentos.',
-    `No fim de um **descanso**, você pode gastar **1 Ponto de Fabula** para que seu bando traga **(NP + 1) Suprimentos**. Eles duram até você usar este poder de novo.
+    `No fim de um **descanso** (veja [[descanso]]), você pode gastar **1 Ponto de Fabula** para que seu bando traga **(NP + 1) Suprimentos**. Eles duram até você usar este poder de novo.
 
-- Ao fazer um **teste de Viagem**, você pode gastar **1 Suprimento** para rolar o dado novamente.
-- Você também pode gastar **1 Suprimento** para criar uma **barraca mágica**.
+- Ao fazer um **teste de Viagem** (veja [[jornadas-e-viagens]]), você pode gastar **1 Suprimento** para rolar o dado novamente.
+- Você também pode gastar **1 Suprimento** para criar uma **barraca mágica** (veja [[pontos-de-inventario]]).
 
 Se gastar **1 Ponto de Ultima** ao usar este poder, o número de Suprimentos trazidos aumenta em **+2**.`,
   ),

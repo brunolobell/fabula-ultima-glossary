@@ -18,7 +18,7 @@ export const poderesHeroicosNecromancer: SeedEntry[] = [
 - **Patente.** Ela passa a ser **soldado**. Se a criatura original era **elite** ou **campeã**, o mestre deve reduzir os PV e os PM do lacaio de acordo (os Poderes são mantidos).
 - **Criatura nova.** O lacaio é uma criatura inteiramente nova: começa com **todos os PV e todos os PM** e sem nenhuma condição. Ele mantém o equipamento da criatura original.
 - **Turno próprio.** Nos conflitos, o lacaio tem o **próprio turno**, e o mestre deve contá-lo como **um PJ adicional** ao montar o conflito.
-- **Descanso.** Quando você descansa, o lacaio também recebe todos os benefícios do descanso.
+- **Descanso.** Quando você descansa (veja [[descanso]]), o lacaio também recebe todos os benefícios do descanso.
 - **Destruição.** O lacaio é destruído na mesma hora se chegar a **0 PV**, se você estiver a **mais de 1 dia de viagem** dele, ou se você **morrer** ou **ficar inconsciente**.
 - **Por sua vontade.** Você pode destruir o lacaio a qualquer momento, e precisa fazê-lo antes de criar um novo.
 - **Ao ser destruído,** seus PV máximos e PM máximos **voltam ao normal**.`,

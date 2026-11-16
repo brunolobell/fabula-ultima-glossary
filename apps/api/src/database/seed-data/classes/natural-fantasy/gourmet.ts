@@ -95,7 +95,7 @@ A classe é atípica: suas habilidades são geradas ao longo da campanha. Você 
     149,
     3,
     'Depois de cada rolagem de viagem, se tiver Culinária, você recebe NP × 2 ingredientes.',
-    `Depois de cada rolagem de viagem, se tiver o poder [[culinaria]], você recebe **(NP × 2)** ingredientes.`,
+    `Depois de cada rolagem de viagem (veja [[jornadas-e-viagens]]), se tiver o poder [[culinaria]], você recebe **(NP × 2)** ingredientes.`,
   ),
 
   skill(
@@ -104,7 +104,7 @@ A classe é atípica: suas habilidades são geradas ao longo da campanha. Você 
     149,
     5,
     'Ao descansar em assentamento, recebe NP ingredientes; por uma ação combina 2 ou 3 ingredientes numa iguaria e a aplica em você e num aliado, ou em inimigos via ataque livre.',
-    `Ao descansar em um assentamento, você recebe **(NP)** ingredientes.
+    `Ao descansar em um assentamento (veja [[descanso]]), você recebe **(NP)** ingredientes.
 
 Você pode usar uma ação e combinar **2 ou 3 ingredientes** para preparar uma iguaria (veja o corpo da classe [[gourmet]]) e escolher um efeito:
 

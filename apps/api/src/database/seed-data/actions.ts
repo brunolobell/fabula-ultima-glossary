@@ -237,7 +237,7 @@ Veja também [[acoes]].`,
 - Você pode fazer esta ação **mesmo com itens equipados nas duas mãos**.
 - Se um Poder exige a ação Inventário, você também pode fazê-la **fora de conflitos**, o que leva de cinco a dez segundos.
 
-O livro trata das regras de Pontos de Inventário na página 104.
+As regras de Pontos de Inventário estão em [[pontos-de-inventario]].
 
 Veja também [[acoes]].`,
     tags,

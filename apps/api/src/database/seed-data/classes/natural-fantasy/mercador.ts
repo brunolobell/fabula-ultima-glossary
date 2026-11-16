@@ -60,7 +60,7 @@ Pode parecer estranho ver mercadores em pé de igualdade com heróis. Mas quem r
     159,
     3,
     'Ao descansar onde há comércio, ganha NP + 1 Pontos de Comércio (máximo NP + 3). Fora de conflito, 2 Pontos criam um item raro ou material (valor até seu nível × 30z) ou um NPC local.',
-    `Depois de descansar numa área onde possa fazer comércio, você recebe **(NP + 1)** Pontos de Comércio. Você nunca pode ter mais que **(NP + 3)**. Se adquirir este poder na criação do personagem, começa o jogo com **2 Pontos de Comércio**.
+    `Depois de descansar (veja [[descanso]]) numa área onde possa fazer comércio, você recebe **(NP + 1)** Pontos de Comércio. Você nunca pode ter mais que **(NP + 3)**. Se adquirir este poder na criação do personagem, começa o jogo com **2 Pontos de Comércio**.
 
 Numa cena sem conflito, você pode gastar **2 Pontos de Comércio** para escolher um efeito:
 

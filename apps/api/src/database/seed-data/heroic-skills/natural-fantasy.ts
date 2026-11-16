@@ -185,7 +185,7 @@ O benefício dura até o fim da cena ou até você usar Confio em Você nele de 
     classes: ['Invocador'],
     summary:
       'Ao adquirir e a cada descanso, escolhe um manancial (água, ar, fogo, raio, terra): ele passa a estar disponível em todas as cenas, dá Resistência a seu dano e permite rituais de elementalismo dele.',
-    body: `Ao adquirir este poder e **sempre que descansar**, escolha um manancial: **água, ar, fogo, raio ou terra**. Até o próximo descanso:
+    body: `Ao adquirir este poder e **sempre que descansar** (veja [[descanso]]), escolha um manancial: **água, ar, fogo, raio ou terra**. Até o próximo descanso:
 
 - você considera o manancial escolhido como **disponível em todas as cenas** (além dos que já estiverem presentes);
 - pode fazer **rituais de elementalismo** (veja [[rituais]]), mas só os que manipulem o elemento do manancial escolhido;
@@ -270,7 +270,7 @@ Ativos enquanto você estiver a 1 dia de viagem do assentamento:
 | Prosperidade | Efeito |
 | --- | --- |
 | 10 ou mais | Quando você ou um aliado precisar pagar zênites por qualquer motivo, o custo cai pela metade. |
-| 15 ou mais | Vocês descansam livremente, sem gastar zênites, e testes de Viagem na área nunca usam dado maior que d8. |
+| 15 ou mais | Vocês descansam livremente, sem gastar zênites, e testes de Viagem (veja [[jornadas-e-viagens]]) na área nunca usam dado maior que d8. |
 | 20 ou mais | Quando um vilão gasta Pontos de Ultima na área, precisa gastar o dobro. |`,
   }),
 

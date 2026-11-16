@@ -33,7 +33,7 @@ O livro traz tabelas de ideias para quando a mesa travar (p. 149-151); elas aind
       {
         title: 'Ficha de mapa',
         intro:
-          'Escolham uma ficha de mapa que combine com o conceito (ou desenhem um mapa próprio, deixando espaço para assentamentos e locais) e definam quanto dura um dia de Viagem no mapa (Livro Básico, p. 106).',
+          'Escolham uma ficha de mapa que combine com o conceito (ou desenhem um mapa próprio, deixando espaço para assentamentos e locais) e definam quanto dura um dia de Viagem no mapa (veja [[jornadas-e-viagens]]).',
         entries: [],
       },
       {

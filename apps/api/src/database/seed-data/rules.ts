@@ -462,7 +462,7 @@ Os [[atributos]] nunca ficam com um dado menor que **d6**. Se o personagem já t
 
 ## Recuperação
 
-As condições podem ser curadas com descanso, feitiços, poderes e itens.`,
+As condições podem ser curadas com [[descanso]], feitiços, poderes e itens.`,
     ['estado', 'combate'],
   ),
 

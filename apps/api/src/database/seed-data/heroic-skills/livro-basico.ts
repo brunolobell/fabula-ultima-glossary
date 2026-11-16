@@ -230,7 +230,7 @@ Além disso, o **primeiro ataque** que fizer com uma arma de duas mãos em cada 
     classes: ['Inventor'],
     summary:
       'Em um descanso, pode dar ou trocar a característica de armas, armaduras e escudos do grupo (até +1000z cada), pagando o custo reduzido pelo NP de Visionário × 100.',
-    body: `Em um **descanso**, você pode escolher qualquer número de armas, armaduras e/ou escudos em posse do seu grupo. Para cada item escolhido, pode aplicar uma **característica** (se ele não tiver) ou **trocar** a atual por outra.
+    body: `Em um **descanso** (veja [[descanso]]), você pode escolher qualquer número de armas, armaduras e/ou escudos em posse do seu grupo. Para cada item escolhido, pode aplicar uma **característica** (se ele não tiver) ou **trocar** a atual por outra.
 
 - As novas características devem estar nas listas de características do respectivo tipo de item e custar **+1000 zênites ou menos**.
 - No fim do descanso, você gasta zênites iguais à **soma de todos os custos**, reduzida por **(NP do seu poder Visionário × 100)**. Se o fizer, os itens são modificados conforme suas escolhas.

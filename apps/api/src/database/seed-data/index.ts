@@ -60,6 +60,7 @@ import { npcSpellsRule } from './npc-spells';
 import { peculiarities, peculiaritiesRule } from './peculiarities';
 import { quickAssemblySeed } from './quick-assembly';
 import { rules } from './rules';
+import { restAndTravelRules } from './rest-and-travel';
 import { weaponForgeRules } from './weapon-forge';
 import { armorForgeRules } from './armor-forge';
 import { bestiaryOptionRules } from './bestiary-options';
@@ -69,6 +70,7 @@ export const seedEntries: SeedEntry[] = [
   ...guides,
   ...rules,
   ...actionRules,
+  ...restAndTravelRules,
   ...checkRules,
   ...gameSetupRules,
   ...inBook('high-fantasy', [peculiaritiesRule, atlasMagicRule]),
