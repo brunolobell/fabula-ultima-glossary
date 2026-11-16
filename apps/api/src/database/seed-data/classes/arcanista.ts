@@ -39,7 +39,7 @@ Se você está no 20º nível ou acima e o efeito causa dano, esse dano aumenta 
 
 ## Domínios
 
-Cada Arcano se associa a alguns conceitos-chave, os **domínios**. O Mestre os usa para criar as provações de vinculação e para definir quais rituais o Poder [[arcanismo-ritualista]] permite. Ao criar Arcanos novos para o seu mundo, associe-os a domínios que permitam bons rituais.
+Cada Arcano se associa a alguns conceitos-chave, os **domínios**. O Mestre os usa para criar as provações de vinculação e para definir quais rituais o Poder [[arcanismo-ritualista]] permite. Ao criar Arcanos novos para o seu mundo, associe-os a domínios que permitam bons rituais (dicas e exemplos em [[magia-e-rituais-atlas]]).
 
 ## Os Arcanos
 
@@ -204,7 +204,9 @@ Se o grupo concordar, a Górgona, a Harpia, a Fênix, a Ondina e o Unicórnio po
     'Você pode fazer rituais da disciplina arcanismo, desde que seus efeitos estejam nos domínios de um ou mais Arcanos vinculados; eles usam (VON + VON) no teste de Magia.',
     `Você pode fazer rituais da disciplina **arcanismo**, desde que seus efeitos estejam entre os domínios de um ou mais Arcanos que você vinculou (veja as páginas 180 a 183).
 
-Os rituais de arcanismo usam **(VON + VON)** no teste de Magia.`,
+Os rituais de arcanismo usam **(VON + VON)** no teste de Magia.
+
+Veja [[rituais]]. Para criar Arcanos novos e ver dois exemplos prontos, veja [[magia-e-rituais-atlas]].`,
   ),
 
   skill(

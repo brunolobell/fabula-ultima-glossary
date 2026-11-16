@@ -54,7 +54,7 @@ Quem lança feitiços precisa seguir as regras de [[como-lancar-um-feitico]].
     187,
     1,
     'Permite fazer rituais da disciplina elementalismo, que usam (AST + VON) no teste de Magia.',
-    'Você pode fazer rituais da disciplina **elementalismo**. Esses rituais usam **(AST + VON)** no teste de Magia.',
+    'Você pode fazer rituais da disciplina **elementalismo**. Esses rituais usam **(AST + VON)** no teste de Magia.\n\nVeja [[rituais]].',
   ),
 
   skill(

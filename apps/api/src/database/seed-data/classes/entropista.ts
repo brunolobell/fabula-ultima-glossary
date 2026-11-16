@@ -44,6 +44,9 @@ Quem lança feitiços segue as regras de [[como-lancar-um-feitico]].
     191,
     1,
     'Você pode fazer rituais da disciplina entropismo, que usam (AST + VON) no teste de Magia.',
+    `Você pode fazer rituais da disciplina **entropismo**. Esses rituais usam **(AST + VON)** no teste de Magia.
+
+Veja [[rituais]].`,
   ),
 
   skill(

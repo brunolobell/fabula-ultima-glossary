@@ -227,7 +227,7 @@ A música dura até o fim da cena, ou até você sair de cena, ficar inconscient
     classes: ['Elementalista', 'Entropista', 'Espiritualista', 'Quimerista'],
     summary:
       'Ao iniciar um ritual num conflito, o relógio do ritual tem duas seções a menos (mínimo quatro).',
-    body: `Quando inicia um **ritual em uma cena de conflito**, o seu relógio de ritual é criado com **duas seções a menos** que o normal (mínimo de **quatro** seções).`,
+    body: `Quando inicia um **ritual em uma cena de conflito**, o seu relógio de ritual é criado com **duas seções a menos** que o normal (mínimo de **quatro** seções). Veja [[rituais]], na parte sobre rituais durante conflitos.`,
   }),
 
   heroicSkill({
@@ -236,7 +236,7 @@ A música dura até o fim da cena, ou até você sair de cena, ficar inconscient
     classes: ['Simbolista'],
     summary:
       'Fora de conflito, um ritual de até 60 PM pode ser armazenado num selo e concluído quando um gatilho escolhido por você ocorrer; só um selo ativo por vez.',
-    body: `Quando faz um **ritual fora de uma cena de conflito**, se o custo total em PM for **60 ou menos**, você pode parar o processo imediatamente **antes do teste de Magia**, armazenando o ritual em um **selo ritual** sobre uma superfície que possa tocar.
+    body: `Quando faz um **ritual fora de uma cena de conflito** (veja [[rituais]]), se o custo total em PM for **60 ou menos**, você pode parar o processo imediatamente **antes do teste de Magia**, armazenando o ritual em um **selo ritual** sobre uma superfície que possa tocar.
 
 - Escolha um **gatilho**, qualquer coisa de "quando eu entrar em crise" a "assim que eu estalar os dedos".
 - Quando o gatilho ocorre, o selo desaparece e o ritual se conclui no local do selo: faça o teste de Magia e resolva os efeitos normalmente (mesmo inconsciente ou ausente da cena).

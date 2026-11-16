@@ -79,7 +79,9 @@ Descrição resumida dos 19 símbolos (páginas 145 a 147 do Atlas). "Escolha um
     143,
     1,
     'Permite fazer rituais de ritualismo e usar ritualismo para criar ilusões visuais.',
-    `Você pode fazer rituais da disciplina **ritualismo**. Além disso, também pode usar ritualismo para criar **ilusões visuais**.`,
+    `Você pode fazer rituais da disciplina **ritualismo**. Além disso, também pode usar ritualismo para criar **ilusões visuais**.
+
+Veja [[rituais]].`,
   ),
 
   skill(

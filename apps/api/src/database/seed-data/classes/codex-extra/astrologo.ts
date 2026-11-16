@@ -83,7 +83,9 @@ O poder também lhe dá **(NP) cargas meteóricas**, que duram até o fim da cen
     'Você pode fazer rituais da disciplina ritualismo e também usá-lo para consultar as estrelas sobre eventos futuros, obter conhecimento de lendas e realizar pequenos desejos.',
     `Você pode fazer **rituais** da disciplina **ritualismo**.
 
-Além disso, pode usar o ritualismo para **consultar as estrelas** sobre possíveis eventos futuros, para **obter conhecimento** de lendas e até para **realizar pequenos desejos**.`,
+Além disso, pode usar o ritualismo para **consultar as estrelas** sobre possíveis eventos futuros, para **obter conhecimento** de lendas e até para **realizar pequenos desejos**.
+
+Veja [[rituais]].`,
   ),
 
   skill(

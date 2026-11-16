@@ -75,6 +75,8 @@ Você pode memorizar até **(NP + 2)** feitiços de Quimerista diferentes dessa 
     'Você pode fazer rituais da disciplina quimerismo, que usam (AST + VON) ou (VIG + VON), à sua escolha ao obter este Poder.',
     `Você pode fazer rituais da disciplina **quimerismo**.
 
-Ao obter este Poder, escolha **(AST + VON)** ou **(VIG + VON)**. Daí em diante, seus rituais de quimerismo usam os Atributos escolhidos no teste de Magia.`,
+Ao obter este Poder, escolha **(AST + VON)** ou **(VIG + VON)**. Daí em diante, seus rituais de quimerismo usam os Atributos escolhidos no teste de Magia.
+
+Veja [[rituais]].`,
   ),
 ];

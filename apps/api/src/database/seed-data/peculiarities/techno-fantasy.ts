@@ -24,7 +24,7 @@ export const peculiaridadesTechnoFantasy: SeedEntry[] = [
     summary:
       'O rio das almas fala por você: ao recuperar PV ou PM de aliados, eles recuperam 5 a mais (10 a partir do nível 30) e se livram de uma condição; você faz rituais de espiritualismo.',
     body: `- Quando você **recupera PV e/ou PM** de um ou mais aliados, cada um recupera **5 PV e/ou PM adicionais**, e você escolhe uma condição entre **abalado, atordoado, enfurecido, envenenado, fraco ou lento**: cada um desses aliados se recupera dela. A partir do **30º nível**, o efeito de recuperação passa a **10**.
-- Você faz rituais de **espiritualismo**.`,
+- Você faz rituais de **espiritualismo** (veja [[rituais]]).`,
   }),
 
   peculiarity({
@@ -63,7 +63,7 @@ No **20º nível**, o familiar recebe um poder adicional; no **40º**, outro. Co
     summary:
       'Você nasceu na rede de almas, entre demônios e humanos: Resistente a dois tipos de dano e Vulnerável a um terceiro, e faz rituais de ritualismo na rede de almas.',
     body: `- Escolha **dois tipos de dano** entre ar, fogo, gelo, luz, raio, terra e trevas: você fica **Resistente** a eles. Escolha um **terceiro** tipo: você fica **Vulnerável** a ele.
-- Você faz rituais de **ritualismo** e pode usá-los para **transportar criaturas** para dentro e para fora da rede de almas, e para obter informações e **rastrear entidades** dentro dela.`,
+- Você faz rituais de **ritualismo** (veja [[rituais]]) e pode usá-los para **transportar criaturas** para dentro e para fora da rede de almas, e para obter informações e **rastrear entidades** dentro dela.`,
   }),
 
   peculiarity({
@@ -130,7 +130,7 @@ Ao adquirir, descreva a **organização** em que trabalhou, dê nome ao **vilão
 Enquanto um PJ ou vilão a tiver equipada, ele pode usar a ação **Poder** para manifestar um destes poderes:
 
 - **(Só PJs)** Fazer **uma pergunta** ao mestre, respondida com sinceridade ao descrever as visões da relíquia.
-- Escolher uma **disciplina** entre elementalismo, entropismo, espiritualismo, quimerismo e ritualismo: até o fim da cena, quem tiver a relíquia equipada faz rituais dessa disciplina pela **metade do custo em PM**.
+- Escolher uma **disciplina** entre elementalismo, entropismo, espiritualismo, quimerismo e ritualismo: até o fim da cena, quem tiver a relíquia equipada faz rituais dessa disciplina (veja [[rituais]]) pela **metade do custo em PM**.
 - Até o fim da cena, os ataques com a relíquia causam **5 pontos de dano adicional**, todo o dano causado **ignora Absorção, Imunidades e Resistências**, e o personagem pode fazer **um ataque livre** com ela.
 
 A segunda e a terceira opção são **cumulativas** entre si (usar a segunda com quimerismo três vezes na mesma cena faz os rituais de quimerismo custarem 1/8 do PM normal).

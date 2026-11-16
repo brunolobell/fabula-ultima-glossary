@@ -51,7 +51,7 @@ Além disso, se atacar uma ou mais criaturas com um arco, lança ou arma de arre
       'Uma vez por turno, ao uma magissemente sair do jardim, gasta 20 PM para reproduzir um de seus efeitos de "fim do turno"; rituais também controlam plantas soldado.',
     body: `**Uma vez por turno**, quando uma magissemente deixa o seu jardim, se ela tiver um ou mais efeitos ativados "**No fim do seu turno**", você pode gastar **20 PM** para reproduzir um desses efeitos. Pode escolher um efeito que não corresponda às seções atuais do seu relógio de germinação.
 
-Além disso, se tiver **Influência Verdejante**, seus rituais também podem influenciar e controlar criaturas de patente **soldado** da espécie **planta** (mas você ainda não consegue criá-las).`,
+Além disso, se tiver **Influência Verdejante**, seus rituais (veja [[rituais]]) também podem influenciar e controlar criaturas de patente **soldado** da espécie **planta** (mas você ainda não consegue criá-las).`,
   }),
 
   heroicSkill({
@@ -81,7 +81,7 @@ Essas penalidades duram até o início do seu próximo turno, até você perder 
     ],
     summary:
       'Num teste de Magia, você pode trocar um dos Atributos por Vigor; armas cujo teste de Precisão usa Vigor contam como arcanas.',
-    body: `Ao fazer um **teste de Magia** para um feitiço ou ritual, você pode **substituir um dos Atributos por Vigor** (como (VIG + VIG) num ritual de quimerismo).
+    body: `Ao fazer um **teste de Magia** para um feitiço ou ritual, você pode **substituir um dos Atributos por Vigor** (como (VIG + VIG) num ritual de quimerismo; veja [[rituais]]).
 
 Se o teste de Precisão da arma que estiver equipando incluir Vigor, você pode considerá-la **arcana** para poderes e efeitos com esse pré-requisito.`,
   }),
@@ -188,7 +188,7 @@ O benefício dura até o fim da cena ou até você usar Confio em Você nele de 
     body: `Ao adquirir este poder e **sempre que descansar**, escolha um manancial: **água, ar, fogo, raio ou terra**. Até o próximo descanso:
 
 - você considera o manancial escolhido como **disponível em todas as cenas** (além dos que já estiverem presentes);
-- pode fazer **rituais de elementalismo**, mas só os que manipulem o elemento do manancial escolhido;
+- pode fazer **rituais de elementalismo** (veja [[rituais]]), mas só os que manipulem o elemento do manancial escolhido;
 - fica **Resistente** ao tipo de dano do manancial;
 - ao causar dano, pode **mudar o tipo** para o do manancial; se fizer isso, o dano **ignora Resistências**.`,
   }),

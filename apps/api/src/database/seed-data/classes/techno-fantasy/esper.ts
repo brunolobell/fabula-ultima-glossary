@@ -94,7 +94,9 @@ Nas fórmulas, **S** é o número de seções preenchidas no seu Relógio Mental
     'Telepatia com qualquer aliado consciente a 1 dia de viagem; rituais de ritualismo e uso de ritualismo para transportar criaturas para dentro e fora da rede de almas, reunir informações e rastrear entidades nela.',
     `Você se comunica **telepaticamente** com qualquer aliado consciente a até **1 dia de viagem**; para poderes e condições, vocês podem ouvir um ao outro.
 
-Você pode fazer rituais da disciplina **ritualismo**. Além disso, pode usar ritualismo para **transportar criaturas para dentro e fora da rede de almas**, reunir informações e rastrear entidades enquanto estiverem na rede.`,
+Você pode fazer rituais da disciplina **ritualismo**. Além disso, pode usar ritualismo para **transportar criaturas para dentro e fora da rede de almas**, reunir informações e rastrear entidades enquanto estiverem na rede.
+
+Veja [[rituais]] e, para ideias de uso da rede de almas, [[magia-e-rituais-atlas]].`,
   ),
 
   skill(

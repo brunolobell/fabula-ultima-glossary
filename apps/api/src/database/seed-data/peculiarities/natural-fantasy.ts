@@ -110,7 +110,7 @@ Se um projeto ([[projetos]]) precisar de um ingrediente ou material especial, vo
       'Você veio do Reino das Fadas: fala com elementais, feras e plantas, aprende um feitiço e faz rituais de ritualismo, mas tem uma fraqueza de fada que o mestre pode explorar.',
     body: `- Você se comunica **verbalmente** com qualquer criatura das espécies **elemental, fera e planta**.
 - Você aprende **um feitiço** à sua escolha entre os de [[elementalista]], [[entropista]] e [[espiritualista]].
-- Você faz rituais de **ritualismo** e pode usá-los para **transportar criaturas** para dentro ou para fora do Reino das Fadas.
+- Você faz rituais de **ritualismo** (veja [[rituais]]) e pode usá-los para **transportar criaturas** para dentro ou para fora do Reino das Fadas.
 - Você tem uma **fraqueza típica das fadas**, que o grupo define com você. **Uma vez por sessão** (cerca de quatro horas de jogo), o mestre pode lhe conceder **1 Ponto de Fabula** para que complicações surjam por causa dela, ou fazer você **falhar automaticamente** em um teste (antes de rolar os dados: o resultado do teste e a RA contam como 0).
 
 > **Exemplo:** alergia a ferro; ter de contar cada grão de areia ou sal que cair; ter de imitar quando alguém faz um gesto específico.`,

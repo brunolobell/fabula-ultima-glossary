@@ -53,7 +53,7 @@ Se conseguir **quebrar a maldição**, você recebe na hora um [Poder Heroico](/
     body: `- Escolha seu **tipo de dano elemental** entre ar, raio, terra, fogo e gelo. Você fica **Resistente** a ele.
 - Sempre que causar dano, você pode **mudar o tipo** dele para o escolhido.
 - Em troca, você fica **Vulnerável** a um tipo de dano **diferente** entre os cinco.
-- Você faz rituais de **elementalismo**, mas só os que manipulam o elemento escolhido (ar; eletricidade; terra/pedra; fogo; gelo/água, respectivamente).`,
+- Você faz rituais de **elementalismo** (veja [[rituais]]), mas só os que manipulam o elemento escolhido (ar; eletricidade; terra/pedra; fogo; gelo/água, respectivamente).`,
   }),
 
   peculiarity({

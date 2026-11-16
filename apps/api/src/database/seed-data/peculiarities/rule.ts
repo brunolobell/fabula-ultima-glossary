@@ -9,7 +9,7 @@ export const peculiaritiesRule: SeedEntry = rule(
   'Peculiaridades',
   113,
   'Regra opcional avançada dos Atlas: cada PJ pode ter uma peculiaridade, uma marca mecânica e temática do que o torna único; ninguém no grupo repete a mesma.',
-  `As peculiaridades são uma **regra opcional avançada** dos três Atlas. Cada uma dá a um PJ uma característica marcante, com efeito em regras e na história. Foram escritas com a alta fantasia em mente (a versão do Techno Fantasy, com a fantasia tecnológica), mas valem em qualquer campanha. A [lista completa](/peculiaridades) reúne as de cada livro.
+  `As peculiaridades são uma **regra opcional avançada** dos três Atlas. Cada uma dá a um PJ uma característica marcante, com efeito em regras e na história. Foram escritas com o High Fantasy em mente (o Techno Fantasy traz a sua versão, adaptada ao gênero), mas valem em qualquer campanha. A [lista completa](/peculiaridades) reúne as de cada livro.
 
 ## Como funciona
 

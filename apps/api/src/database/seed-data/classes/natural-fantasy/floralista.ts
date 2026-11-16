@@ -190,7 +190,9 @@ Durante um conflito, se não houver magissementes no seu jardim, você pode usar
     139,
     1,
     'Permite fazer rituais de ritualismo e usar ritualismo para criar, animar e controlar vegetação, pólen, esporos e toxinas (exceto NPCs da espécie planta).',
-    `Você pode fazer rituais da disciplina **ritualismo**. Além disso, pode usar ritualismo para **criar, animar e/ou controlar** vegetação, pólen, esporos e toxinas, mas não pode criar nem controlar NPCs da espécie planta dessa forma.`,
+    `Você pode fazer rituais da disciplina **ritualismo**. Além disso, pode usar ritualismo para **criar, animar e/ou controlar** vegetação, pólen, esporos e toxinas, mas não pode criar nem controlar NPCs da espécie planta dessa forma.
+
+Veja [[rituais]] e, sobre o papel da magia no Natural Fantasy, [[magia-e-rituais-atlas]].`,
   ),
 
   skill(

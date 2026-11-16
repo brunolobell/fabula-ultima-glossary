@@ -83,7 +83,9 @@ O livro imprime a coluna de custo como "PV", mas o exemplo do próprio texto fal
     149,
     1,
     'Permite fazer rituais de ritualismo e usar ritualismo para criar ilusões sonoras.',
-    `Você pode fazer rituais da disciplina **ritualismo**. Além disso, também pode usar ritualismo para criar **ilusões sonoras**.`,
+    `Você pode fazer rituais da disciplina **ritualismo**. Além disso, também pode usar ritualismo para criar **ilusões sonoras**.
+
+Veja [[rituais]].`,
   ),
 
   skill(

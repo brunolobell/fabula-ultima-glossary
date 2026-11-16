@@ -394,8 +394,103 @@ Para lançar um feitiço, o personagem precisa cumprir **todos** estes requisito
 - Elementalismo, entropismo e espiritualismo usam **(AST + VON)**.
 - Quimerismo usa **(AST + VON)** ou **(VIG + VON)**, à sua escolha.
 - Feitiços **não ofensivos** têm sucesso automático, sem teste.
-- Falhas críticas e sucessos críticos no teste de Magia geram **oportunidades** normalmente.`,
+- Falhas críticas e sucessos críticos no teste de Magia geram **oportunidades** normalmente.
+
+## Rituais
+
+Os **rituais** são magias livres, sem lista de feitiços, que seguem este mesmo procedimento, mas com custo em PM, ND e consequências de falha próprios. Veja [[rituais]].`,
     ['magia', 'feitiços'],
+  ),
+
+  rule(
+    'Rituais',
+    118,
+    'Rituais são magias livres de cada disciplina: o mestre fixa potência e área, o custo em PM é potência × área, o teste de Magia precisa bater um ND (7, 10, 13 ou 16) e uma falha distorce o efeito de modo catastrófico.',
+    `Quem adquire certas classes e Poderes ganha a habilidade de realizar **rituais**, uma magia ritualística de uma ou mais **disciplinas**. Cada disciplina dá influência sobre um aspecto do mundo.
+
+## Disciplinas
+
+| Disciplina | Teste de Magia | Possíveis usos |
+| --- | --- | --- |
+| Arcanismo | (VON + VON) | Produzir um efeito mágico ligado ao Arcano a que você se vinculou. |
+| Quimerismo | (AST + VON) ou (VIG + VON) | Aguçar os sentidos, ver pelos olhos de um animal, acalmar um monstro furioso. |
+| Elementalismo | (AST + VON) | Andar sobre a água, moldar rochas, apagar chamas, fazer chover, criar ciclones. |
+| Entropismo | (AST + VON) | Envelhecer matéria, distorcer o fluxo do tempo, teletransporte. |
+| Ritualismo | (AST + VON) | Extrair magia de um objeto, ativar um circuito de almas, sentir a presença de magia. |
+| Espiritualismo | (AST + VON) | Sentir a presença e os sentimentos de criaturas, encorajar alguém ou fazê-lo dormir. |
+
+## O que um ritual nunca pode fazer
+
+- **Causar dano direto.** Ele pode causar **dano colateral** (abrir uma fenda sob os inimigos pode feri-los); use a tabela da p. 93 para definir esse dano.
+- Causar ou remover **condições** ([[condicoes]]).
+- Fazer personagens perderem ou ganharem PV, PM, PI, Pontos de Fabula ou Pontos de Ultima.
+- Replicar os benefícios mecânicos de um feitiço ou Poder existente. Efeitos **narrativos**, como teletransporte e voo, são permitidos, mesmo que algum Poder também os conceda.
+- Criar criaturas ou equipamentos, ou dar a eles habilidades permanentes.
+
+Fora isso, quase todo ritual é válido. Quanto mais forte o efeito, mais trágicas são as consequências de uma falha.
+
+## Passo a passo
+
+1. **Descreva o ritual.** Diga o que quer fazer e qual área ou quais criaturas quer afetar. O mestre tem a palavra final sobre ser possível e define a disciplina do ritual.
+2. **Calcule o custo.** O mestre consulta as tabelas de potência e de área: o custo total em [[pontos-de-mana]] é o **PM da potência × o multiplicador da área**.
+3. **Faça o teste de Magia.** O ritual é lançado como um feitiço ([[como-lancar-um-feitico]]), mas **sempre** exige um teste de Magia com resultado igual ou maior que o **ND** da potência, usando os Atributos da disciplina. Num sucesso, o efeito sai como desejado; numa falha, o mestre descreve como o efeito se distorceu de forma catastrófica.
+
+## Potência
+
+| Potência | PM | ND | Exemplos |
+| --- | --- | --- | --- |
+| Menor | 20 | 7 | Criar um lampejo, bloquear uma passagem, quebrar um vidro. |
+| Média | 30 | 10 | Criar uma ilusão, tratar uma doença, localizar alguém ou algo, sentir emoções, fornecer energia a curto prazo. |
+| Maior | 40 | 13 | Sentir pensamentos, influenciar emoções, dissipar uma maldição, mudar o clima por um tempo, fornecer energia a longo prazo. |
+| Extrema | 50 | 16 | Enfraquecer uma entidade divina, evitar uma catástrofe, alterar uma criatura ou local por uma semana. |
+
+## Área
+
+| Área | PM | Exemplos |
+| --- | --- | --- |
+| Individual | ×1 | Uma criatura de tamanho humano, um objeto, uma árvore. |
+| Pequena | ×2 | Algumas criaturas de tamanho humano, uma criatura grande, uma pequena clareira, um cômodo, um vagão de trem, uma casa. |
+| Grande | ×3 | Uma multidão, uma pequena floresta, uma aeronave ou galeão, um salão de castelo, uma criatura gigante. |
+| Enorme | ×4 | Uma fortaleza, um lago, um cume de montanha, uma aldeia, um quarteirão de cidade. |
+
+## Rituais como testes em grupo
+
+Quando alguém começa um ritual, outras pessoas podem apoiá-lo, **mesmo sem saber fazer rituais**. O teste de Magia vira um **teste em grupo** (p. 50), e quem conduz o ritual é o líder. Veja [[testes]].
+
+## Rituais com custo reduzido
+
+Se o conjurador oferecer um ingrediente particularmente raro ou poderoso, o custo em PM cai **pela metade**.
+
+- Isso só vale **uma vez por ritual**. O mestre define a natureza do ingrediente, e encontrá-lo pode ser uma aventura por si só.
+- Se não houver tempo para se preparar e o ritual for urgente, um item ou ingrediente que o mestre julgue adequado pode ser **sacrificado** para iniciá-lo.
+
+## Rituais durante conflitos
+
+É possível fazer rituais numa cena de conflito, mas primeiro é preciso juntar energia mágica suficiente:
+
+1. Inicie o ritual com a ação **Objetivo** e siga os passos 1 e 2 acima, definindo disciplina, área e potência.
+2. Cria-se na hora um **Relógio de ritual** ([[relogios]]) com um número de seções igual ao da potência (tabela abaixo).
+3. Qualquer um pode interagir com esse Relógio usando a ação Objetivo. Como sempre nessa ação, o mestre define os Atributos do teste e se o ND é fixo ou um teste oposto. O conjurador pode fazer o primeiro teste, preenchendo seções como parte da ação que iniciou o ritual.
+4. Quando o Relógio se completa, quem iniciou o ritual usa uma ação para fazer o passo 3: gasta o PM adequado e faz o teste de Magia, com o ND da potência. O resultado diz se o ritual deu certo ou se foi distorcido de forma catastrófica.
+
+| Potência | Seções do Relógio | PM | ND |
+| --- | --- | --- | --- |
+| Menor | 4 | 20 | 7 |
+| Média | 6 | 30 | 10 |
+| Maior | 6 | 40 | 13 |
+| Extrema | 8 | 50 | 16 |
+
+## Exemplos
+
+- **Invocar uma esfera de fogo para destruir o motor de uma aeronave:** elementalismo, potência maior, área pequena (**80 PM, ND 13**). Se falhar, o ritual pode virar uma tempestade de fogo devastadora.
+- **Sentir se uma pessoa é hostil:** espiritualismo, potência menor, área individual (**20 PM, ND 7**). Se falhar, o ritual pode incitar emoções negativas fortes na pessoa, com consequências imprevisíveis.
+- **Erguer uma barreira que proteja o castelo de uma avalanche:** ritualismo, potência extrema, área enorme (**200 PM, ND 16**). Se falhar, pode liberar um surto de energia mágica descontrolada e desencadear um cataclismo sobrenatural.
+- **Alterar o fluxo do tempo para restaurar por um instante um mecanismo danificado:** entropismo, potência média, área individual (**30 PM, ND 10**). Se falhar, o mecanismo e objetos próximos podem apodrecer e virar pó diante de quem conduz o ritual.
+
+## Nos Atlas
+
+Os Atlas trazem conselhos de ambientação para rituais ([[magia-e-rituais-atlas]]) e dois Poderes Heroicos que mexem neles: [[rituais-ageis]] (relógio de ritual menor em conflitos) e [[selos-rituais]] (guardar um ritual para usar depois).`,
+    ['magia', 'ritual', 'disciplinas'],
   ),
 
   rule(
@@ -432,7 +527,7 @@ Há uma lista de acessórios de exemplo nas páginas 285 a 287.`,
     'Projetos',
     134,
     'Regra de criação de invenções (poções, golens, aeronaves…) para personagens Inventores: o custo sai de potência × área × uso e o projeto avança 1 ponto de progresso por dia por PJ (mais 1 por Inventor) até chegar a custo ÷ 100.',
-    `Assim como conjuradores têm a magia ritualística, personagens [[inventor]] podem iniciar **projetos** e trabalhar em invenções personalizadas, de poções do amor a aeronaves. O Inventor ganha o direito de iniciar Projetos na classe; a regra em si vale para qualquer PJ que ajude no trabalho.
+    `Assim como conjuradores têm a magia ritualística ([[rituais]]), personagens [[inventor]] podem iniciar **projetos** e trabalhar em invenções personalizadas, de poções do amor a aeronaves. O Inventor ganha o direito de iniciar Projetos na classe; a regra em si vale para qualquer PJ que ajude no trabalho.
 
 ## Passo a passo
 
@@ -557,7 +652,7 @@ Um Relógio acompanha situações que evoluem, perigos que se aproximam ou o pro
 
 - Um Relógio de Alerta, numa infiltração, enche quando os testes falham.
 - Quando os heróis derrubam colunas para desabar o teto sobre um inimigo colossal, um Relógio mede quanto o suporte já cedeu.
-- Num ritual que pode mudar o mundo, um Relógio como "Apocalipse Arcano" mostra o tempo que resta para impedi-lo.
+- Num ritual que pode mudar o mundo (veja [[rituais]]), um Relógio como "Apocalipse Arcano" mostra o tempo que resta para impedi-lo.
 
 ## Quem cria e como é feito
 
